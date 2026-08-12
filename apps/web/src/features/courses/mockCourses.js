@@ -1,0 +1,112 @@
+export const myCourses = [
+  {
+    id: 1,
+    title: 'Toán lớp 6',
+    teacher: 'Cô Lan',
+    thumbnail: null,
+    duration: '8 giờ 30 phút',
+    lessonCount: 24,
+  },
+  {
+    id: 2,
+    title: 'Ngữ văn lớp 6',
+    teacher: 'Cô Mai',
+    thumbnail: null,
+    duration: '6 giờ 45 phút',
+    lessonCount: 18,
+  },
+  {
+    id: 3,
+    title: 'Tiếng Anh lớp 6',
+    teacher: 'Cô Hương',
+    thumbnail: null,
+    duration: '10 giờ 20 phút',
+    lessonCount: 30,
+  },
+  {
+    id: 4,
+    title: 'Khoa học tự nhiên lớp 6',
+    teacher: 'Thầy Nam',
+    thumbnail: null,
+    duration: '7 giờ 15 phút',
+    lessonCount: 20,
+  },
+  {
+    id: 5,
+    title: 'Lịch sử và Địa lý lớp 6',
+    teacher: 'Cô Trang',
+    thumbnail: null,
+    duration: '5 giờ 40 phút',
+    lessonCount: 16,
+  },
+];
+
+export const pendingCourses = [
+  {
+    id: 6,
+    title: 'Vật lý cơ bản',
+    teacher: 'Thầy Minh',
+    thumbnail: null,
+    duration: '6 giờ 30 phút',
+    lessonCount: 15,
+  },
+  {
+    id: 7,
+    title: 'Hóa học lớp 6',
+    teacher: 'Cô Hoa',
+    thumbnail: null,
+    duration: '5 giờ 20 phút',
+    lessonCount: 14,
+  },
+  {
+    id: 8,
+    title: 'Sinh học lớp 6',
+    teacher: 'Thầy Đức',
+    thumbnail: null,
+    duration: '4 giờ 50 phút',
+    lessonCount: 12,
+  },
+  {
+    id: 9,
+    title: 'Tin học lớp 6',
+    teacher: 'Cô Phương',
+    thumbnail: null,
+    duration: '3 giờ 40 phút',
+    lessonCount: 10,
+  },
+  {
+    id: 10,
+    title: 'Công nghệ lớp 6',
+    teacher: 'Thầy Hoàng',
+    thumbnail: null,
+    duration: '4 giờ 15 phút',
+    lessonCount: 11,
+  },
+  {
+    id: 11,
+    title: 'Giáo dục công dân lớp 6',
+    teacher: 'Cô Thảo',
+    thumbnail: null,
+    duration: '3 giờ 30 phút',
+    lessonCount: 9,
+  },
+];
+
+export const availableCourses = [
+  {
+    id: 12,
+    title: 'Toán nâng cao lớp 6',
+    teacher: 'Cô Lan',
+    thumbnail: null,
+    duration: '9 giờ 10 phút',
+    lessonCount: 26,
+  },
+  {
+    id: 13,
+    title: 'Tiếng Anh giao tiếp',
+    teacher: 'Cô Hương',
+    thumbnail: null,
+    duration: '12 giờ 30 phút',
+    lessonCount: 32,
+  },
+];
