@@ -1,7 +1,7 @@
 const notFound = (req, res) => {
     res.status(404).json({
-        success: false,
-        message: `Route not found: ${req.method} ${req.originalUrl}`,
+        message: 'Không tìm thấy tài nguyên yêu cầu.',
+        error_message: `Route not found: ${req.method} ${req.originalUrl}`,
     });
 };
 
