@@ -1,34 +1,47 @@
-// courses/TeacherCourses.jsx
-
 import { Route, Routes } from "react-router-dom";
 
-import CourseList from "./CourseList";
-import CreateCourse from "./CreateCourse";
-import CourseDetail from "./CourseDetail";
-import EditCourse from "./EditCourse";
+import CoursesPage from "./pages/CoursesPage";
+import CourseCreatePage from "./pages/CourseCreatePage";
+import CourseDetailPage from "./detail/CourseDetailPage";
+import CourseOverviewPage from "./detail/overview/CourseOverviewPage";
+import CourseLessonsPage from "./detail/lessons/CourseLessonsPage";
+import CourseStudentsPage from "./detail/students/CourseStudentsPage";
 
 const TeacherCourses = () => {
     return (
         <Routes>
             <Route
                 index
-                element={<CourseList />}
+                element={<CoursesPage />}
             />
 
             <Route
                 path="create"
-                element={<CreateCourse />}
+                element={<CourseCreatePage />}
             />
 
             <Route
                 path=":courseId"
-                element={<CourseDetail />}
-            />
+                element={<CourseDetailPage />}
+            >
+                {/* /teach/courses/:courseId */}
+                <Route
+                    index
+                    element={<CourseOverviewPage />}
+                />
 
-            <Route
-                path=":courseId/edit"
-                element={<EditCourse />}
-            />
+                {/* /teach/courses/:courseId/lessons */}
+                <Route
+                    path="lessons"
+                    element={<CourseLessonsPage />}
+                />
+
+                {/* /teach/courses/:courseId/students */}
+                <Route
+                    path="students"
+                    element={<CourseStudentsPage />}
+                />
+            </Route>
         </Routes>
     );
 };

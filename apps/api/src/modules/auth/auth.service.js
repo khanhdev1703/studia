@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import userRepository from '../users/userRepository.js';
+import userRepository from '../users/user.repository.js';
 import { hashPassword, comparePassword } from '../../utils/password.js';
 import env from '../../config/env.js';
 

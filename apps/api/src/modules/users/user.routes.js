@@ -3,7 +3,7 @@ import { Router } from 'express';
 import auth from '../../middlewares/auth.js';
 import authorize from '../../middlewares/authorize.js';
 
-import userController from './userController.js';
+import userController from './user.controller.js';
 
 const router = Router();
 
