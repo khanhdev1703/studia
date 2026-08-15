@@ -20,6 +20,16 @@ router.get(
     userController.getMe
 );
 
+router.put(
+    '/me',
+    userController.updateProfile
+);
+
+router.put(
+    '/me/password',
+    userController.updatePassword
+);
+
 router.get(
     '/:id',
     authorize('ADMIN'),

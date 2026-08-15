@@ -7,7 +7,7 @@ const errorHandler = (err, req, res, next) => {
         success: false,
         message:
             statusCode === 500
-                ? 'Internal server error'
+                ? "Lỗi hệ thống"
                 : err.message,
     });
 };

@@ -1,61 +1,41 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 
-import authService from '../../services/authService';
-import Logo from '../../components/common/Logo';
+import Logo from "../../components/common/Logo";
+import authService from "../../services/authService";
+import toast from "../../utils/toast"
 
-function LoginPage() {
+const LoginPage = () => {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    if (error) {
-      setError('');
-    }
-  };
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError('');
+    if (loading) return;
+
+    setLoading(true);
 
     try {
-      setLoading(true);
-
-      const response = await authService.login({
-        email: form.email.trim(),
-        password: form.password,
+      const result = await authService.login({
+        email: email.trim(),
+        password,
       });
 
-      console.log('Login success:', response);
+      toast.success(result.message);
 
-      // TODO:
-      // Lưu access token sau khi BE hoàn thiện
-      //
-      // localStorage.setItem(
-      //   'accessToken',
-      //   response.accessToken
-      // );
-
-      navigate('/student');
+      navigate("/student");
     } catch (error) {
-      setError(
-        error.response?.data?.message ||
-        'Email hoặc mật khẩu không chính xác.'
+      toast.error(
+        error?.response?.data?.message ||
+        error.message ||
+        "Đăng nhập không thành công."
       );
     } finally {
       setLoading(false);
@@ -63,107 +43,140 @@ function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#FAF9FF] px-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen bg-[#F7F7FF] px-4 py-8">
+      <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md items-center justify-center">
+        <div className="w-full rounded-3xl border border-gray-100 bg-white p-6 shadow-lg sm:p-8">
+          <div className="mb-4 flex justify-center">
+            <Logo showText={false} size="lg" border={false} />
+          </div>
 
-        {/* Logo + Header */}
-        <div className="mb-6 flex flex-col items-center">
-          <Link
-            to="/"
-            aria-label="Về trang chủ"
-            className="block"
+          <div className="mb-4 text-center">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Đăng nhập
+            </h1>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-5"
           >
-            <Logo className="h-20 w-20" showText={false} size='lg' />
-          </Link>
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Email
+              </label>
 
-          <h1 className="mt-3 text-2xl font-semibold text-[#252238]">
-            Đăng nhập
-          </h1>
-        </div>
+              <div className="relative">
+                <Mail
+                  size={20}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
 
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl border border-[#E7E3F5] bg-white p-5"
-        >
-          {/* Email */}
-          <div>
-            <label
-              htmlFor="email"
-              className="mb-1.5 block text-sm font-medium text-[#252238]"
-            >
-              Email
-            </label>
-
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              autoComplete="email"
-              required
-              disabled={loading}
-              className="h-11 w-full rounded-xl border border-[#DDD9E9] px-3 text-sm outline-none transition focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/10 disabled:bg-[#F7F6FA]"
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-1.5 block text-sm font-medium text-[#252238]"
-            >
-              Mật khẩu
-            </label>
-
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Nhập mật khẩu"
-              autoComplete="current-password"
-              required
-              disabled={loading}
-              className="h-11 w-full rounded-xl border border-[#DDD9E9] px-3 text-sm outline-none transition focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/10 disabled:bg-[#F7F6FA]"
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="rounded-xl bg-red-50 px-3 py-2.5 text-sm text-red-600">
-              {error}
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
+                  placeholder="Nhập email của bạn"
+                  autoComplete="email"
+                  disabled={loading}
+                  className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 text-sm outline-none transition focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/20 disabled:bg-gray-100"
+                />
+              </div>
             </div>
-          )}
 
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="h-11 w-full rounded-full bg-[#6C5CE7] text-sm font-medium text-white transition hover:bg-[#6252D9] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-          </button>
-        </form>
+            {/* Password */}
+            <div>
+              <label
+                htmlFor="password"
+                className="mb-2 flex justify-between block text-sm font-medium text-gray-700"
+              >
+                <span>Mật khẩu</span>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm font-medium text-[#6C5CE7] hover:underline"
+                >
+                  Quên mật khẩu?
+                </Link>
+              </label>
 
-        {/* Register */}
-        <p className="mt-5 text-center text-sm text-[#858585]">
-          Chưa có tài khoản?{' '}
+              <div className="relative">
+                <LockKeyhole
+                  size={20}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
 
-          <Link
-            to="/register"
-            className="font-medium text-[#6C5CE7] hover:underline"
-          >
-            Đăng ký
-          </Link>
-        </p>
+                <input
+                  id="password"
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
+                  placeholder="Nhập mật khẩu"
+                  autoComplete="current-password"
+                  disabled={loading}
+                  className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-12 text-sm outline-none transition focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/20 disabled:bg-gray-100"
+                />
 
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPassword(
+                      (prev) => !prev
+                    )
+                  }
+                  disabled={loading}
+                  aria-label={
+                    showPassword
+                      ? "Ẩn mật khẩu"
+                      : "Hiển thị mật khẩu"
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-gray-600 disabled:cursor-not-allowed"
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-[#6C5CE7] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#5b4bd6] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading
+                ? "Đang đăng nhập..."
+                : "Đăng nhập"}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center text-sm text-gray-500">
+            Chưa có tài khoản?{" "}
+            <Link
+              to="/register"
+              className="font-semibold text-[#6C5CE7] hover:underline"
+            >
+              Đăng ký
+            </Link>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
   );
-}
+};
 
 export default LoginPage;

@@ -30,6 +30,26 @@ const userRepository = {
             },
         });
     },
+
+    async updateProfile(id, data) {
+        return prisma.user.update({
+            where: {
+                id,
+            },
+            data,
+        });
+    },
+
+    async updatePassword(id, password) {
+        return prisma.user.update({
+            where: {
+                id,
+            },
+            data: {
+                password,
+            },
+        });
+    },
 };
 
 export default userRepository;

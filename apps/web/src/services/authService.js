@@ -1,23 +1,91 @@
-import api from './api';
+import {
+  loginApi,
+  registerApi,
+  getMeApi,
+} from "../api/authApi";
 
-const authService = {
-  register: async (data) => {
-    const response = await api.post(
-      '/auth/register',
-      data
+import useAuthStore from "../stores/authStore";
+
+const login = async ({ email, password }) => {
+  const response = await loginApi({
+    email,
+    password,
+  });
+
+  const { success, message, data } = response.data;
+
+  if (!success || !data?.accessToken) {
+    throw new Error(
+      message || "Đăng nhập không thành công."
     );
+  }
 
-    return response.data;
-  },
+  useAuthStore
+    .getState()
+    .setAccessToken(data.accessToken);
 
-  login: async (data) => {
-    const response = await api.post(
-      '/auth/login',
-      data
-    );
-
-    return response.data;
-  },
+  return {
+    message,
+    data,
+  };
 };
 
-export default authService;
+const register = async ({
+  name,
+  email,
+  password,
+}) => {
+  const response = await registerApi({
+    name,
+    email,
+    password,
+  });
+
+  const { success, message, data } = response.data;
+
+  if (!success) {
+    throw new Error(
+      message || "Đăng ký không thành công."
+    );
+  }
+
+  return {
+    message,
+    data,
+  };
+};
+
+const getMe = async () => {
+  const response = await getMeApi();
+
+  const { success, message, data } = response.data;
+
+  if (!success || !data?.user) {
+    throw new Error(
+      message ||
+      "Không thể lấy thông tin người dùng."
+    );
+  }
+
+  useAuthStore
+    .getState()
+    .setUser(data.user);
+
+  return {
+    message,
+    data,
+  };
+};
+
+const logout = async () => {
+  useAuthStore
+    .getState()
+    .logout();
+};
+
+export default {
+  login,
+  register,
+  getMe,
+  logout,
+};
