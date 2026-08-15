@@ -2,8 +2,8 @@ import logo from '../../assets/logo-1.png';
 
 function Logo({
   size = 'md',
-  showText = true,
-  border = true,
+  showText = false,
+  border = false,
   borderColor = '#6C5CE7',
   borderWidth = 2,
 }) {

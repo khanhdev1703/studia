@@ -7,6 +7,7 @@ import RoleRoute from "./RoleRoute";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import LandingPage from "../pages/LandingPage"
+import TeacherLayout from "../pages/teacher/layout/TeacherLayout";
 
 const AppRoute = () => {
     return (
@@ -55,7 +56,7 @@ const AppRoute = () => {
                 >
                     <Route
                         path="/teacher/*"
-                        element={<div>TeacherPage</div>}
+                        element={<TeacherLayout />}
                     />
                 </Route>
 

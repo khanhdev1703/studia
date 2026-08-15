@@ -1,8 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import useAuthStore from "../stores/authStore";
 
-// src/constants/roleRoutes.js
-
 const ROLE_ROUTES = {
     STUDENT: "/student",
     TEACHER: "/teacher",
