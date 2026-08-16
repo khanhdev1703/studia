@@ -3,15 +3,14 @@ import courseService from "./course.service.js";
 const courseController = {
     async createCourse(req, res, next) {
         try {
-            const { title, description, thumbnail } =
-                req.body;
+            const { title, description } = req.body;
 
             const course =
                 await courseService.createCourse({
                     teacherId: req.user.userId,
                     title,
                     description,
-                    thumbnail,
+                    thumbnail: req.file,
                 });
 
             res.status(201).json({
@@ -63,8 +62,11 @@ const courseController = {
 
     async updateCourse(req, res, next) {
         try {
-            const { title, description, thumbnail, status } =
-                req.body;
+            const {
+                title,
+                description,
+                status,
+            } = req.body;
 
             const course =
                 await courseService.updateCourse({
@@ -72,8 +74,8 @@ const courseController = {
                     teacherId: req.user.userId,
                     title,
                     description,
-                    thumbnail,
                     status,
+                    thumbnail: req.file,
                 });
 
             res.status(200).json({

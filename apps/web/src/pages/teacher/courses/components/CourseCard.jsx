@@ -1,14 +1,15 @@
 import { ArrowRight, BookOpen, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import getImageUrl from "../../../../utils/getImageUrl";
 
 const statusConfig = {
     DRAFT: {
-        label: "Draft",
+        label: "Nháp",
         className: "bg-amber-50 text-amber-600",
         dotClassName: "bg-amber-500",
     },
     PUBLISHED: {
-        label: "Published",
+        label: "Công khai",
         className: "bg-green-50 text-green-600",
         dotClassName: "bg-green-500",
     },
@@ -23,8 +24,8 @@ const CourseCard = ({ course }) => {
     const navigate = useNavigate();
 
     const thumbnail =
-        course.thumbnail ||
-        `https://picsum.photos/seed/${course.id}/600/340`;
+        course.thumbnail ? getImageUrl(course.thumbnail) :
+            `https://picsum.photos/seed/${course.id}/600/340`;
 
     const status =
         statusConfig[course.status] ||
@@ -107,7 +108,7 @@ const CourseCard = ({ course }) => {
                 "
             >
                 {/* Title + Manage */}
-                <div className="flex items-start gap-2">
+                <div className="flex items-center gap-2">
                     <h3
                         title={course.title}
                         className="

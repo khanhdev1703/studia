@@ -73,7 +73,7 @@ const CoursesPage = () => {
                 <button
                     type="button"
                     onClick={handleCreateCourse}
-                    className="flex shrink-0 items-center gap-2 rounded-xl bg-[#6C5CE7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#5b4bd6]"
+                    className="flex shrink-0 items-center gap-2 rounded-sm bg-[#6C5CE7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#5b4bd6]"
                 >
                     <Plus size={18} />
 

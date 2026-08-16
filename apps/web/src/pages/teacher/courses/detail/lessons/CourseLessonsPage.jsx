@@ -341,8 +341,8 @@ const CourseLessonsPage = () => {
                                             >
                                                 {lesson.status ===
                                                     "PUBLISHED"
-                                                    ? "Published"
-                                                    : "Draft"}
+                                                    ? "Công khai"
+                                                    : "Nháp"}
                                             </span>
                                         </>
                                     )}

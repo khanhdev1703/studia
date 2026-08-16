@@ -1,12 +1,19 @@
+import storage from "../../utils/storage/index.js";
 import courseRepository from "./course.repository.js";
 
 const courseService = {
+    // src/modules/course/course.service.js
+
     async createCourse({
         teacherId,
         title,
         description,
         thumbnail,
     }) {
+        // ==========================================
+        // Validate title
+        // ==========================================
+
         if (!title?.trim()) {
             const error = new Error(
                 "Vui lòng nhập tên khóa học."
@@ -16,14 +23,41 @@ const courseService = {
             throw error;
         }
 
-        return courseRepository.create({
+        // ==========================================
+        // Prepare create data
+        // ==========================================
+
+        const createData = {
             teacherId,
+
             title: title.trim(),
+
             description:
                 description?.trim() || null,
-            thumbnail:
-                thumbnail?.trim() || null,
-        });
+        };
+
+        // ==========================================
+        // Upload thumbnail
+        // ==========================================
+
+        if (thumbnail) {
+            const uploaded =
+                await storage.upload(
+                    thumbnail,
+                    "courses"
+                );
+
+            createData.thumbnail =
+                uploaded.url;
+        }
+
+        // ==========================================
+        // Create database
+        // ==========================================
+
+        return courseRepository.create(
+            createData
+        );
     },
 
     async getTeacherCourses(teacherId) {
@@ -66,9 +100,16 @@ const courseService = {
         title,
         description,
         thumbnail,
+        status,
     }) {
         const course =
-            await courseRepository.findById(courseId);
+            await courseRepository.findById(
+                courseId
+            );
+
+        // ==========================================
+        // Check course
+        // ==========================================
 
         if (!course) {
             const error = new Error(
@@ -78,6 +119,10 @@ const courseService = {
             error.statusCode = 404;
             throw error;
         }
+
+        // ==========================================
+        // Check permission
+        // ==========================================
 
         if (course.teacherId !== teacherId) {
             const error = new Error(
@@ -88,6 +133,10 @@ const courseService = {
             throw error;
         }
 
+        // ==========================================
+        // Validate title
+        // ==========================================
+
         if (!title?.trim()) {
             const error = new Error(
                 "Vui lòng nhập tên khóa học."
@@ -97,24 +146,89 @@ const courseService = {
             throw error;
         }
 
-        return courseRepository.updateById(
-            courseId,
-            {
-                title: title.trim(),
-                description:
-                    description?.trim() || null,
-                thumbnail:
-                    thumbnail?.trim() || null,
+        // ==========================================
+        // Prepare update data
+        // ==========================================
+
+        const updateData = {
+            title: title.trim(),
+
+            description:
+                description?.trim() || null,
+        };
+
+        // ==========================================
+        // Status
+        // ==========================================
+
+        if (status) {
+            updateData.status = status;
+        }
+
+        // ==========================================
+        // Upload thumbnail
+        // ==========================================
+
+        if (thumbnail) {
+            const uploaded =
+                await storage.upload(
+                    thumbnail,
+                    "courses"
+                );
+
+            updateData.thumbnail =
+                uploaded.url;
+        }
+
+        // ==========================================
+        // Update database
+        // ==========================================
+
+        const updatedCourse =
+            await courseRepository.updateById(
+                courseId,
+                updateData
+            );
+
+        // ==========================================
+        // Delete old thumbnail
+        // ==========================================
+
+        if (
+            thumbnail &&
+            course.thumbnail
+        ) {
+            try {
+                await storage.remove(
+                    course.thumbnail
+                );
+            } catch (error) {
+                console.error(
+                    "Không thể xóa thumbnail cũ:",
+                    error
+                );
             }
-        );
+        }
+
+        return updatedCourse;
     },
 
     async deleteCourse({
         courseId,
         teacherId,
     }) {
+        // ==========================================
+        // Find course
+        // ==========================================
+
         const course =
-            await courseRepository.findById(courseId);
+            await courseRepository.findById(
+                courseId
+            );
+
+        // ==========================================
+        // Check course
+        // ==========================================
 
         if (!course) {
             const error = new Error(
@@ -125,6 +239,10 @@ const courseService = {
             throw error;
         }
 
+        // ==========================================
+        // Check permission
+        // ==========================================
+
         if (course.teacherId !== teacherId) {
             const error = new Error(
                 "Bạn không có quyền xóa khóa học này."
@@ -134,9 +252,30 @@ const courseService = {
             throw error;
         }
 
+        // ==========================================
+        // Delete course from database
+        // ==========================================
+
         await courseRepository.deleteById(
             courseId
         );
+
+        // ==========================================
+        // Delete thumbnail
+        // ==========================================
+
+        if (course.thumbnail) {
+            try {
+                await storage.remove(
+                    course.thumbnail
+                );
+            } catch (error) {
+                console.error(
+                    "Không thể xóa thumbnail của khóa học:",
+                    error
+                );
+            }
+        }
     },
 };
 

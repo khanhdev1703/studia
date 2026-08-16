@@ -54,10 +54,10 @@ const CourseDetailPage = () => {
                 <div className="h-5 w-64 animate-pulse rounded bg-gray-200" />
 
                 {/* Tabs skeleton */}
-                <div className="h-10 animate-pulse rounded-xl bg-gray-200" />
+                <div className="h-10 animate-pulse rounded-md bg-gray-200" />
 
                 {/* Content skeleton */}
-                <div className="h-64 animate-pulse rounded-2xl bg-gray-200" />
+                <div className="h-64 animate-pulse rounded-md bg-gray-200" />
             </div>
         );
     }
@@ -66,7 +66,7 @@ const CourseDetailPage = () => {
         return (
             <div
                 className="
-                    rounded-2xl
+                    rounded-md
                     border
                     border-red-100
                     bg-red-50

@@ -8,13 +8,13 @@ const CourseDangerZone = ({
     return (
         <section
             className="
-                rounded-xl
+                rounded-md
                 border
                 border-red-100
                 bg-white
                 shadow-sm
 
-                sm:rounded-2xl
+                sm:rounded-md
             "
         >
             <div className="p-4 sm:p-5">
@@ -27,7 +27,7 @@ const CourseDangerZone = ({
                         sm:text-base
                     "
                 >
-                    Khu vực nguy hiểm
+                    Xoá khoá học
                 </h2>
 
                 <div
@@ -45,19 +45,6 @@ const CourseDangerZone = ({
                     <div className="min-w-0">
                         <p
                             className="
-                                text-xs
-                                font-medium
-                                text-gray-700
-
-                                sm:text-sm
-                            "
-                        >
-                            Xóa khóa học
-                        </p>
-
-                        <p
-                            className="
-                                mt-1
                                 text-[11px]
                                 leading-4
                                 text-gray-400
@@ -85,7 +72,7 @@ const CourseDangerZone = ({
                             items-center
                             justify-center
                             gap-2
-                            rounded-lg
+                            rounded-md
                             border
                             border-red-200
                             px-3

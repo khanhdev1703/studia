@@ -1,26 +1,61 @@
-import { Save } from "lucide-react";
-
-import CourseThumbnail from "./CourseThumbnail";
+import { useRef } from "react";
+import {
+    ImagePlus,
+    Save,
+    Loader2,
+} from "lucide-react";
+import getImageUrl from "../../../../../utils/getImageUrl";
 
 const CourseBasicInfo = ({
-    title,
-    description,
-    status,
+    form,
     thumbnailPreview,
     saving,
-    onTitleChange,
-    onDescriptionChange,
-    onStatusChange,
+    onFormChange,
     onSelectImage,
     onSave,
 }) => {
-    const isPublished = status === "PUBLISHED";
+    const fileInputRef = useRef(null);
+
+    const isPublished = form.status === "PUBLISHED";
+
+    const handleThumbnailClick = () => {
+        if (saving) {
+            return;
+        }
+
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event) => {
+        const file = event.target.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        onSelectImage(file);
+
+        // Cho phép chọn lại cùng một file
+        event.target.value = "";
+    };
+
+    const handleStatusToggle = () => {
+        onFormChange(
+            "status",
+            isPublished
+                ? "DRAFT"
+                : "PUBLISHED"
+        );
+    };
+
+    console.log(thumbnailPreview);
 
     return (
-        <section
+        <form
+            onSubmit={onSave}
             className="
                 overflow-hidden
-                rounded-2xl
+                rounded-md
                 border
                 border-gray-100
                 bg-white
@@ -28,46 +63,264 @@ const CourseBasicInfo = ({
             "
         >
             {/* Header */}
-
+            <div
+                className="
+                    border-b
+                    border-gray-100
+                    px-4
+                    py-4
+                    sm:px-5
+                "
+            >
+                <h2
+                    className="
+                        text-base
+                        font-semibold
+                        text-[#252238]
+                    "
+                >
+                    Thông tin khóa học
+                </h2>
+            </div>
 
             {/* Content */}
             <div
                 className="
+                    space-y-5
                     p-4
-
                     sm:p-5
-
-                    md:p-6
                 "
             >
+                {/* Thumbnail + Status */}
                 <div
                     className="
                         grid
                         grid-cols-1
-                        gap-6
+                        gap-5
 
-                        md:grid-cols-[180px_minmax(0,1fr)]
-                        md:gap-7
-
-                        lg:grid-cols-[200px_minmax(0,1fr)]
-                        lg:gap-8
+                        lg:grid-cols-[280px_minmax(0,1fr)]
+                        lg:items-start
                     "
                 >
                     {/* Thumbnail */}
-                    <div>
-                        <CourseThumbnail
-                            preview={thumbnailPreview}
-                            onSelect={onSelectImage}
+                    <div className="w-full">
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="
+                                image/jpeg,
+                                image/png,
+                                image/webp
+                            "
+                            className="hidden"
+                            onChange={
+                                handleFileChange
+                            }
                         />
+
+                        <button
+                            type="button"
+                            onClick={
+                                handleThumbnailClick
+                            }
+                            disabled={saving}
+                            className="
+                                group
+                                relative
+                                block
+                                aspect-video
+                                w-full
+                                overflow-hidden
+                                rounded-md
+                                border
+                                border-gray-200
+                                bg-gray-100
+                                text-left
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-[#6C5CE7]/30
+                                disabled:cursor-not-allowed
+                            "
+                        >
+                            {thumbnailPreview ? (
+                                <img
+                                    src={getImageUrl(thumbnailPreview)}
+                                    alt={form.title || "Thumbnail khóa học"}
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : (
+                                <div
+                                    className="
+                                        flex
+                                        h-full
+                                        w-full
+                                        flex-col
+                                        items-center
+                                        justify-center
+                                        gap-2
+                                        text-gray-400
+                                    "
+                                >
+                                    <ImagePlus
+                                        size={28}
+                                    />
+
+                                    <span
+                                        className="
+                                            text-xs
+                                        "
+                                    >
+                                        Thêm ảnh
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Hover overlay */}
+                            <div
+                                className="
+                                    absolute
+                                    inset-0
+                                    flex
+                                    items-center
+                                    justify-center
+                                    bg-black/0
+                                    opacity-0
+                                    transition
+                                    group-hover:bg-black/30
+                                    group-hover:opacity-100
+                                "
+                            >
+                                <div
+                                    className="
+                                        flex
+                                        items-center
+                                        gap-2
+                                        rounded-md
+                                        bg-white/95
+                                        px-3
+                                        py-2
+                                        text-xs
+                                        font-medium
+                                        text-gray-700
+                                        shadow-sm
+                                    "
+                                >
+                                    <ImagePlus
+                                        size={15}
+                                    />
+
+                                    Đổi ảnh
+                                </div>
+                            </div>
+                        </button>
+
+                        {/* Status */}
+                        <div
+                            className="
+                                mt-3
+                                flex
+                                items-center
+                                justify-between
+                                rounded-md
+                                border
+                                border-gray-100
+                                bg-gray-50
+                                px-3
+                                py-2.5
+                            "
+                        >
+                            <div className="min-w-0">
+                                <p
+                                    className="
+                                        text-xs
+                                        font-medium
+                                        text-gray-500
+                                    "
+                                >
+                                    Trạng thái
+                                </p>
+                            </div>
+
+                            {/* Switch */}
+                            <div className="flex gap-2 items-center">
+                                <span
+                                    className={`
+                                        inline-flex
+                                        items-center
+                                        rounded-full
+                                        px-2
+                                        py-0.5
+                                        text-xs
+                                        font-medium
+                                        ${isPublished
+                                            ? "bg-green-50 text-green-600"
+                                            : "bg-amber-50 text-amber-600"
+                                        }
+                                    `}
+                                >
+                                    {isPublished
+                                        ? "Công khai"
+                                        : "Nháp"}
+                                </span>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={
+                                        isPublished
+                                    }
+                                    disabled={saving}
+                                    onClick={
+                                        handleStatusToggle
+                                    }
+                                    className={`
+                                    relative
+                                    inline-flex
+                                    h-6
+                                    w-11
+                                    shrink-0
+                                    items-center
+                                    rounded-full
+                                    transition-colors
+                                    focus:outline-none
+                                    focus:ring-2
+                                    focus:ring-[#6C5CE7]/30
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-50
+                                    ${isPublished
+                                            ? "bg-[#6C5CE7]"
+                                            : "bg-gray-300"
+                                        }
+                                `}
+                                >
+                                    <span
+                                        className={`
+                                        inline-block
+                                        h-5
+                                        w-5
+                                        rounded-full
+                                        bg-white
+                                        shadow-sm
+                                        transition-transform
+                                        ${isPublished
+                                                ? "translate-x-5"
+                                                : "translate-x-0.5"
+                                            }
+                                    `}
+                                    />
+                                </button>
+                            </div>
+
+                        </div>
                     </div>
 
-                    {/* Form */}
-                    <div className="min-w-0 space-y-5">
+                    {/* Fields */}
+                    <div className="space-y-4">
                         {/* Title */}
                         <div>
                             <label
                                 htmlFor="course-title"
                                 className="
+                                    mb-1.5
                                     block
                                     text-sm
                                     font-medium
@@ -80,18 +333,21 @@ const CourseBasicInfo = ({
                             <input
                                 id="course-title"
                                 type="text"
-                                value={title}
+                                value={
+                                    form.title
+                                }
                                 onChange={(event) =>
-                                    onTitleChange(
-                                        event.target.value
+                                    onFormChange(
+                                        "title",
+                                        event.target
+                                            .value
                                     )
                                 }
                                 placeholder="Nhập tên khóa học"
+                                disabled={saving}
                                 className="
-                                    mt-2
-                                    block
                                     w-full
-                                    rounded-xl
+                                    rounded-md
                                     border
                                     border-gray-200
                                     bg-white
@@ -101,14 +357,11 @@ const CourseBasicInfo = ({
                                     text-[#252238]
                                     outline-none
                                     transition
-
                                     placeholder:text-gray-400
-
-                                    hover:border-gray-300
-
                                     focus:border-[#6C5CE7]
                                     focus:ring-2
                                     focus:ring-[#6C5CE7]/10
+                                    disabled:bg-gray-50
                                 "
                             />
                         </div>
@@ -118,6 +371,7 @@ const CourseBasicInfo = ({
                             <label
                                 htmlFor="course-description"
                                 className="
+                                    mb-1.5
                                     block
                                     text-sm
                                     font-medium
@@ -129,143 +383,40 @@ const CourseBasicInfo = ({
 
                             <textarea
                                 id="course-description"
-                                value={description}
+                                rows={5}
+                                value={
+                                    form.description
+                                }
                                 onChange={(event) =>
-                                    onDescriptionChange(
-                                        event.target.value
+                                    onFormChange(
+                                        "description",
+                                        event.target
+                                            .value
                                     )
                                 }
                                 placeholder="Nhập mô tả khóa học"
-                                rows={5}
+                                disabled={saving}
                                 className="
-                                    mt-2
-                                    block
-                                    min-h-[120px]
                                     w-full
-                                    resize-y
-                                    rounded-xl
+                                    resize-none
+                                    rounded-md
                                     border
                                     border-gray-200
                                     bg-white
                                     px-3.5
-                                    py-3
+                                    py-2.5
                                     text-sm
                                     leading-6
                                     text-[#252238]
                                     outline-none
                                     transition
-
                                     placeholder:text-gray-400
-
-                                    hover:border-gray-300
-
                                     focus:border-[#6C5CE7]
                                     focus:ring-2
                                     focus:ring-[#6C5CE7]/10
+                                    disabled:bg-gray-50
                                 "
                             />
-                        </div>
-
-                        {/* Status */}
-                        <div
-                            className="
-        flex
-        items-center
-        justify-between
-        gap-4
-        rounded-xl
-        border
-        border-gray-100
-        bg-gray-50
-        px-3.5
-        py-3
-        sm:px-4
-    "
-                        >
-                            <div className="flex min-w-0 items-center gap-2.5">
-                                <p className="text-sm font-medium text-gray-700">
-                                    Trạng thái
-                                </p>
-                            </div>
-
-                            <div className="flex gap-3 ">
-                                <span
-                                    className={`
-                inline-flex
-                items-center
-                rounded-sm
-                px-2.5
-                py-1
-                text-[12px]
-                font-semibold
-
-                ${status === "PUBLISHED"
-                                            ? "bg-green-200 text-green-800"
-                                            : "bg-gray-100 text-gray-500"
-                                        }
-            `}
-                                >
-                                    {status === "PUBLISHED"
-                                        ? "Công khai"
-                                        : "Nháp"}
-                                </span>
-                                <button
-                                    type="button"
-                                    role="switch"
-                                    aria-checked={status === "PUBLISHED"}
-                                    disabled={saving}
-                                    onClick={() =>
-                                        onStatusChange(
-                                            status === "PUBLISHED"
-                                                ? "DRAFT"
-                                                : "PUBLISHED"
-                                        )
-                                    }
-                                    className={`
-            relative
-            flex
-            h-6
-            w-11
-            shrink-0
-            items-center
-            rounded-full
-            p-0.5
-            transition-colors
-            duration-200
-
-            focus:outline-none
-            focus:ring-2
-            focus:ring-[#6C5CE7]/20
-            focus:ring-offset-2
-
-            disabled:cursor-not-allowed
-            disabled:opacity-60
-
-            ${status === "PUBLISHED"
-                                            ? "bg-[#6C5CE7]"
-                                            : "bg-gray-300"
-                                        }
-        `}
-                                >
-                                    <span
-                                        className={`
-                block
-                h-5
-                w-5
-                rounded-full
-                bg-white
-                shadow-sm
-                transition-transform
-                duration-200
-
-                ${status === "PUBLISHED"
-                                                ? "translate-x-5"
-                                                : "translate-x-0"
-                                            }
-            `}
-                                    />
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -275,23 +426,16 @@ const CourseBasicInfo = ({
             <div
                 className="
                     flex
-                    flex-col-reverse
-                    gap-2
+                    justify-end
                     border-t
                     border-gray-100
                     px-4
                     py-3
-
-                    sm:flex-row
-                    sm:items-center
-                    sm:justify-end
                     sm:px-5
-                    sm:py-4
                 "
             >
                 <button
-                    type="button"
-                    onClick={onSave}
+                    type="submit"
                     disabled={saving}
                     className="
                         inline-flex
@@ -299,36 +443,43 @@ const CourseBasicInfo = ({
                         items-center
                         justify-center
                         gap-2
-                        rounded-xl
+                        rounded-md
                         bg-[#6C5CE7]
                         px-4
                         py-2.5
                         text-sm
-                        font-semibold
+                        font-medium
                         text-white
                         transition
-
-                        hover:bg-[#5b4bd6]
-
+                        hover:bg-[#5b4bd5]
                         focus:outline-none
                         focus:ring-2
-                        focus:ring-[#6C5CE7]/20
-                        focus:ring-offset-2
-
+                        focus:ring-[#6C5CE7]/30
                         disabled:cursor-not-allowed
                         disabled:opacity-60
 
                         sm:w-auto
                     "
                 >
-                    <Save size={16} />
+                    {saving ? (
+                        <>
+                            <Loader2
+                                size={17}
+                                className="animate-spin"
+                            />
 
-                    {saving
-                        ? "Đang lưu..."
-                        : "Lưu thay đổi"}
+                            Đang lưu...
+                        </>
+                    ) : (
+                        <>
+                            <Save size={17} />
+
+                            Lưu thay đổi
+                        </>
+                    )}
                 </button>
             </div>
-        </section>
+        </form>
     );
 };
 

@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import {
+    useOutletContext,
+    useParams,
+    useNavigate,
+} from "react-router-dom";
+
+import appToast from "../../../../../utils/toast";
+
+import courseService from "../../../../../services/courseService";
 
 import CourseBasicInfo from "./CourseBasicInfo";
+import CourseDangerZone from "./CourseDangerZone";
+import DeleteCourseModal from "./DeleteCourseModal";
 
 const CourseOverviewPage = () => {
     const {
@@ -9,24 +19,34 @@ const CourseOverviewPage = () => {
         setCourse,
     } = useOutletContext();
 
+    const { courseId } = useParams();
+    const navigate = useNavigate();
+
     // ==========================================
     // Form state
     // ==========================================
 
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [status, setStatus] = useState("DRAFT");
-
-    const [thumbnailPreview, setThumbnailPreview] = useState("");
-    const [thumbnailFile, setThumbnailFile] = useState(null);
+    const [form, setForm] = useState({
+        title: "",
+        description: "",
+        status: "DRAFT",
+        thumbnailFile: null,
+    });
 
     // ==========================================
     // UI state
     // ==========================================
 
+    const [thumbnailPreview, setThumbnailPreview] =
+        useState("");
+
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+
+    const [deleteModalOpen, setDeleteModalOpen] =
+        useState(false);
+
+    const [deleting, setDeleting] =
+        useState(false);
 
     // ==========================================
     // Sync course -> form
@@ -37,18 +57,28 @@ const CourseOverviewPage = () => {
             return;
         }
 
-        setTitle(course.title || "");
-        setDescription(course.description || "");
-        setStatus(course.status || "DRAFT");
+        setForm({
+            title: course.title || "",
+            description: course.description || "",
+            status: course.status || "DRAFT",
+            thumbnailFile: null,
+        });
 
         setThumbnailPreview(
             course.thumbnail || ""
         );
-
-        setThumbnailFile(null);
-        setError("");
-        setSuccess("");
     }, [course]);
+
+    // ==========================================
+    // Update form
+    // ==========================================
+
+    const updateForm = (field, value) => {
+        setForm((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
 
     // ==========================================
     // Select thumbnail
@@ -61,7 +91,7 @@ const CourseOverviewPage = () => {
 
         // Max 5MB
         if (file.size > 5 * 1024 * 1024) {
-            setError(
+            appToast.error(
                 "Ảnh không được vượt quá 5MB."
             );
 
@@ -76,18 +106,20 @@ const CourseOverviewPage = () => {
         ];
 
         if (!allowedTypes.includes(file.type)) {
-            setError(
+            appToast.error(
                 "Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP."
             );
 
             return;
         }
 
-        setError("");
-        setSuccess("");
+        // Save file into form
+        setForm((prev) => ({
+            ...prev,
+            thumbnailFile: file,
+        }));
 
-        setThumbnailFile(file);
-
+        // Preview
         const previewUrl =
             URL.createObjectURL(file);
 
@@ -98,13 +130,23 @@ const CourseOverviewPage = () => {
     // Save
     // ==========================================
 
-    const handleSave = async () => {
-        setError("");
-        setSuccess("");
+    const handleSave = async (event) => {
+        event?.preventDefault();
 
-        // Basic validation
-        if (!title.trim()) {
-            setError(
+        if (!courseId) {
+            appToast.error(
+                "Không tìm thấy khóa học."
+            );
+
+            return;
+        }
+
+        // ======================================
+        // Validation
+        // ======================================
+
+        if (!form.title.trim()) {
+            appToast.error(
                 "Vui lòng nhập tên khóa học."
             );
 
@@ -114,50 +156,72 @@ const CourseOverviewPage = () => {
         try {
             setSaving(true);
 
-            /*
-             * TODO:
-             *
-             * Gọi courseService.update()
-             *
-             * Nếu có upload thumbnail:
-             * sử dụng FormData để gửi:
-             *
-             * title
-             * description
-             * status
-             * thumbnailFile
-             */
+            // ==================================
+            // Create FormData
+            // ==================================
 
-            const updatedCourse = {
-                ...course,
+            const formData = new FormData();
 
-                title: title.trim(),
+            formData.append(
+                "title",
+                form.title.trim()
+            );
 
-                description:
-                    description.trim(),
+            formData.append(
+                "description",
+                form.description.trim()
+            );
 
-                status,
+            formData.append(
+                "status",
+                form.status
+            );
 
-                /*
-                 * Tạm thời sử dụng preview.
-                 * Sau khi backend upload ảnh hoàn chỉnh,
-                 * thay bằng URL ảnh trả về từ API.
-                 */
-                thumbnail:
-                    thumbnailPreview ||
-                    course.thumbnail,
-            };
+            // Chỉ gửi file nếu chọn ảnh mới
+            if (form.thumbnailFile) {
+                formData.append(
+                    "thumbnail",
+                    form.thumbnailFile
+                );
+            }
 
-            // Update course ở CourseDetailPage
+            // ==================================
+            // Service
+            // ==================================
+
+            const response =
+                await courseService.updateCourse(
+                    courseId,
+                    formData
+                );
+
+            const updatedCourse = response.data;
+
+            // Cập nhật CourseDetail context
             setCourse(updatedCourse);
 
-            setSuccess(
-                "Đã lưu thông tin khóa học."
+            // Reset thumbnail file
+            setForm((prev) => ({
+                ...prev,
+                thumbnailFile: null,
+            }));
+
+            // Preview sử dụng URL thật từ BE
+            setThumbnailPreview(
+                updatedCourse.thumbnail || ""
+            );
+
+            appToast.success(
+                response.message ||
+                "Cập nhật khóa học thành công."
             );
         } catch (error) {
-            console.error(error);
+            console.error(
+                "Update course error:",
+                error
+            );
 
-            setError(
+            appToast.error(
                 error?.response?.data?.message ||
                 "Không thể cập nhật khóa học."
             );
@@ -167,7 +231,48 @@ const CourseOverviewPage = () => {
     };
 
     // ==========================================
-    // Loading / empty
+    // Delete course
+    // ==========================================
+
+    const handleDelete = async () => {
+        if (!courseId || deleting) {
+            return;
+        }
+
+        try {
+            setDeleting(true);
+
+            await courseService.deleteCourse(
+                courseId
+            );
+
+            appToast.success(
+                "Đã xóa khóa học."
+            );
+
+            setCourse(null);
+
+            navigate("/teacher/courses", {
+                replace: true,
+            });
+        } catch (error) {
+            console.error(
+                "Delete course error:",
+                error
+            );
+
+            appToast.error(
+                error?.response?.data?.message ||
+                "Không thể xóa khóa học."
+            );
+        } finally {
+            setDeleting(false);
+            setDeleteModalOpen(false);
+        }
+    };
+
+    // ==========================================
+    // Empty
     // ==========================================
 
     if (!course) {
@@ -180,61 +285,38 @@ const CourseOverviewPage = () => {
 
     return (
         <div className="space-y-4">
-            {/* Error */}
-            {error && (
-                <div
-                    className="
-                        rounded-xl
-                        border
-                        border-red-100
-                        bg-red-50
-                        px-4
-                        py-3
-                        text-sm
-                        text-red-600
-                    "
-                >
-                    {error}
-                </div>
-            )}
+            {/* Basic information */}
 
-            {/* Success */}
-            {success && (
-                <div
-                    className="
-                        rounded-xl
-                        border
-                        border-green-100
-                        bg-green-50
-                        px-4
-                        py-3
-                        text-sm
-                        text-green-600
-                    "
-                >
-                    {success}
-                </div>
-            )}
-
-            {/* Course basic information */}
             <CourseBasicInfo
-                title={title}
-                description={description}
-                status={status}
-                thumbnailPreview={
-                    thumbnailPreview
-                }
-                thumbnailFile={thumbnailFile}
+                form={form}
+                thumbnailPreview={thumbnailPreview}
                 saving={saving}
-                onTitleChange={setTitle}
-                onDescriptionChange={
-                    setDescription
-                }
-                onStatusChange={setStatus}
+                onFormChange={updateForm}
                 onSelectImage={
                     handleSelectImage
                 }
                 onSave={handleSave}
+            />
+
+            {/* Danger zone */}
+
+            <CourseDangerZone
+                courseTitle={course.title}
+                deleting={deleting}
+                onDelete={() =>
+                    setDeleteModalOpen(true)
+                }
+            />
+            <DeleteCourseModal
+                open={deleteModalOpen}
+                courseTitle={course.title}
+                deleting={deleting}
+                onClose={() => {
+                    if (!deleting) {
+                        setDeleteModalOpen(false);
+                    }
+                }}
+                onConfirm={handleDelete}
             />
         </div>
     );
