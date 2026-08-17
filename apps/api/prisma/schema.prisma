@@ -44,9 +44,33 @@ model Course {
 
   status      CourseStatus @default(DRAFT)
 
+  lessons     Lesson[]
+
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   @@index([teacherId])
   @@index([status])
+}
+
+model Lesson {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  courseId    String   @db.ObjectId
+  course      Course   @relation(fields: [courseId], references: [id])
+
+  title       String
+  description String?
+
+  video       String?
+  document    String?
+  duration Int?
+
+  order       Int
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([courseId])
+  @@index([courseId, order])
 }

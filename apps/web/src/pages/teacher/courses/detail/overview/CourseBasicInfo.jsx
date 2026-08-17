@@ -48,8 +48,6 @@ const CourseBasicInfo = ({
         );
     };
 
-    console.log(thumbnailPreview);
-
     return (
         <form
             onSubmit={onSave}
@@ -259,8 +257,8 @@ const CourseBasicInfo = ({
                                     `}
                                 >
                                     {isPublished
-                                        ? "Công khai"
-                                        : "Nháp"}
+                                        ? "Mở"
+                                        : "Khoá"}
                                 </span>
                                 <button
                                     type="button"

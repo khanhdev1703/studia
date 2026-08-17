@@ -97,6 +97,7 @@ const CourseDetailPage = () => {
                     items-center
                     gap-1.5
                     text-sm
+                    mb-4
                 "
             >
                 <Link

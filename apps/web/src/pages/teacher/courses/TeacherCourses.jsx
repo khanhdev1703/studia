@@ -32,7 +32,7 @@ const TeacherCourses = () => {
 
                 {/* /teach/courses/:courseId/lessons */}
                 <Route
-                    path="lessons"
+                    path="lessons/*"
                     element={<CourseLessonsPage />}
                 />
 

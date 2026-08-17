@@ -4,7 +4,7 @@ const lessonAPI = {
     // GET /course/:courseId/lessons
     getLessonsByCourse: (courseId) => {
         return apiClient.get(
-            `/course/${courseId}/lessons`
+            `/lesson/course/${courseId}`
         );
     },
 
@@ -16,10 +16,30 @@ const lessonAPI = {
     },
 
     // POST /lessons/course/:courseId
-    create: (courseId, data) => {
+    create: async (
+        courseId,
+        data,
+        onProgress
+    ) => {
         return apiClient.post(
-            `/lessons/course/${courseId}`,
-            data
+            `/lesson/course/${courseId}`,
+            data,
+            {
+                timeout: 0,
+
+                onUploadProgress: (event) => {
+                    if (!event.total) {
+                        return;
+                    }
+
+                    const progress = Math.round(
+                        (event.loaded * 100) /
+                        event.total
+                    );
+
+                    onProgress?.(progress);
+                },
+            }
         );
     },
 
@@ -34,7 +54,7 @@ const lessonAPI = {
     // DELETE /lessons/:lessonId
     delete: (lessonId) => {
         return apiClient.delete(
-            `/lessons/${lessonId}`
+            `/lesson/${lessonId}`
         );
     },
 

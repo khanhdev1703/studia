@@ -4,12 +4,12 @@ import getImageUrl from "../../../../utils/getImageUrl";
 
 const statusConfig = {
     DRAFT: {
-        label: "Nháp",
+        label: "Khoá",
         className: "bg-amber-50 text-amber-600",
         dotClassName: "bg-amber-500",
     },
     PUBLISHED: {
-        label: "Công khai",
+        label: "Mở",
         className: "bg-green-50 text-green-600",
         dotClassName: "bg-green-500",
     },

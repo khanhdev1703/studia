@@ -17,7 +17,7 @@ const TeacherLayout = () => {
             <div className="min-h-screen lg:pl-64">
                 <TeacherHeader />
 
-                <main className="px-4 pb-24 pt-5 sm:px-6 lg:px-8 lg:pb-8">
+                <main className="px-4 pb-24 pt-4 sm:px-6 lg:px-8 lg:pb-8">
                     <div className="mx-auto w-full max-w-7xl">
                         <Routes>
                             <Route

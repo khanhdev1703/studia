@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import auth from "../../middlewares/auth.js";
 import authorize from "../../middlewares/authorize.js";
-import upload from "../../middlewares/upload.js";
+import { imageUpload } from "../../middlewares/upload.js";
 
 import courseController from "./course.controller.js";
 
@@ -14,7 +14,7 @@ router.use(auth);
 router.post(
     "/",
     authorize("TEACHER"),
-    upload.single("thumbnail"),
+    imageUpload.single("thumbnail"),
     courseController.createCourse
 );
 
@@ -35,7 +35,7 @@ router.get(
 router.put(
     "/:id",
     authorize("TEACHER"),
-    upload.single("thumbnail"),
+    imageUpload.single("thumbnail"),
     courseController.updateCourse
 );
 

@@ -3,9 +3,9 @@
 import lessonAPI from "../api/lessonAPI";
 
 const lessonService = {
-    getByCourse: async (courseId) => {
+    getLessonsByCourse: async (courseId) => {
         const response =
-            await lessonAPI.getByCourse(courseId);
+            await lessonAPI.getLessonsByCourse(courseId);
 
         return response.data;
     },
@@ -17,9 +17,13 @@ const lessonService = {
         return response.data;
     },
 
-    create: async (courseId, data) => {
+    create: async (courseId, data, onProgress) => {
         const response =
-            await lessonAPI.create(courseId, data);
+            await lessonAPI.create(
+                courseId,
+                data,
+                onProgress
+            );
 
         return response.data;
     },

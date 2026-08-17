@@ -20,6 +20,15 @@ const courseRepository = {
             where: {
                 teacherId,
             },
+
+            include: {
+                _count: {
+                    select: {
+                        lessons: true,
+                    },
+                },
+            },
+
             orderBy: {
                 createdAt: "desc",
             },
