@@ -307,6 +307,7 @@ const CourseOverviewPage = () => {
                     setDeleteModalOpen(true)
                 }
             />
+
             <DeleteCourseModal
                 open={deleteModalOpen}
                 courseTitle={course.title}

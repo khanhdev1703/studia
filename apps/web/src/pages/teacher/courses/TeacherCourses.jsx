@@ -2,10 +2,7 @@ import { Route, Routes } from "react-router-dom";
 
 import CoursesPage from "./pages/CoursesPage";
 import CourseCreatePage from "./pages/CourseCreatePage";
-import CourseDetailPage from "./detail/CourseDetailPage";
-import CourseOverviewPage from "./detail/overview/CourseOverviewPage";
-import CourseLessonsPage from "./detail/lessons/CourseLessonsPage";
-import CourseStudentsPage from "./detail/students/CourseStudentsPage";
+import CourseRoute from "./detail/CourseRoute";
 
 const TeacherCourses = () => {
     return (
@@ -21,27 +18,9 @@ const TeacherCourses = () => {
             />
 
             <Route
-                path=":courseId"
-                element={<CourseDetailPage />}
-            >
-                {/* /teach/courses/:courseId */}
-                <Route
-                    index
-                    element={<CourseOverviewPage />}
-                />
-
-                {/* /teach/courses/:courseId/lessons */}
-                <Route
-                    path="lessons/*"
-                    element={<CourseLessonsPage />}
-                />
-
-                {/* /teach/courses/:courseId/students */}
-                <Route
-                    path="students"
-                    element={<CourseStudentsPage />}
-                />
-            </Route>
+                path=":courseId/*"
+                element={<CourseRoute />}
+            />
         </Routes>
     );
 };

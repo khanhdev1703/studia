@@ -57,9 +57,9 @@ const CoursesPage = () => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-2">
             {/* Page Header */}
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4 p-4 border-b border-gray-100 bg-white">
                 <div>
                     <h2 className="text-xl font-bold text-[#252238]">
                         Khóa học
@@ -130,7 +130,7 @@ const CoursesPage = () => {
             {!loading &&
                 !error &&
                 courses.length > 0 && (
-                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 px-2">
                         {courses.map((course) => (
                             <CourseCard
                                 key={course.id}

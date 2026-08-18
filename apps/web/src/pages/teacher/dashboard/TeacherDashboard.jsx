@@ -1,6 +1,11 @@
+import TeacherHeader from "./TeacherHeader";
+
 const TeacherDashboard = () => {
     return (
-        <>Teacher Dashboard</>
+        <>
+            <TeacherHeader />
+            <div>Teacher Dashboard</div>
+        </>
     )
 }
 

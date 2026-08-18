@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import {
     BookOpen,
-    ChevronRight,
 } from "lucide-react";
 import {
-    Link,
-    NavLink,
     Outlet,
     useParams,
 } from "react-router-dom";
 
+import Breadcrumb from "../../../../components/common/Breadcrumb"
+
 import courseService from "../../../../services/courseService";
+import CourseDetailTabs from "./components/CourseDetailTabs";
 
 const CourseDetailPage = () => {
     const { courseId } = useParams();
@@ -86,190 +86,27 @@ const CourseDetailPage = () => {
     }
 
     return (
-        <div className="space-y-5">
+        <div className="space-y-2 pb-20 bg-[#F7F7FF]">
             {/* ==========================================
                 Breadcrumb
             ========================================== */}
-            <div
-                className="
-                    flex
-                    min-w-0
-                    items-center
-                    gap-1.5
-                    text-sm
-                    mb-4
-                "
-            >
-                <Link
-                    to="/teacher/courses"
-                    className="
-                        inline-flex
-                        shrink-0
-                        items-center
-                        gap-1.5
-                        text-gray-500
-                        transition
-                        hover:text-[#6C5CE7]
-                    "
-                >
-                    <BookOpen size={16} />
-
-                    <span>Khóa học</span>
-                </Link>
-
-                <ChevronRight
-                    size={16}
-                    className="shrink-0 text-gray-300"
+            <div className="sticky top-0 z-30 border-b border-gray-100 bg-white p-4">
+                <Breadcrumb
+                    items={[
+                        {
+                            label: "Khóa học",
+                            to: "/teacher/courses",
+                            icon: BookOpen,
+                        },
+                        {
+                            label: course.title,
+                        },
+                    ]}
                 />
-
-                <span
-                    className="
-                        min-w-0
-                        truncate
-                        font-medium
-                        text-[#252238]
-                    "
-                    title={course.title}
-                >
-                    {course.title}
-                </span>
             </div>
 
-            {/* ==========================================
-                Tabs
-            ========================================== */}
-            <div
-                className="
-                    overflow-x-auto
-                    border-b
-                    border-gray-200
-                "
-            >
-                <nav
-                    className="
-                        flex
-                        min-w-max
-                        gap-5
-                    "
-                >
-                    {/* Overview */}
-                    <NavLink
-                        to={`/teacher/courses/${courseId}`}
-                        end
-                        className={({ isActive }) =>
-                            `
-                            relative
-                            pb-3
-                            text-sm
-                            font-medium
-                            transition
-
-                            ${isActive
-                                ? "text-[#6C5CE7]"
-                                : "text-gray-500 hover:text-gray-700"
-                            }
-                            `
-                        }
-                    >
-                        {({ isActive }) => (
-                            <>
-                                Tổng quan
-
-                                {isActive && (
-                                    <span
-                                        className="
-                                            absolute
-                                            bottom-0
-                                            left-0
-                                            h-0.5
-                                            w-full
-                                            rounded-full
-                                            bg-[#6C5CE7]
-                                        "
-                                    />
-                                )}
-                            </>
-                        )}
-                    </NavLink>
-
-                    {/* Lessons */}
-                    <NavLink
-                        to={`/teacher/courses/${courseId}/lessons`}
-                        className={({ isActive }) =>
-                            `
-                            relative
-                            pb-3
-                            text-sm
-                            font-medium
-                            transition
-
-                            ${isActive
-                                ? "text-[#6C5CE7]"
-                                : "text-gray-500 hover:text-gray-700"
-                            }
-                            `
-                        }
-                    >
-                        {({ isActive }) => (
-                            <>
-                                Bài học
-
-                                {isActive && (
-                                    <span
-                                        className="
-                                            absolute
-                                            bottom-0
-                                            left-0
-                                            h-0.5
-                                            w-full
-                                            rounded-full
-                                            bg-[#6C5CE7]
-                                        "
-                                    />
-                                )}
-                            </>
-                        )}
-                    </NavLink>
-
-                    {/* Students */}
-                    <NavLink
-                        to={`/teacher/courses/${courseId}/students`}
-                        className={({ isActive }) =>
-                            `
-                            relative
-                            pb-3
-                            text-sm
-                            font-medium
-                            transition
-
-                            ${isActive
-                                ? "text-[#6C5CE7]"
-                                : "text-gray-500 hover:text-gray-700"
-                            }
-                            `
-                        }
-                    >
-                        {({ isActive }) => (
-                            <>
-                                Học viên
-
-                                {isActive && (
-                                    <span
-                                        className="
-                                            absolute
-                                            bottom-0
-                                            left-0
-                                            h-0.5
-                                            w-full
-                                            rounded-full
-                                            bg-[#6C5CE7]
-                                        "
-                                    />
-                                )}
-                            </>
-                        )}
-                    </NavLink>
-                </nav>
+            <div className="bg-white p-2 pl-4 pb-0">
+                <CourseDetailTabs courseId={courseId} />
             </div>
 
             {/* ==========================================

@@ -39,7 +39,7 @@ app.use(
                 return callback(null, true);
             }
 
-            if (allowedOrigins.includes(origin)) {
+            if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
                 return callback(null, true);
             }
 

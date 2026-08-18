@@ -237,7 +237,7 @@ const DeleteCourseModal = ({
                     >
                         {deleting
                             ? "Đang xóa..."
-                            : "Xóa khóa học"}
+                            : "Xóa"}
                     </button>
                 </div>
             </div>

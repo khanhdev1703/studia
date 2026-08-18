@@ -8,7 +8,6 @@ const CourseDangerZone = ({
     return (
         <section
             className="
-                rounded-md
                 border
                 border-red-100
                 bg-white
@@ -23,7 +22,6 @@ const CourseDangerZone = ({
                         text-sm
                         font-semibold
                         text-red-600
-
                         sm:text-base
                     "
                 >
@@ -34,7 +32,6 @@ const CourseDangerZone = ({
                     className="
                         mt-3
                         space-y-3
-
                         sm:flex
                         sm:items-center
                         sm:justify-between
@@ -94,7 +91,7 @@ const CourseDangerZone = ({
 
                         {deleting
                             ? "Đang xóa..."
-                            : "Xóa khóa học"}
+                            : "Xóa"}
                     </button>
                 </div>
             </div>

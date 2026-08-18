@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import {
+    ChevronDown,
+    ChevronUp,
+    MoreVertical,
     Pencil,
     Plus,
     Trash2,
@@ -154,7 +157,7 @@ const CourseLessonsList = () => {
     // ==========================================
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-2">
             {/* ======================================
                 Header
             ====================================== */}
@@ -162,28 +165,28 @@ const CourseLessonsList = () => {
             <div
                 className="
                     flex
-                    items-end
+                    items-center
                     justify-between
                     gap-4
+                    bg-white
+                    p-2
+                    px-4
                 "
             >
                 <div>
                     <h2
                         className="
-                            text-lg
                             font-semibold
                             tracking-tight
                             text-[#252238]
-
                             sm:text-xl
                         "
                     >
-                        Nội dung khóa học
+                        Nội dung
                     </h2>
 
                     <p
                         className="
-                            mt-1
                             text-xs
                             font-medium
                             text-gray-500
@@ -202,7 +205,7 @@ const CourseLessonsList = () => {
                         shrink-0
                         items-center
                         gap-1.5
-                        rounded-xl
+                        rounded-sm
                         bg-[#6C5CE7]
                         px-3
                         py-2.5
@@ -218,8 +221,8 @@ const CourseLessonsList = () => {
                         sm:text-sm
                     "
                 >
-                    <Plus size={17} />
-                    Thêm bài học
+                    <Plus size={14} />
+                    Thêm
                 </Link>
             </div>
 
@@ -291,290 +294,235 @@ const CourseLessonsList = () => {
                 </div>
             )}
 
-            {/* ======================================
-                Timeline
-            ====================================== */}
 
             {lessons.length > 0 && (
-                <div className="relative">
-                    {/* Timeline line */}
+                <div className="space-y-2 p-2">
+                    {lessons.map((lesson, index) => {
+                        const hasVideo =
+                            Boolean(lesson.video);
 
-                    <div
-                        className="
-                            absolute
-                            bottom-7
-                            left-[18px]
-                            top-7
-                            w-px
-                            bg-gray-300
+                        const hasDuration =
+                            hasVideo &&
+                            lesson.duration !== null &&
+                            lesson.duration !== undefined;
 
-                            sm:left-[21px]
+                        const isPublished =
+                            lesson.status === "PUBLISHED";
+
+                        return (
+                            <div
+                                key={lesson.id}
+                                className="group flex items-center gap-3 rounded-sm border border-gray-200 bg-white px-3 py-3 transition
+                        hover:border-[#DCD6FF]
+                        hover:shadow-sm
+                        sm:gap-4
+                        sm:px-4
+                        sm:py-3.5
+                    "
+                            >
+
+
+                                <div
+                                    className="
+                            flex
+                            h-9
+                            w-9
+                            shrink-0
+                            items-center
+                            justify-center
+                            rounded-full
+                            bg-[#6C5CE7]/10
+                            text-xs
+                            font-semibold
+                            tabular-nums
+                            text-[#6C5CE7]
+
+                            sm:h-10
+                            sm:w-10
+                            sm:text-sm
                         "
-                    />
+                                >
+                                    {String(
+                                        (lesson.order ??
+                                            index) + 1
+                                    ).padStart(2, "0")}
+                                </div>
 
-                    <div className="space-y-4">
-                        {lessons.map(
-                            (lesson, index) => {
-                                const hasVideo =
-                                    Boolean(
-                                        lesson.video
-                                    );
+                                {/* ==================================
+                        Content
+                    ================================== */}
 
-                                const hasDuration =
-                                    hasVideo &&
-                                    lesson.duration !==
-                                    null &&
-                                    lesson.duration !==
-                                    undefined;
+                                <Link
+                                    to={lesson.id}
+                                    className="
+                            min-w-0
+                            flex-1
+                        "
+                                >
+                                    {/* Title */}
 
-                                return (
-                                    <div
-                                        key={
-                                            lesson.id
-                                        }
+                                    <h3
                                         className="
-                                            group
-                                            relative
-                                            flex
-                                            items-start
-                                            gap-3
+                                truncate
+                                text-sm
+                                font-semibold
+                                leading-5
+                                text-[#252238]
+                                transition
 
-                                            sm:gap-4
-                                        "
+                                group-hover:text-[#6C5CE7]
+
+                                sm:text-[15px]
+                            "
+                                        title={lesson.title}
                                     >
-                                        {/* ==================
-                                            Number
-                                        ================== */}
+                                        {lesson.title}
+                                    </h3>
 
-                                        <div
-                                            className="
-                                                relative
-                                                z-10
-                                                flex
-                                                h-9
-                                                w-9
-                                                shrink-0
-                                                items-center
-                                                justify-center
-                                                rounded-full
-                                                border-2
-                                                border-[#F7F7FF]
-                                                bg-white
-                                                text-[11px]
-                                                font-semibold
-                                                text-gray-500
-                                                shadow-sm
-                                                transition
+                                    {/* Meta */}
 
-                                                group-hover:border-[#E8E4FF]
-                                                group-hover:bg-[#6C5CE7]
-                                                group-hover:text-white
+                                    <div
+                                        className="
+                                mt-1.5
+                                flex
+                                min-w-0
+                                items-center
+                                gap-2
+                                text-xs
+                                leading-4
+                            "
+                                    >
+                                        {/* Duration */}
 
-                                                sm:h-11
-                                                sm:w-11
-                                                sm:text-xs
-                                            "
-                                        >
-                                            {String(
-                                                index +
-                                                1
-                                            ).padStart(
-                                                2,
-                                                "0"
-                                            )}
-                                        </div>
-
-                                        {/* ==================
-                                            Lesson card
-                                        ================== */}
-
-                                        <div
-                                            className="
-                                                min-w-0
-                                                flex-1
-                                                rounded-xl
-                                                border
-                                                border-gray-200
-                                                bg-white
-                                                px-4
-                                                py-3.5
-                                                shadow-sm
-                                                transition
-
-                                                group-hover:border-[#DCD6FF]
-                                                group-hover:shadow-md
-
-                                                sm:px-5
-                                                sm:py-4
-                                            "
-                                        >
-                                            <div
+                                        {hasDuration && (
+                                            <span
                                                 className="
-                                                    flex
-                                                    items-start
-                                                    gap-4
-                                                "
+                                        shrink-0
+                                        font-medium
+                                        tabular-nums
+                                        text-gray-500
+                                    "
                                             >
-                                                {/* Content */}
-
-                                                <Link
-                                                    to={
-                                                        lesson.id
-                                                    }
-                                                    className="
-                                                        min-w-0
-                                                        flex-1
-                                                    "
-                                                >
-                                                    <h3
-                                                        className="
-                                                            truncate
-                                                            text-sm
-                                                            font-semibold
-                                                            leading-5
-                                                            text-[#252238]
-                                                            transition
-                                                            group-hover:text-[#6C5CE7]
-
-                                                            sm:text-base
-                                                        "
-                                                    >
-                                                        {
-                                                            lesson.title
-                                                        }
-                                                    </h3>
-
-                                                    {lesson.description && (
-                                                        <p
-                                                            className="
-                                                                mt-1
-                                                                line-clamp-2
-                                                                text-xs
-                                                                leading-5
-                                                                text-gray-500
-
-                                                                sm:text-sm
-                                                            "
-                                                        >
-                                                            {
-                                                                lesson.description
-                                                            }
-                                                        </p>
-                                                    )}
-                                                </Link>
-
-                                                {/* Duration */}
-
-                                                {hasDuration && (
-                                                    <div
-                                                        className="
-                                                            shrink-0
-                                                            rounded-lg
-                                                            bg-gray-50
-                                                            px-2.5
-                                                            py-1.5
-                                                            text-xs
-                                                            font-semibold
-                                                            tabular-nums
-                                                            text-gray-600
-                                                        "
-                                                    >
-                                                        {formatTime(
-                                                            lesson.duration
-                                                        )}
-                                                    </div>
+                                                {formatTime(
+                                                    lesson.duration
                                                 )}
-                                            </div>
+                                            </span>
+                                        )}
 
-                                            {/* Bottom actions */}
+                                        {/* Separator */}
 
-                                            <div
+                                        {hasDuration && (
+                                            <span
                                                 className="
-                                                    mt-3
-                                                    flex
-                                                    items-center
-                                                    justify-end
-                                                    gap-1
-                                                    border-t
-                                                    border-gray-100
-                                                    pt-2.5
-
-                                                    sm:opacity-0
-                                                    sm:transition
-                                                    sm:group-hover:opacity-100
-                                                "
+                                        shrink-0
+                                        text-gray-300
+                                    "
                                             >
-                                                <Link
-                                                    to={
-                                                        lesson.id
-                                                    }
-                                                    className="
-                                                        inline-flex
-                                                        h-7
-                                                        items-center
-                                                        gap-1.5
-                                                        rounded-lg
-                                                        px-2
-                                                        text-xs
-                                                        font-medium
-                                                        text-gray-400
-                                                        transition
-                                                        hover:bg-gray-100
-                                                        hover:text-[#6C5CE7]
-                                                    "
-                                                    title="Chỉnh sửa"
-                                                >
-                                                    <Pencil
-                                                        size={
-                                                            14
-                                                        }
-                                                    />
+                                                •
+                                            </span>
+                                        )}
 
-                                                    <span>
-                                                        Chỉnh sửa
-                                                    </span>
-                                                </Link>
+                                        {/* Status */}
 
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        handleDelete(
-                                                            lesson.id
-                                                        )
-                                                    }
-                                                    className="
-                                                        inline-flex
-                                                        h-7
-                                                        items-center
-                                                        gap-1.5
-                                                        rounded-lg
-                                                        px-2
-                                                        text-xs
-                                                        font-medium
-                                                        text-gray-400
-                                                        transition
-                                                        hover:bg-red-50
-                                                        hover:text-red-500
-                                                    "
-                                                    title="Xóa"
-                                                >
-                                                    <Trash2
-                                                        size={
-                                                            14
-                                                        }
-                                                    />
+                                        <span
+                                            className={`
+                                    truncate
+                                    font-medium
 
-                                                    <span>
-                                                        Xóa
-                                                    </span>
-                                                </button>
-                                            </div>
-                                        </div>
+                                    ${isPublished
+                                                    ? "text-emerald-500"
+                                                    : "text-gray-400"
+                                                }
+                                `}
+                                        >
+                                            {isPublished
+                                                ? "Đã xuất bản"
+                                                : "Khóa"}
+                                        </span>
                                     </div>
-                                );
-                            }
-                        )}
-                    </div>
+                                </Link>
+
+                                {/* Reorder Actions */}
+
+                                <div
+                                    className="
+        ml-2
+        flex
+        shrink-0
+        items-center
+        gap-2
+        p-1
+    "
+                                >
+                                    {/* Move up */}
+
+                                    <button
+                                        type="button"
+                                        disabled={index === 0}
+                                        // onClick={() =>
+                                        //     handleMove(index, "up")
+                                        // }
+                                        className="
+            flex
+            h-8
+            w-8
+            items-center
+            justify-center
+            rounded-full
+            transition
+            hover:bg-[#6C5CE7]
+            hover:text-white
+            disabled:cursor-not-allowed
+            disabled:text-[#C9C3E8]
+            disabled:hover:bg-transparent
+            disabled:hover:text-[#C9C3E8]
+        "
+                                        title="Đưa bài học lên"
+                                        aria-label="Đưa bài học lên"
+                                    >
+                                        <ChevronUp
+                                            size={19}
+                                            strokeWidth={2.5}
+                                        />
+                                    </button>
+
+                                    {/* Move down */}
+
+                                    <button
+                                        type="button"
+                                        disabled={
+                                            index === lessons.length - 1
+                                        }
+                                        // onClick={() =>
+                                        //     handleMove(index, "down")
+                                        // }
+                                        className="
+            flex
+            h-8
+            w-8
+            items-center
+            justify-center
+            rounded-full
+            transition
+            hover:bg-[#6C5CE7]
+            hover:text-white
+            disabled:cursor-not-allowed
+            disabled:text-[#C9C3E8]
+            disabled:hover:bg-transparent
+            disabled:hover:text-[#C9C3E8]
+        "
+                                        title="Đưa bài học xuống"
+                                        aria-label="Đưa bài học xuống"
+                                    >
+                                        <ChevronDown
+                                            size={19}
+                                            strokeWidth={2.5}
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </div>

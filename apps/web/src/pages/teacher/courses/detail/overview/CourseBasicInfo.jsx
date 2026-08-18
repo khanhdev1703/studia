@@ -53,39 +53,18 @@ const CourseBasicInfo = ({
             onSubmit={onSave}
             className="
                 overflow-hidden
-                rounded-md
                 border
                 border-gray-100
                 bg-white
                 shadow-sm
             "
         >
-            {/* Header */}
-            <div
-                className="
-                    border-b
-                    border-gray-100
-                    px-4
-                    py-4
-                    sm:px-5
-                "
-            >
-                <h2
-                    className="
-                        text-base
-                        font-semibold
-                        text-[#252238]
-                    "
-                >
-                    Thông tin khóa học
-                </h2>
-            </div>
 
             {/* Content */}
             <div
                 className="
                     space-y-5
-                    p-4
+                    p-3
                     sm:p-5
                 "
             >
@@ -129,7 +108,7 @@ const CourseBasicInfo = ({
                                 aspect-video
                                 w-full
                                 overflow-hidden
-                                rounded-md
+                                rounded-sm
                                 border
                                 border-gray-200
                                 bg-gray-100
@@ -273,7 +252,7 @@ const CourseBasicInfo = ({
                                     className={`
                                     relative
                                     inline-flex
-                                    h-6
+                                    h-5
                                     w-11
                                     shrink-0
                                     items-center
@@ -285,7 +264,7 @@ const CourseBasicInfo = ({
                                     disabled:cursor-not-allowed
                                     disabled:opacity-50
                                     ${isPublished
-                                            ? "bg-[#6C5CE7]"
+                                            ? "bg-green-600"
                                             : "bg-gray-300"
                                         }
                                 `}
@@ -293,14 +272,14 @@ const CourseBasicInfo = ({
                                     <span
                                         className={`
                                         inline-block
-                                        h-5
-                                        w-5
+                                        h-4
+                                        w-4
                                         rounded-full
                                         bg-white
                                         shadow-sm
                                         transition-transform
                                         ${isPublished
-                                                ? "translate-x-5"
+                                                ? "translate-x-6"
                                                 : "translate-x-0.5"
                                             }
                                     `}

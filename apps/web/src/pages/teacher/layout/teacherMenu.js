@@ -2,8 +2,8 @@ import {
     LayoutDashboard,
     BookOpen,
     Users,
-    UserRound,
 } from "lucide-react";
+import ProfileIcon from "../../../components/common/ProfileIcon";
 
 const teacherMenuItems = [
     {
@@ -28,8 +28,8 @@ const teacherMenuItems = [
     {
         label: "Hồ sơ",
         path: "/teacher/profile",
-        icon: UserRound,
-        isShowMenu: false,
+        icon: ProfileIcon,
+        isShowMenu: true,
     },
 ];
 

@@ -2,8 +2,7 @@ import { Bell } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 import Logo from "../../../components/common/Logo";
-import TeacherAccountMenu from "./TeacherAccountMenu";
-import teacherMenuItems from "./teacherMenu";
+import teacherMenuItems from "../layout/teacherMenu";
 
 const TeacherHeader = () => {
     const location = useLocation();
@@ -46,8 +45,6 @@ const TeacherHeader = () => {
                         <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#6C5CE7]" />
                     </button>
 
-                    {/* Account */}
-                    <TeacherAccountMenu />
                 </div>
             </div>
         </header>

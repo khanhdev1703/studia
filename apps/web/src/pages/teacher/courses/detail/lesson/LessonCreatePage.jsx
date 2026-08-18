@@ -280,33 +280,14 @@ const LessonCreatePage = () => {
     // ==========================================
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-2 pb-30">
 
             {/* Header */}
 
-            <div>
-                <Link
-                    to=".."
-                    relative="path"
-                    className="
-                        inline-flex
-                        items-center
-                        gap-1.5
-                        text-xs
-                        font-medium
-                        text-gray-500
-                        transition
-                        hover:text-[#6C5CE7]
-                    "
-                >
-                    <ArrowLeft size={15} />
-
-                    Quay lại bài học
-                </Link>
-
+            <div className="p-4 bg-white border
+                        border-gray-100">
                 <h1
                     className="
-                        mt-2
                         text-base
                         font-semibold
                         text-[#252238]
@@ -326,6 +307,27 @@ const LessonCreatePage = () => {
                 </p>
             </div>
 
+            <div className="p-2 m-0">
+                <Link
+                    to=".."
+                    relative="path"
+                    className="
+                        inline-flex
+                        items-center
+                        gap-1.5
+                        text-xs
+                        font-medium
+                        text-gray-500
+                        transition
+                        hover:text-[#6C5CE7]
+                    "
+                >
+                    <ArrowLeft size={15} />
+
+                    Quay lại danh sách bài học
+                </Link>
+            </div>
+
             {/* Form */}
 
             <form
@@ -337,7 +339,6 @@ const LessonCreatePage = () => {
 
                 <section
                     className="
-                        rounded-xl
                         border
                         border-gray-100
                         bg-white
@@ -346,27 +347,6 @@ const LessonCreatePage = () => {
                         sm:p-5
                     "
                 >
-                    <div className="mb-4">
-                        <h2
-                            className="
-                                text-sm
-                                font-semibold
-                                text-[#252238]
-                            "
-                        >
-                            Thông tin bài học
-                        </h2>
-
-                        <p
-                            className="
-                                mt-1
-                                text-xs
-                                text-gray-400
-                            "
-                        >
-                            Nhập thông tin cơ bản của bài học.
-                        </p>
-                    </div>
 
                     {/* Title */}
 
@@ -467,7 +447,6 @@ const LessonCreatePage = () => {
 
                 <section
                     className="
-                        rounded-xl
                         border
                         border-gray-100
                         bg-white
@@ -510,12 +489,12 @@ const LessonCreatePage = () => {
                         <label
                             className="
                                 flex
-                                min-h-48
+                                min-h-40
                                 cursor-pointer
                                 flex-col
                                 items-center
                                 justify-center
-                                rounded-xl
+                                rounded-lg
                                 border
                                 border-dashed
                                 border-gray-200
@@ -723,7 +702,6 @@ const LessonCreatePage = () => {
 
                 <section
                     className="
-                        rounded-xl
                         border
                         border-gray-100
                         bg-white
@@ -771,7 +749,7 @@ const LessonCreatePage = () => {
                             )
                         }
                         disabled={saving}
-                        rows={8}
+                        rows={3}
                         placeholder="Nhập nội dung tài liệu..."
                         className="
                             w-full
@@ -798,11 +776,10 @@ const LessonCreatePage = () => {
 
                 <div
                     className="
+                    p-4
                         flex
-                        flex-col-reverse
                         gap-2
-                        sm:flex-row
-                        sm:justify-end
+                        justify-end
                     "
                 >
                     <Link
@@ -812,11 +789,12 @@ const LessonCreatePage = () => {
                             inline-flex
                             items-center
                             justify-center
-                            rounded-lg
+                            rounded-sm
                             border
                             border-gray-200
                             px-4
                             py-2.5
+                            bg-white
                             text-xs
                             font-medium
                             text-gray-600
@@ -834,7 +812,7 @@ const LessonCreatePage = () => {
                             inline-flex
                             items-center
                             justify-center
-                            rounded-lg
+                            rounded-sm
                             bg-[#6C5CE7]
                             px-5
                             py-2.5

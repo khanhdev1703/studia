@@ -56,7 +56,7 @@ const CourseCard = ({ course }) => {
                 group
                 cursor-pointer
                 overflow-hidden
-                rounded-sm
+                rounded-lg
                 border
                 border-gray-100
                 bg-white
