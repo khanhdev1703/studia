@@ -50,12 +50,11 @@ const CourseDangerZone = ({
                                 sm:leading-5
                             "
                         >
-                            Xóa vĩnh viễn khóa học
+                            Xóa vĩnh viễn
                             {courseTitle
                                 ? ` "${courseTitle}"`
                                 : ""}
-                            . Hành động này không thể
-                            hoàn tác.
+                            . Hành động này sẽ xoá cả những bài trong khoá học.
                         </p>
                     </div>
 

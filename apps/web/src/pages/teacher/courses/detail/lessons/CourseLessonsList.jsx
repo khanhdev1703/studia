@@ -2,10 +2,7 @@ import { useEffect, useState } from "react";
 import {
     ChevronDown,
     ChevronUp,
-    MoreVertical,
-    Pencil,
     Plus,
-    Trash2,
 } from "lucide-react";
 import {
     Link,
@@ -233,7 +230,8 @@ const CourseLessonsList = () => {
             {lessons.length === 0 && (
                 <div
                     className="
-                        rounded-2xl
+                        m-3
+                        rounded-sm
                         border
                         border-gray-200
                         bg-white
@@ -270,27 +268,6 @@ const CourseLessonsList = () => {
                         cho khóa học.
                     </p>
 
-                    <Link
-                        to="create"
-                        className="
-                            mt-5
-                            inline-flex
-                            items-center
-                            gap-1.5
-                            rounded-xl
-                            bg-[#6C5CE7]
-                            px-4
-                            py-2.5
-                            text-xs
-                            font-semibold
-                            text-white
-                            transition
-                            hover:bg-[#5B4BD6]
-                        "
-                    >
-                        <Plus size={15} />
-                        Thêm bài học
-                    </Link>
                 </div>
             )}
 

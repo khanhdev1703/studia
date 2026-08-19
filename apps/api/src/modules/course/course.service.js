@@ -1,5 +1,6 @@
 import storage from "../../utils/storage/index.js";
 import courseRepository from "./course.repository.js";
+import lessonRepository from "../lesson/lesson.repository.js"
 
 const courseService = {
     // src/modules/course/course.service.js
@@ -213,70 +214,75 @@ const courseService = {
         return updatedCourse;
     },
 
-    async deleteCourse({
-        courseId,
-        teacherId,
-    }) {
-        // ==========================================
-        // Find course
-        // ==========================================
+    async deleteCourse({ courseId, teacherId }) {
 
         const course =
-            await courseRepository.findById(
-                courseId
-            );
-
-        // ==========================================
-        // Check course
-        // ==========================================
+            await courseRepository.findById(courseId);
 
         if (!course) {
-            const error = new Error(
+            throw new Error(
                 "Không tìm thấy khóa học."
             );
-
-            error.statusCode = 404;
-            throw error;
         }
 
-        // ==========================================
-        // Check permission
-        // ==========================================
-
-        if (course.teacherId !== teacherId) {
-            const error = new Error(
-                "Bạn không có quyền xóa khóa học này."
-            );
-
-            error.statusCode = 403;
-            throw error;
-        }
-
-        // ==========================================
-        // Delete course from database
-        // ==========================================
-
-        await courseRepository.deleteById(
-            courseId
+        console.log(
+            "teacherId:",
+            teacherId
         );
 
+        if (course.teacherId !== teacherId) {
+            throw new Error(
+                "Bạn không có quyền xóa khóa học này."
+            );
+        }
+        const lessons =
+            await lessonRepository.findByCourseId(
+                courseId
+            );
         // ==========================================
-        // Delete thumbnail
+        // Xóa file của lessons
         // ==========================================
 
-        if (course.thumbnail) {
-            try {
+        for (const lesson of lessons) {
+            if (lesson.video) {
                 await storage.remove(
-                    course.thumbnail
+                    lesson.video
                 );
-            } catch (error) {
-                console.error(
-                    "Không thể xóa thumbnail của khóa học:",
-                    error
+            }
+
+            if (lesson.document) {
+                await storage.remove(
+                    lesson.document
                 );
             }
         }
-    },
+
+        // ==========================================
+        // Xóa thumbnail
+        // ==========================================
+
+        if (course.thumbnail) {
+            await storage.remove(
+                course.thumbnail
+            );
+        }
+
+        const deletedLessons =
+            await lessonRepository.deleteByCourseId(
+                courseId
+            );
+
+        const deletedCourse =
+            await courseRepository.deleteById(
+                courseId
+            );
+
+        return {
+            courseId,
+            deletedLessons:
+                deletedLessons.count,
+        };
+    }
 };
 
 export default courseService;

@@ -95,34 +95,31 @@ const CourseCreatePage = () => {
     };
 
     return (
-        <div className="mx-auto w-full max-w-3xl">
+        <div className="mx-auto w-full max-w-3xl space-y-2">
             {/* Header */}
-            <div className="mb-6">
-                <button
-                    type="button"
+            <div className="p-4 bg-white relative">
+                <div
                     onClick={handleBack}
                     disabled={loading}
-                    className="mb-4 flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-[#6C5CE7] disabled:cursor-not-allowed"
+                    className="absolute top-1/2 -translate-y-1/2 flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-[#6C5CE7] disabled:cursor-not-allowed"
                 >
                     <ArrowLeft size={18} />
+                </div>
 
-                    <span>Khóa học</span>
-                </button>
-
-                <h1 className="text-2xl font-bold text-[#252238]">
+                <h1 className="text-xl text-center font-bold text-[#252238]">
                     Tạo khóa học
                 </h1>
 
-                <p className="mt-1 text-sm text-gray-500">
+                {/* <p className="mt-1 text-sm text-gray-500">
                     Tạo một khóa học mới để bắt đầu xây dựng
                     nội dung giảng dạy.
-                </p>
+                </p> */}
             </div>
 
             {/* Form */}
             <form
                 onSubmit={handleSubmit}
-                className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6"
+                className="border border-gray-100 bg-white p-5 shadow-sm sm:p-6"
             >
                 <div className="space-y-6">
                     {/* Title */}

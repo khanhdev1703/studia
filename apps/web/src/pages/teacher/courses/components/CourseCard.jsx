@@ -69,17 +69,10 @@ const CourseCard = ({ course }) => {
             {/* Thumbnail */}
             <div
                 className="
-                    h-32
                     w-full
                     overflow-hidden
                     bg-gray-100
-
-                    sm:h-36
-
-                    md:h-40
-
-                    lg:h-auto
-                    lg:aspect-video
+                    aspect-video
                 "
             >
                 <img

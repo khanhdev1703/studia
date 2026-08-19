@@ -2,7 +2,7 @@ import { BookOpen } from "lucide-react";
 
 const EmptyCourses = () => {
     return (
-        <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-12 text-center">
+        <div className="m-3 flex min-h-[320px] flex-col items-center justify-center rounded-sm border border-dashed border-gray-200 bg-white px-6 py-12 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#6C5CE7]/10 text-[#6C5CE7]">
                 <BookOpen size={28} />
             </div>

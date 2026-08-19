@@ -84,6 +84,14 @@ const lessonRepository = {
         });
     },
 
+    async deleteByCourseId(courseId) {
+        return prisma.lesson.deleteMany({
+            where: {
+                courseId,
+            },
+        });
+    },
+
     // ==========================================
     // Update lesson order
     // ==========================================
