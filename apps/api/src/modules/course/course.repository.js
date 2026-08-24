@@ -1,4 +1,4 @@
-import { prisma } from '../../config/database.js';
+import { prisma } from "../../config/database.js";
 
 const courseRepository = {
     async create(data) {
@@ -7,6 +7,7 @@ const courseRepository = {
         });
     },
 
+    // Có thể lấy cả active và deleted
     async findById(id) {
         return prisma.course.findUnique({
             where: {
@@ -15,12 +16,23 @@ const courseRepository = {
         });
     },
 
+    // Chỉ lấy Course đang active
+    async findActiveById(id) {
+        return prisma.course.findFirst({
+            where: {
+                id,
+                deletedAt: null,
+            },
+        });
+    },
+
+    // Chỉ lấy Course active của Teacher
     async findByTeacherId(teacherId) {
         return prisma.course.findMany({
             where: {
                 teacherId,
+                deletedAt: null,
             },
-
             include: {
                 _count: {
                     select: {
@@ -28,7 +40,6 @@ const courseRepository = {
                     },
                 },
             },
-
             orderBy: {
                 createdAt: "desc",
             },
@@ -41,6 +52,28 @@ const courseRepository = {
                 id,
             },
             data,
+        });
+    },
+
+    async softDeleteById(id) {
+        return prisma.course.update({
+            where: {
+                id,
+            },
+            data: {
+                deletedAt: new Date(),
+            },
+        });
+    },
+
+    async restoreById(id) {
+        return prisma.course.update({
+            where: {
+                id,
+            },
+            data: {
+                deletedAt: null,
+            },
         });
     },
 

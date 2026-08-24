@@ -1,6 +1,5 @@
 import storage from "../../utils/storage/index.js";
 import courseRepository from "./course.repository.js";
-import lessonRepository from "../lesson/lesson.repository.js"
 
 const courseService = {
     // src/modules/course/course.service.js
@@ -104,7 +103,7 @@ const courseService = {
         status,
     }) {
         const course =
-            await courseRepository.findById(
+            await courseRepository.findActiveById(
                 courseId
             );
 
@@ -214,33 +213,79 @@ const courseService = {
         return updatedCourse;
     },
 
-    async deleteCourse({ courseId, teacherId }) {
+    // ==========================================
+    // Teacher → Soft delete
+    // ==========================================
 
+    async softDeleteCourse({ courseId, teacherId }) {
         const course =
             await courseRepository.findById(courseId);
 
+        // Check course
         if (!course) {
-            throw new Error(
+            const error = new Error(
                 "Không tìm thấy khóa học."
             );
+
+            error.statusCode = 404;
+            throw error;
         }
 
-        console.log(
-            "teacherId:",
-            teacherId
-        );
-
+        // Check ownership
         if (course.teacherId !== teacherId) {
-            throw new Error(
+            const error = new Error(
                 "Bạn không có quyền xóa khóa học này."
             );
+
+            error.statusCode = 403;
+            throw error;
         }
+
+        // Check already deleted
+        if (course.deletedAt) {
+            const error = new Error(
+                "Khóa học đã được xóa."
+            );
+
+            error.statusCode = 400;
+            throw error;
+        }
+
+        // Soft delete
+        return courseRepository.softDeleteById(
+            courseId
+        );
+    },
+
+    // ==========================================
+    // Admin → Hard delete
+    // ==========================================
+
+    async hardDeleteCourse({ courseId }) {
+        const course =
+            await courseRepository.findById(courseId);
+
+        // Check course
+        if (!course) {
+            const error = new Error(
+                "Không tìm thấy khóa học."
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // ==========================================
+        // Find lessons
+        // ==========================================
+
         const lessons =
             await lessonRepository.findByCourseId(
                 courseId
             );
+
         // ==========================================
-        // Xóa file của lessons
+        // Delete lesson files
         // ==========================================
 
         for (const lesson of lessons) {
@@ -258,7 +303,7 @@ const courseService = {
         }
 
         // ==========================================
-        // Xóa thumbnail
+        // Delete course thumbnail
         // ==========================================
 
         if (course.thumbnail) {
@@ -267,22 +312,28 @@ const courseService = {
             );
         }
 
+        // ==========================================
+        // Delete lessons
+        // ==========================================
+
         const deletedLessons =
             await lessonRepository.deleteByCourseId(
                 courseId
             );
 
-        const deletedCourse =
-            await courseRepository.deleteById(
-                courseId
-            );
+        // ==========================================
+        // Hard delete course
+        // ==========================================
+
+        await courseRepository.deleteById(
+            courseId
+        );
 
         return {
             courseId,
-            deletedLessons:
-                deletedLessons.count,
+            deletedLessons: deletedLessons.count,
         };
-    }
+    },
 };
 
 export default courseService;

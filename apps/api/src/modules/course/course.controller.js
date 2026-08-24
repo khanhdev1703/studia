@@ -89,9 +89,10 @@ const courseController = {
         }
     },
 
-    async deleteCourse(req, res, next) {
+    // Teacher → Soft delete
+    async softDeleteCourse(req, res, next) {
         try {
-            await courseService.deleteCourse({
+            await courseService.softDeleteCourse({
                 courseId: req.params.id,
                 teacherId: req.user.userId,
             });
@@ -99,6 +100,23 @@ const courseController = {
             res.status(200).json({
                 success: true,
                 message: "Xóa khóa học thành công.",
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // Admin → Hard delete
+    async hardDeleteCourse(req, res, next) {
+        try {
+            await courseService.hardDeleteCourse({
+                courseId: req.params.id,
+            });
+
+            res.status(200).json({
+                success: true,
+                message:
+                    "Xóa khóa học vĩnh viễn thành công.",
             });
         } catch (error) {
             next(error);

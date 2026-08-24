@@ -30,14 +30,14 @@ function Logo({
       >
         <img
           src={logo}
-          alt="Studia"
+          alt="Stady"
           className="h-[95%] w-[95%] object-contain"
         />
       </div>
 
       {showText && (
         <span className="ml-2 text-lg font-semibold text-[#252238]">
-          Studia
+          Stady
         </span>
       )}
     </div>

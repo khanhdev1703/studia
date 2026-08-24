@@ -43,7 +43,7 @@ const LandingPage = () => {
                         </h1>
 
                         <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-gray-500 sm:text-lg">
-                            Studia giúp bạn học tập theo cách đơn giản,
+                            Stady giúp bạn học tập theo cách đơn giản,
                             tập trung và hiệu quả hơn. Khám phá những
                             khóa học phù hợp và từng bước xây dựng kiến
                             thức của riêng mình.
@@ -101,7 +101,7 @@ const LandingPage = () => {
                         </h2>
 
                         <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-white/80">
-                            Bắt đầu với Studia và biến mỗi giờ học thành
+                            Bắt đầu với Stady và biến mỗi giờ học thành
                             một bước tiến mới.
                         </p>
 
@@ -119,7 +119,7 @@ const LandingPage = () => {
             {/* Footer */}
             <footer className="border-t border-gray-100 px-5 py-6 sm:px-8">
                 <div className="mx-auto max-w-6xl text-center text-sm text-gray-400">
-                    © {new Date().getFullYear()} Studia. Học tập mỗi ngày.
+                    © {new Date().getFullYear()} Stady. Học tập mỗi ngày.
                 </div>
             </footer>
         </div>

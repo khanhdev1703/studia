@@ -86,7 +86,7 @@ const CourseDetailPage = () => {
     }
 
     return (
-        <div className="space-y-2 pb-20 bg-[#F7F7FF]">
+        <div className="space-y-2 pb-2 bg-[#F7F7FF]">
             {/* ==========================================
                 Breadcrumb
             ========================================== */}

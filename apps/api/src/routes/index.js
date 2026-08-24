@@ -13,7 +13,7 @@ const router = Router();
 router.get('/', (req, res) => {
     res.json({
         success: true,
-        message: 'Studia API',
+        message: 'API',
     });
 });
 
@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
 router.get('/health', (req, res) => {
     res.json({
         success: true,
-        message: 'Studia API is healthy',
+        message: 'API is healthy',
     });
 });
 

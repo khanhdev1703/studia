@@ -4,7 +4,6 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 
-import env from './config/env.js';
 import allowedOrigins from './config/cors.js';
 
 import routes from './routes/index.js';

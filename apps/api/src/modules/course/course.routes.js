@@ -39,11 +39,20 @@ router.put(
     courseController.updateCourse
 );
 
-// Teacher xóa khóa học
+// Admin xóa khóa học vĩnh viễn
+router.delete(
+    "/:id/permanent",
+    authorize("ADMIN"),
+    courseController.hardDeleteCourse
+);
+
+// Teacher xóa khóa học (soft delete)
 router.delete(
     "/:id",
     authorize("TEACHER"),
-    courseController.deleteCourse
+    courseController.softDeleteCourse
 );
+
+
 
 export default router;

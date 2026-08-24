@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 
-const TOAST_ID = "studia-toast";
+const TOAST_ID = "stady-toast";
 
 const toastSuccess = (message) => {
     toast.success(message, {
