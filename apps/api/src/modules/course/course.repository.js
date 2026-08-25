@@ -33,6 +33,7 @@ const courseRepository = {
                 teacherId,
                 deletedAt: null,
             },
+
             include: {
                 _count: {
                     select: {
@@ -40,8 +41,105 @@ const courseRepository = {
                     },
                 },
             },
+
             orderBy: {
                 createdAt: "desc",
+            },
+        });
+    },
+
+    // Student → Chỉ lấy Course đã published
+    async findPublishedCourses({ search } = {}) {
+        const where = {
+            status: "PUBLISHED",
+            deletedAt: null,
+        };
+
+        // Search theo tên khóa học
+        if (search?.trim()) {
+            where.title = {
+                contains: search.trim(),
+                mode: "insensitive",
+            };
+        }
+
+        return prisma.course.findMany({
+            where,
+
+            include: {
+                teacher: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+
+                lessons: {
+                    where: {
+                        deletedAt: null,
+                    },
+                    select: {
+                        duration: true,
+                    },
+                },
+
+                _count: {
+                    select: {
+                        lessons: {
+                            where: {
+                                deletedAt: null,
+                            },
+                        },
+                    },
+                },
+            },
+
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+    },
+
+    async findPublishedById(id) {
+        return prisma.course.findFirst({
+            where: {
+                id,
+                status: "PUBLISHED",
+                deletedAt: null,
+            },
+
+            include: {
+                teacher: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+
+                lessons: {
+                    where: {
+                        deletedAt: null,
+                    },
+
+                    select: {
+                        id: true,
+                        title: true,
+                        description: true,
+                        duration: true,
+                        order: true,
+                        isLocked: true,
+                    },
+
+                    orderBy: {
+                        order: "asc",
+                    },
+                },
+
+                _count: {
+                    select: {
+                        lessons: true,
+                    },
+                },
             },
         });
     },
@@ -51,6 +149,7 @@ const courseRepository = {
             where: {
                 id,
             },
+
             data,
         });
     },
@@ -60,6 +159,7 @@ const courseRepository = {
             where: {
                 id,
             },
+
             data: {
                 deletedAt: new Date(),
             },
@@ -71,6 +171,7 @@ const courseRepository = {
             where: {
                 id,
             },
+
             data: {
                 deletedAt: null,
             },

@@ -415,7 +415,7 @@ const LoginPage = () => {
             {/* Heading */}
             <div className="text-center">
               {/* Branding */}
-              <div className="mb-5 flex flex-col items-center">
+              <div className="mb-2 flex flex-col items-center">
 
                 <div
                   className="
@@ -446,7 +446,7 @@ const LoginPage = () => {
                   />
 
                   <span className="text-[13px] font-medium text-[#77738F]">
-                    Học tập dễ dàng hơn cùng Stady
+                    Học tập cùng Stady
                   </span>
 
                   <Sparkles

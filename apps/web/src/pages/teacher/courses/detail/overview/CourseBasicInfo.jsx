@@ -343,6 +343,74 @@ const CourseBasicInfo = ({
                             />
                         </div>
 
+                        <div>
+                            <label
+                                className="
+            mb-1.5
+            block
+            text-[12px]
+            font-medium
+            text-[#55536A]
+        "
+                            >
+                                Giá khóa học
+                            </label>
+
+                            <div className="relative">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    value={form.price ?? ""}
+                                    onChange={(e) =>
+                                        onFormChange(
+                                            "price",
+                                            e.target.value
+                                        )
+                                    }
+                                    placeholder="0"
+                                    disabled={saving}
+                                    className="
+                w-full
+                rounded-md
+                border
+                border-[#E6E4EF]
+                bg-white
+                px-3
+                py-2.5
+                pr-12
+                text-[12px]
+                text-[#24234D]
+                outline-none
+                transition
+                focus:border-[#CFC9FF]
+                focus:ring-4
+                focus:ring-[#6C5CE7]/10
+                disabled:bg-gray-50
+            "
+                                />
+
+                                <span
+                                    className="
+                pointer-events-none
+                absolute
+                right-3
+                top-1/2
+                -translate-y-1/2
+                text-[11px]
+                font-medium
+                text-[#9997AA]
+            "
+                                >
+                                    nghìn
+                                </span>
+                            </div>
+
+                            <p className="mt-1 text-[10px] text-[#9997AA]">
+                                Nhập 0 nếu khóa học miễn phí.
+                            </p>
+                        </div>
+
                         {/* Description */}
                         <div>
                             <label

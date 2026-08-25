@@ -25,7 +25,18 @@ router.get(
     courseController.getTeacherCourses
 );
 
-// Xem một khóa học
+router.get(
+    "/search",
+    authorize("STUDENT", "TEACHER", "ADMIN"),
+    courseController.getPublishedCourses
+);
+
+router.get(
+    "/published/:id",
+    authorize("STUDENT", "TEACHER", "ADMIN"),
+    courseController.getPublishedCourseDetail
+);
+
 router.get(
     "/:id",
     courseController.getCourseById

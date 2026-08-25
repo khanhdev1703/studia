@@ -3,6 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 
 import useAuthStore from "../stores/authStore";
 import authService from "../services/authService";
+import Loading from "../components/common/Loading";
 
 const ProtectedRoute = ({ redirectTo = "/login" }) => {
     const accessToken = useAuthStore(
@@ -28,6 +29,7 @@ const ProtectedRoute = ({ redirectTo = "/login" }) => {
                 }
             } catch (error) {
                 console.log("Protected Error:", error);
+
                 useAuthStore.getState().logout();
             } finally {
                 setLoading(false);
@@ -38,11 +40,18 @@ const ProtectedRoute = ({ redirectTo = "/login" }) => {
     }, [accessToken, user]);
 
     if (!accessToken) {
-        return <Navigate to={redirectTo} replace />;
+        return (
+            <Navigate
+                to={redirectTo}
+                replace
+            />
+        );
     }
 
     if (loading) {
-        return <div>Đang kiểm tra đăng nhập...</div>;
+        return (
+            <Loading text="Đang kiểm tra tài khoản..." />
+        );
     }
 
     return <Outlet />;

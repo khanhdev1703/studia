@@ -1,6 +1,11 @@
 import courseAPI from "../api/courseAPI";
 
 const courseService = {
+    searchCourse: async (params = {}) => {
+        const response = await courseAPI.searchCourse(params);
+
+        return response.data;
+    },
     async getTeacherCourses() {
         const response = await courseAPI.getTeacherCourses();
 
@@ -9,6 +14,14 @@ const courseService = {
 
     async getCourseById(courseId) {
         const response = await courseAPI.getCourseById(
+            courseId
+        );
+
+        return response.data;
+    },
+
+    async getStudentCourseDetail(courseId) {
+        const response = await courseAPI.getStudentCourseDetail(
             courseId
         );
 

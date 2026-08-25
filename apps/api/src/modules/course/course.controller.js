@@ -41,6 +41,25 @@ const courseController = {
         }
     },
 
+    // Student → Lấy danh sách khóa học đã published
+    async getPublishedCourses(req, res, next) {
+        try {
+            const { search } = req.query;
+
+            const courses = await courseService.getPublishedCourses({
+                search,
+            });
+
+            res.status(200).json({
+                success: true,
+                message: "Lấy danh sách khóa học thành công.",
+                data: courses,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async getCourseById(req, res, next) {
         try {
             const course =
@@ -60,12 +79,31 @@ const courseController = {
         }
     },
 
+    async getPublishedCourseDetail(req, res, next) {
+        try {
+            const course =
+                await courseService.getPublishedCourseDetail(
+                    req.params.id
+                );
+
+            res.status(200).json({
+                success: true,
+                message:
+                    "Lấy thông tin khóa học thành công.",
+                data: course,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async updateCourse(req, res, next) {
         try {
             const {
                 title,
                 description,
                 status,
+                price
             } = req.body;
 
             const course =
@@ -76,6 +114,7 @@ const courseController = {
                     description,
                     status,
                     thumbnail: req.file,
+                    price
                 });
 
             res.status(200).json({

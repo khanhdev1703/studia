@@ -8,6 +8,7 @@ import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import LandingPage from "../pages/LandingPage"
 import TeacherLayout from "../pages/teacher/layout/TeacherLayout";
+import StudentLayout from "../pages/student/layout/StudentLayout";
 
 const AppRoute = () => {
     return (
@@ -43,7 +44,7 @@ const AppRoute = () => {
                 >
                     <Route
                         path="/student/*"
-                        element={<div>StudentPage</div>}
+                        element={<StudentLayout />}
                     />
                 </Route>
 

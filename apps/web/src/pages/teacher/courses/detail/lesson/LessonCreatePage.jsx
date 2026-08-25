@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import {
     ArrowLeft,
     FileText,
@@ -6,6 +7,7 @@ import {
     Upload,
     Video,
 } from "lucide-react";
+
 import {
     Link,
     useNavigate,
@@ -22,7 +24,6 @@ const LessonCreatePage = () => {
     // ==========================================
     // Form state
     // ==========================================
-
     const [form, setForm] = useState({
         title: "",
         description: "",
@@ -33,26 +34,17 @@ const LessonCreatePage = () => {
     // ==========================================
     // UI state
     // ==========================================
-
-    const [videoPreview, setVideoPreview] =
-        useState("");
-
-    const [saving, setSaving] =
-        useState(false);
-
-    const [uploadProgress, setUploadProgress] =
-        useState(0);
+    const [videoPreview, setVideoPreview] = useState("");
+    const [saving, setSaving] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     // ==========================================
     // Cleanup preview
     // ==========================================
-
     useEffect(() => {
         return () => {
             if (videoPreview) {
-                URL.revokeObjectURL(
-                    videoPreview
-                );
+                URL.revokeObjectURL(videoPreview);
             }
         };
     }, [videoPreview]);
@@ -60,7 +52,6 @@ const LessonCreatePage = () => {
     // ==========================================
     // Update form
     // ==========================================
-
     const updateForm = (field, value) => {
         setForm((prev) => ({
             ...prev,
@@ -71,15 +62,16 @@ const LessonCreatePage = () => {
     // ==========================================
     // Select video
     // ==========================================
-
     const handleSelectVideo = (event) => {
-        const file =
-            event.target.files?.[0];
+        const file = event.target.files?.[0];
 
         if (!file) {
             return;
         }
 
+        // ======================================
+        // Validate type
+        // ======================================
         const allowedTypes = [
             "video/mp4",
             "video/webm",
@@ -95,11 +87,12 @@ const LessonCreatePage = () => {
             return;
         }
 
-        // 500MB
-        if (
-            file.size >
-            500 * 1024 * 1024
-        ) {
+        // ======================================
+        // Validate size
+        // ======================================
+        const maxSize = 500 * 1024 * 1024;
+
+        if (file.size > maxSize) {
             appToast.error(
                 "Video không được vượt quá 500MB."
             );
@@ -108,15 +101,17 @@ const LessonCreatePage = () => {
             return;
         }
 
+        // ======================================
         // Release old preview
+        // ======================================
         if (videoPreview) {
-            URL.revokeObjectURL(
-                videoPreview
-            );
+            URL.revokeObjectURL(videoPreview);
         }
 
-        const previewUrl =
-            URL.createObjectURL(file);
+        // ======================================
+        // Create preview
+        // ======================================
+        const previewUrl = URL.createObjectURL(file);
 
         setForm((prev) => ({
             ...prev,
@@ -124,23 +119,19 @@ const LessonCreatePage = () => {
         }));
 
         setVideoPreview(previewUrl);
-
         setUploadProgress(0);
     };
 
     // ==========================================
     // Remove video
     // ==========================================
-
     const handleRemoveVideo = () => {
         if (saving) {
             return;
         }
 
         if (videoPreview) {
-            URL.revokeObjectURL(
-                videoPreview
-            );
+            URL.revokeObjectURL(videoPreview);
         }
 
         setVideoPreview("");
@@ -156,7 +147,6 @@ const LessonCreatePage = () => {
     // ==========================================
     // Submit
     // ==========================================
-
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -167,36 +157,30 @@ const LessonCreatePage = () => {
         // ======================================
         // Validate course
         // ======================================
-
         if (!courseId) {
             appToast.error(
                 "Không tìm thấy khóa học."
             );
-
             return;
         }
 
         // ======================================
         // Validate title
         // ======================================
-
         if (!form.title.trim()) {
             appToast.error(
                 "Vui lòng nhập tên bài học."
             );
-
             return;
         }
 
         // ======================================
         // Validate video
         // ======================================
-
         if (!form.videoFile) {
             appToast.error(
                 "Vui lòng chọn video cho bài học."
             );
-
             return;
         }
 
@@ -207,9 +191,7 @@ const LessonCreatePage = () => {
             // ==================================
             // FormData
             // ==================================
-
-            const formData =
-                new FormData();
+            const formData = new FormData();
 
             formData.append(
                 "title",
@@ -234,22 +216,23 @@ const LessonCreatePage = () => {
             // ==================================
             // Create lesson
             // ==================================
-
-            const response =
-                await lessonService.create(
-                    courseId,
-                    formData,
-                    (progress) => {
-                        setUploadProgress(
-                            progress
-                        );
-                    }
-                );
+            // Không gửi:
+            // - order
+            // - duration
+            // - isLocked
+            //
+            // BE sẽ tự xử lý các giá trị này.
+            const response = await lessonService.create(
+                courseId,
+                formData,
+                (progress) => {
+                    setUploadProgress(progress);
+                }
+            );
 
             // ==================================
             // Success
             // ==================================
-
             appToast.success(
                 response?.message ||
                 "Tạo bài học thành công."
@@ -278,36 +261,21 @@ const LessonCreatePage = () => {
     // ==========================================
     // Render
     // ==========================================
-
     return (
-        <div className="space-y-2 pb-30">
-
+        <div className="space-y-2">
             {/* Header */}
-
-            <div className="p-4 bg-white border
-                        border-gray-100">
-                <h1
-                    className="
-                        text-base
-                        font-semibold
-                        text-[#252238]
-                    "
-                >
+            <div className="border border-gray-100 bg-white p-4">
+                <h1 className="text-base font-semibold text-[#252238]">
                     Thêm bài học
                 </h1>
 
-                <p
-                    className="
-                        mt-0.5
-                        text-xs
-                        text-gray-500
-                    "
-                >
+                <p className="mt-0.5 text-xs text-gray-500">
                     Thêm nội dung mới vào khóa học.
                 </p>
             </div>
 
-            <div className="p-2 m-0">
+            {/* Back */}
+            <div className="p-2">
                 <Link
                     to=".."
                     relative="path"
@@ -323,20 +291,18 @@ const LessonCreatePage = () => {
                     "
                 >
                     <ArrowLeft size={15} />
-
                     Quay lại danh sách bài học
                 </Link>
             </div>
 
             {/* Form */}
-
             <form
                 onSubmit={handleSubmit}
                 className="space-y-4"
             >
-
-                {/* Basic information */}
-
+                {/* ==================================
+                    Basic information
+                ================================== */}
                 <section
                     className="
                         border
@@ -347,9 +313,7 @@ const LessonCreatePage = () => {
                         sm:p-5
                     "
                 >
-
                     {/* Title */}
-
                     <div>
                         <label
                             className="
@@ -397,7 +361,6 @@ const LessonCreatePage = () => {
                     </div>
 
                     {/* Description */}
-
                     <div className="mt-4">
                         <label
                             className="
@@ -443,8 +406,9 @@ const LessonCreatePage = () => {
                     </div>
                 </section>
 
-                {/* Video */}
-
+                {/* ==================================
+                    Video
+                ================================== */}
                 <section
                     className="
                         border
@@ -474,14 +438,12 @@ const LessonCreatePage = () => {
                             Video bài học
                         </h2>
 
-                        <p
-                            className="
-                                mt-1
-                                text-xs
-                                text-gray-400
-                            "
-                        >
+                        <p className="mt-1 text-xs text-gray-400">
                             MP4, WebM hoặc MOV. Tối đa 500MB.
+                        </p>
+
+                        <p className="mt-1 text-xs text-gray-400">
+                            Thời lượng video sẽ được hệ thống tự động xác định.
                         </p>
                     </div>
 
@@ -543,9 +505,7 @@ const LessonCreatePage = () => {
                             <input
                                 type="file"
                                 accept="video/mp4,video/webm,video/quicktime"
-                                onChange={
-                                    handleSelectVideo
-                                }
+                                onChange={handleSelectVideo}
                                 disabled={saving}
                                 className="hidden"
                             />
@@ -628,15 +588,12 @@ const LessonCreatePage = () => {
                                             "
                                             title="Xóa video"
                                         >
-                                            <Trash2
-                                                size={16}
-                                            />
+                                            <Trash2 size={16} />
                                         </button>
                                     )}
                                 </div>
 
                                 {/* Upload progress */}
-
                                 {saving && (
                                     <div className="mt-4">
                                         <div
@@ -655,7 +612,7 @@ const LessonCreatePage = () => {
                                             >
                                                 {uploadProgress >=
                                                     100
-                                                    ? "Đang hoàn tất..."
+                                                    ? "Đang xử lý video..."
                                                     : "Đang tải video..."}
                                             </span>
 
@@ -698,8 +655,9 @@ const LessonCreatePage = () => {
                     )}
                 </section>
 
-                {/* Document */}
-
+                {/* ==================================
+                    Document
+                ================================== */}
                 <section
                     className="
                         border
@@ -729,13 +687,7 @@ const LessonCreatePage = () => {
                             Tài liệu
                         </h2>
 
-                        <p
-                            className="
-                                mt-1
-                                text-xs
-                                text-gray-400
-                            "
-                        >
+                        <p className="mt-1 text-xs text-gray-400">
                             Nội dung tài liệu của bài học.
                         </p>
                     </div>
@@ -772,14 +724,15 @@ const LessonCreatePage = () => {
                     />
                 </section>
 
-                {/* Actions */}
-
+                {/* ==================================
+                    Actions
+                ================================== */}
                 <div
                     className="
-                    p-4
                         flex
-                        gap-2
                         justify-end
+                        gap-2
+                        p-4
                     "
                 >
                     <Link
@@ -792,9 +745,9 @@ const LessonCreatePage = () => {
                             rounded-sm
                             border
                             border-gray-200
+                            bg-white
                             px-4
                             py-2.5
-                            bg-white
                             text-xs
                             font-medium
                             text-gray-600
@@ -827,7 +780,7 @@ const LessonCreatePage = () => {
                     >
                         {saving
                             ? uploadProgress >= 100
-                                ? "Đang hoàn tất..."
+                                ? "Đang xử lý..."
                                 : `Đang tải ${uploadProgress}%...`
                             : "Tạo bài học"}
                     </button>

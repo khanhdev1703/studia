@@ -1,9 +1,11 @@
 import storage from "../../utils/storage/index.js";
+
 import courseRepository from "./course.repository.js";
 
 const courseService = {
-    // src/modules/course/course.service.js
-
+    // ==========================================
+    // Teacher → Create course
+    // ==========================================
     async createCourse({
         teacherId,
         title,
@@ -13,7 +15,6 @@ const courseService = {
         // ==========================================
         // Validate title
         // ==========================================
-
         if (!title?.trim()) {
             const error = new Error(
                 "Vui lòng nhập tên khóa học."
@@ -26,46 +27,134 @@ const courseService = {
         // ==========================================
         // Prepare create data
         // ==========================================
-
         const createData = {
             teacherId,
-
             title: title.trim(),
-
-            description:
-                description?.trim() || null,
+            description: description?.trim() || null,
         };
 
         // ==========================================
         // Upload thumbnail
         // ==========================================
-
         if (thumbnail) {
-            const uploaded =
-                await storage.upload(
-                    thumbnail,
-                    "courses"
-                );
+            const uploaded = await storage.upload(
+                thumbnail,
+                "courses"
+            );
 
-            createData.thumbnail =
-                uploaded.url;
+            createData.thumbnail = uploaded.url;
         }
 
         // ==========================================
         // Create database
         // ==========================================
-
-        return courseRepository.create(
-            createData
-        );
+        return courseRepository.create(createData);
     },
 
+    // ==========================================
+    // Teacher → Get courses
+    // ==========================================
     async getTeacherCourses(teacherId) {
         return courseRepository.findByTeacherId(
             teacherId
         );
     },
 
+    // ==========================================
+    // Student → Get published courses
+    // ==========================================
+    async getPublishedCourses({ search } = {}) {
+        const courses =
+            await courseRepository.findPublishedCourses({
+                search,
+            });
+
+        return courses.map((course) => ({
+            id: course.id,
+            title: course.title,
+            description: course.description,
+            thumbnail: course.thumbnail,
+            price: course.price,
+
+            teacher: {
+                id: course.teacher.id,
+                name: course.teacher.name,
+            },
+
+            lessonCount: course._count.lessons,
+
+            duration: course.lessons.reduce(
+                (total, lesson) => total + (lesson.duration || 0),
+                0
+            ),
+        }));
+    },
+
+    async getPublishedCourseDetail(courseId) {
+        const course =
+            await courseRepository.findPublishedById(
+                courseId
+            );
+
+        if (!course) {
+            const error = new Error(
+                "Không tìm thấy khóa học."
+            );
+
+            error.statusCode = 404;
+
+            throw error;
+        }
+
+        // Tổng thời lượng tất cả lesson
+        const totalDuration = course.lessons.reduce(
+            (total, lesson) => {
+                return total + (lesson.duration || 0);
+            },
+            0
+        );
+
+        // const hours = Math.floor(totalDuration / 60);
+        // const minutes = totalDuration % 60;
+
+        // let duration = "";
+
+        // if (hours > 0) {
+        //     duration += `${hours} giờ`;
+        // }
+
+        // if (minutes > 0) {
+        //     duration += duration
+        //         ? ` ${minutes} phút`
+        //         : `${minutes} phút`;
+        // }
+
+        // if (!duration) {
+        //     duration = "Chưa cập nhật";
+        // }
+
+        return {
+            id: course.id,
+            title: course.title,
+            description: course.description,
+            teacher: course.teacher?.name || "Chưa cập nhật",
+            thumbnail: course.thumbnail,
+            lessonCount: course.lessons.length,
+            totalDuration,
+            price: course.price,
+
+            lessons: course.lessons.map((lesson) => ({
+                id: lesson.id,
+                title: lesson.title,
+                duration: lesson.duration,
+                isLocked: lesson.isLocked,
+            })),
+        };
+    },
+
+    // ==========================================
+    // Get course by ID
+    // ==========================================
     async getCourseById(courseId, user) {
         const course =
             await courseRepository.findById(courseId);
@@ -94,6 +183,9 @@ const courseService = {
         return course;
     },
 
+    // ==========================================
+    // Teacher → Update course
+    // ==========================================
     async updateCourse({
         courseId,
         teacherId,
@@ -101,6 +193,7 @@ const courseService = {
         description,
         thumbnail,
         status,
+        price,
     }) {
         const course =
             await courseRepository.findActiveById(
@@ -110,7 +203,6 @@ const courseService = {
         // ==========================================
         // Check course
         // ==========================================
-
         if (!course) {
             const error = new Error(
                 "Không tìm thấy khóa học."
@@ -123,7 +215,6 @@ const courseService = {
         // ==========================================
         // Check permission
         // ==========================================
-
         if (course.teacherId !== teacherId) {
             const error = new Error(
                 "Bạn không có quyền chỉnh sửa khóa học này."
@@ -136,7 +227,6 @@ const courseService = {
         // ==========================================
         // Validate title
         // ==========================================
-
         if (!title?.trim()) {
             const error = new Error(
                 "Vui lòng nhập tên khóa học."
@@ -149,10 +239,8 @@ const courseService = {
         // ==========================================
         // Prepare update data
         // ==========================================
-
         const updateData = {
             title: title.trim(),
-
             description:
                 description?.trim() || null,
         };
@@ -160,15 +248,17 @@ const courseService = {
         // ==========================================
         // Status
         // ==========================================
-
         if (status) {
             updateData.status = status;
+        }
+
+        if (price !== undefined) {
+            updateData.price = Number(price);
         }
 
         // ==========================================
         // Upload thumbnail
         // ==========================================
-
         if (thumbnail) {
             const uploaded =
                 await storage.upload(
@@ -176,14 +266,12 @@ const courseService = {
                     "courses"
                 );
 
-            updateData.thumbnail =
-                uploaded.url;
+            updateData.thumbnail = uploaded.url;
         }
 
         // ==========================================
         // Update database
         // ==========================================
-
         const updatedCourse =
             await courseRepository.updateById(
                 courseId,
@@ -193,7 +281,6 @@ const courseService = {
         // ==========================================
         // Delete old thumbnail
         // ==========================================
-
         if (
             thumbnail &&
             course.thumbnail
@@ -216,10 +303,14 @@ const courseService = {
     // ==========================================
     // Teacher → Soft delete
     // ==========================================
-
-    async softDeleteCourse({ courseId, teacherId }) {
+    async softDeleteCourse({
+        courseId,
+        teacherId,
+    }) {
         const course =
-            await courseRepository.findById(courseId);
+            await courseRepository.findById(
+                courseId
+            );
 
         // Check course
         if (!course) {
@@ -260,10 +351,11 @@ const courseService = {
     // ==========================================
     // Admin → Hard delete
     // ==========================================
-
     async hardDeleteCourse({ courseId }) {
         const course =
-            await courseRepository.findById(courseId);
+            await courseRepository.findById(
+                courseId
+            );
 
         // Check course
         if (!course) {
@@ -278,7 +370,6 @@ const courseService = {
         // ==========================================
         // Find lessons
         // ==========================================
-
         const lessons =
             await lessonRepository.findByCourseId(
                 courseId
@@ -287,7 +378,6 @@ const courseService = {
         // ==========================================
         // Delete lesson files
         // ==========================================
-
         for (const lesson of lessons) {
             if (lesson.video) {
                 await storage.remove(
@@ -305,7 +395,6 @@ const courseService = {
         // ==========================================
         // Delete course thumbnail
         // ==========================================
-
         if (course.thumbnail) {
             await storage.remove(
                 course.thumbnail
@@ -315,7 +404,6 @@ const courseService = {
         // ==========================================
         // Delete lessons
         // ==========================================
-
         const deletedLessons =
             await lessonRepository.deleteByCourseId(
                 courseId
@@ -324,14 +412,14 @@ const courseService = {
         // ==========================================
         // Hard delete course
         // ==========================================
-
         await courseRepository.deleteById(
             courseId
         );
 
         return {
             courseId,
-            deletedLessons: deletedLessons.count,
+            deletedLessons:
+                deletedLessons.count,
         };
     },
 };
