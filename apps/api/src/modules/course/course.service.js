@@ -1,4 +1,5 @@
 import storage from "../../utils/storage/index.js";
+import enrollmentRepository from "../enrollment/enrollment.repository.js";
 
 import courseRepository from "./course.repository.js";
 
@@ -90,11 +91,9 @@ const courseService = {
         }));
     },
 
-    async getPublishedCourseDetail(courseId) {
+    async getPublishedCourseDetail(courseId, studentId = null) {
         const course =
-            await courseRepository.findPublishedById(
-                courseId
-            );
+            await courseRepository.findPublishedById(courseId);
 
         if (!course) {
             const error = new Error(
@@ -102,36 +101,27 @@ const courseService = {
             );
 
             error.statusCode = 404;
-
             throw error;
         }
 
-        // Tổng thời lượng tất cả lesson
+        let enrollment = null;
+        console.log(studentId);
+
+
+        if (studentId) {
+            enrollment =
+                await enrollmentRepository.findByStudentAndCourse(
+                    studentId,
+                    courseId
+                );
+        }
+
         const totalDuration = course.lessons.reduce(
             (total, lesson) => {
                 return total + (lesson.duration || 0);
             },
             0
         );
-
-        // const hours = Math.floor(totalDuration / 60);
-        // const minutes = totalDuration % 60;
-
-        // let duration = "";
-
-        // if (hours > 0) {
-        //     duration += `${hours} giờ`;
-        // }
-
-        // if (minutes > 0) {
-        //     duration += duration
-        //         ? ` ${minutes} phút`
-        //         : `${minutes} phút`;
-        // }
-
-        // if (!duration) {
-        //     duration = "Chưa cập nhật";
-        // }
 
         return {
             id: course.id,
@@ -142,6 +132,8 @@ const courseService = {
             lessonCount: course.lessons.length,
             totalDuration,
             price: course.price,
+
+            enrollment,
 
             lessons: course.lessons.map((lesson) => ({
                 id: lesson.id,

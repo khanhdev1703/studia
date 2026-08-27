@@ -3,6 +3,7 @@ import userRoutes from '../modules/users/user.routes.js';
 import authRoutes from '../modules/auth/auth.routes.js';
 import courseRoutes from '../modules/course/course.routes.js';
 import lessonRoutes from '../modules/lesson/lesson.routes.js';
+import enrollmentRoutes from '../modules/enrollment/enrollment.routes.js';
 
 const router = Router();
 
@@ -32,5 +33,6 @@ router.use('/user', userRoutes);
 router.use('/auth', authRoutes);
 router.use('/course', courseRoutes);
 router.use('/lesson', lessonRoutes);
+router.use('/enrollment', enrollmentRoutes);
 
 export default router;

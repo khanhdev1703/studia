@@ -5,7 +5,7 @@ import TeacherBottomNav from "./TeacherBottomNav";
 
 import TeacherDashboard from "../dashboard/TeacherDashboard";
 import TeacherCourses from "../courses/TeacherCourses";
-import TeacherStudents from "../students/TeacherStudents";
+import TeacherNotifications from "../notifications/TeacherNotifications"
 import TeacherProfile from "../profile/TeacherProfile";
 
 const TeacherLayout = () => {
@@ -28,8 +28,8 @@ const TeacherLayout = () => {
                     />
 
                     <Route
-                        path="students"
-                        element={<TeacherStudents />}
+                        path="notifications"
+                        element={<TeacherNotifications />}
                     />
 
                     <Route

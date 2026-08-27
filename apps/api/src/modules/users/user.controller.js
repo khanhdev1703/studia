@@ -92,6 +92,23 @@ const userController = {
             next(error);
         }
     },
+
+    async searchTeachers(req, res, next) {
+        try {
+            const { search } = req.query;
+
+            const teachers = await userService.searchTeachers({
+                search,
+            });
+
+            return res.status(200).json({
+                success: true,
+                data: teachers,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 export default userController;

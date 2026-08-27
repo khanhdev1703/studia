@@ -14,6 +14,13 @@ const toastError = (message) => {
     });
 };
 
+const toastWarning = (message) => {
+    toast(message, {
+        id: TOAST_ID,
+        icon: "⚠️",
+    });
+};
+
 const toastLoading = (message) => {
     toast.loading(message, {
         id: TOAST_ID,
@@ -27,6 +34,7 @@ const toastDismiss = () => {
 const appToast = {
     success: toastSuccess,
     error: toastError,
+    warning: toastWarning,
     loading: toastLoading,
     dismiss: toastDismiss,
 };

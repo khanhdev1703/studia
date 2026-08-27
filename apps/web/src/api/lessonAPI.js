@@ -11,7 +11,7 @@ const lessonAPI = {
     // GET /lessons/:lessonId
     getById: (lessonId) => {
         return apiClient.get(
-            `/lessons/${lessonId}`
+            `/lesson/${lessonId}`
         );
     },
 
@@ -45,7 +45,7 @@ const lessonAPI = {
     // PUT /lessons/:lessonId
     update: (lessonId, data) => {
         return apiClient.put(
-            `/lessons/${lessonId}`,
+            `/lesson/${lessonId}`,
             data
         );
     },

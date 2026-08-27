@@ -5,6 +5,7 @@ import authorize from "../../middlewares/authorize.js";
 import { imageUpload } from "../../middlewares/upload.js";
 
 import courseController from "./course.controller.js";
+import enrollmentController from "../enrollment/enrollment.controller.js";
 
 const router = Router();
 
@@ -35,6 +36,12 @@ router.get(
     "/published/:id",
     authorize("STUDENT", "TEACHER", "ADMIN"),
     courseController.getPublishedCourseDetail
+);
+
+router.post(
+    "/:courseId/enroll",
+    authorize("STUDENT"),
+    enrollmentController.enroll
 );
 
 router.get(

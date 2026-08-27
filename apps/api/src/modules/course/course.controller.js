@@ -83,13 +83,13 @@ const courseController = {
         try {
             const course =
                 await courseService.getPublishedCourseDetail(
-                    req.params.id
+                    req.params.id,
+                    req.user.userId
                 );
 
             res.status(200).json({
                 success: true,
-                message:
-                    "Lấy thông tin khóa học thành công.",
+                message: "Lấy thông tin khóa học thành công.",
                 data: course,
             });
         } catch (error) {

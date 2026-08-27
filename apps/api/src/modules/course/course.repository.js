@@ -137,7 +137,11 @@ const courseRepository = {
 
                 _count: {
                     select: {
-                        lessons: true,
+                        lessons: {
+                            where: {
+                                deletedAt: null,
+                            },
+                        },
                     },
                 },
             },

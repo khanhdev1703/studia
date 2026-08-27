@@ -4,8 +4,6 @@ import {
     ArrowLeft,
     BookOpen,
     Clock3,
-    GraduationCap,
-    LockKeyhole,
     PlayCircle,
     UserRound,
 } from "lucide-react";
@@ -14,6 +12,9 @@ import {
     useNavigate,
     useParams,
 } from "react-router-dom";
+
+import enrollmentService from "../../../services/enrollmentService";
+import appToast from "../../../utils/toast";
 
 import formatPrice from "../../../utils/formatPrice";
 import formatDuration from "../../../utils/formatDuration";
@@ -24,20 +25,47 @@ const StudentCourseDetailPage = () => {
     const navigate = useNavigate();
     const { courseId } = useParams();
 
+    // =========================================
+    // Course state
+    // =========================================
+
     const [course, setCourse] = useState(null);
+
+    // =========================================
+    // UI state
+    // =========================================
+
     const [loading, setLoading] = useState(true);
+    const [enrolling, setEnrolling] = useState(false);
+    const [cancelling, setCancelling] = useState(false);
+
+    // =========================================
+    // Enrollment
+    // =========================================
+
+    const enrollment = course?.enrollment || null;
+    const enrollmentStatus = enrollment?.status;
 
     /*
-     * =========================================
-     * Get course detail
-     * =========================================
+     * REJECTED được xem như chưa đăng ký.
      */
+    const isPending = enrollmentStatus === "PENDING";
+    const isApproved = enrollmentStatus === "APPROVED";
+
+    // =========================================
+    // Get course detail
+    // =========================================
+
     useEffect(() => {
         const fetchCourse = async () => {
             try {
                 setLoading(true);
 
-                const response = await courseService.getStudentCourseDetail(courseId);
+                const response =
+                    await courseService.getStudentCourseDetail(
+                        courseId
+                    );
+
                 setCourse(response.data);
             } catch (error) {
                 console.error(
@@ -56,22 +84,153 @@ const StudentCourseDetailPage = () => {
         }
     }, [courseId]);
 
-    /*
-     * =========================================
-     * Handlers
-     * =========================================
-     */
+    // =========================================
+    // Handlers
+    // =========================================
 
     const handleBack = () => {
         navigate("/student/explore");
     };
 
-    const handleEnroll = () => {
-        // Sau này:
-        // enrollmentService.create(course.id);
+    // =========================================
+    // Enroll
+    // =========================================
 
-        console.log("Enroll course:", course.id);
+    const handleEnroll = async () => {
+        if (enrolling || cancelling) {
+            return;
+        }
+
+        if (!course?.id) {
+            appToast.error(
+                "Không tìm thấy thông tin khóa học."
+            );
+            return;
+        }
+
+        /*
+         * Không cho đăng ký nếu đang chờ duyệt
+         * hoặc đã được duyệt.
+         */
+        if (isPending || isApproved) {
+            return;
+        }
+
+        try {
+            setEnrolling(true);
+
+            const response =
+                await enrollmentService.enroll(course.id);
+
+            /*
+             * API enroll trả về enrollment mới.
+             *
+             * Hỗ trợ cả trường hợp:
+             * response.data = enrollment
+             * hoặc response.enrollment = enrollment
+             */
+            const newEnrollment =
+                response?.data ||
+                response?.enrollment ||
+                null;
+
+            setCourse((prev) => {
+                if (!prev) {
+                    return prev;
+                }
+
+                return {
+                    ...prev,
+                    enrollment: newEnrollment || {
+                        status: "PENDING",
+                    },
+                };
+            });
+
+            appToast.success(
+                response?.message ||
+                "Đăng ký khóa học thành công."
+            );
+        } catch (error) {
+            console.error(
+                "Enroll course error:",
+                error
+            );
+
+            appToast.error(
+                error?.response?.data?.message ||
+                "Không thể đăng ký khóa học."
+            );
+        } finally {
+            setEnrolling(false);
+        }
     };
+
+    // =========================================
+    // Cancel enrollment
+    // =========================================
+
+    const handleCancelEnrollment = async () => {
+        if (cancelling || enrolling) {
+            return;
+        }
+
+        /*
+         * Chỉ cho phép hủy khi PENDING.
+         */
+        if (!isPending || !enrollment?.id) {
+            return;
+        }
+
+        try {
+            setCancelling(true);
+
+            const response =
+                await enrollmentService.cancel(
+                    courseId
+                );
+
+            /*
+             * Sau khi cancel:
+             *
+             * - Xóa enrollment khỏi course
+             * - UI trở về trạng thái Đăng ký khóa học
+             *
+             * Không cần fetch lại course.
+             */
+            setCourse((prev) => {
+                if (!prev) {
+                    return prev;
+                }
+
+                return {
+                    ...prev,
+                    enrollment: null,
+                };
+            });
+
+            appToast.warning(
+                response?.message ||
+                "Đã hủy đăng ký khóa học."
+            );
+        } catch (error) {
+            console.error(
+                "Cancel enrollment error:",
+                error
+            );
+
+            appToast.error(
+                error?.response?.data?.message ||
+                "Không thể hủy đăng ký khóa học."
+            );
+        } finally {
+            setCancelling(false);
+        }
+    };
+
+    // =========================================
+    // Lesson click
+    // =========================================
 
     const handleLessonClick = (lesson) => {
         // Lesson bị khóa thì không cho học
@@ -87,14 +246,15 @@ const StudentCourseDetailPage = () => {
          * );
          */
 
-        console.log("Open lesson:", lesson.id);
+        console.log(
+            "Open lesson:",
+            lesson.id
+        );
     };
 
-    /*
-     * =========================================
-     * Loading
-     * =========================================
-     */
+    // =========================================
+    // Loading
+    // =========================================
 
     if (loading) {
         return (
@@ -108,7 +268,9 @@ const StudentCourseDetailPage = () => {
 
                             <div className="space-y-3 p-4 sm:p-6">
                                 <div className="h-7 w-2/3 rounded bg-[#EEEAFE]" />
+
                                 <div className="h-4 w-40 rounded bg-[#F1F0F6]" />
+
                                 <div className="h-16 w-full rounded bg-[#F1F0F6]" />
                             </div>
                         </div>
@@ -120,11 +282,9 @@ const StudentCourseDetailPage = () => {
         );
     }
 
-    /*
-     * =========================================
-     * Course not found
-     * =========================================
-     */
+    // =========================================
+    // Course not found
+    // =========================================
 
     if (!course) {
         return (
@@ -136,8 +296,8 @@ const StudentCourseDetailPage = () => {
                         </h2>
 
                         <p className="mt-1 text-[11px] text-[#9997AA]">
-                            Khóa học có thể không tồn tại hoặc
-                            đã bị xóa.
+                            Khóa học có thể không tồn tại
+                            hoặc đã bị xóa.
                         </p>
 
                         <button
@@ -168,11 +328,9 @@ const StudentCourseDetailPage = () => {
         );
     }
 
-    /*
-     * =========================================
-     * Course data
-     * =========================================
-     */
+    // =========================================
+    // Course data
+    // =========================================
 
     const lessons = course.lessons || [];
 
@@ -186,8 +344,13 @@ const StudentCourseDetailPage = () => {
 
     const isFree = Number(course.price) <= 0;
 
+    // =========================================
+    // Render
+    // =========================================
+
     return (
         <div className="relative min-h-full overflow-hidden bg-[#F4F3FF]">
+
             {/* =================================
                 Background decorations
             ================================== */}
@@ -253,6 +416,7 @@ const StudentCourseDetailPage = () => {
                     lg:px-8
                 "
             >
+
                 {/* Back button */}
 
                 <button
@@ -291,6 +455,7 @@ const StudentCourseDetailPage = () => {
                         shadow-[0_8px_25px_rgba(60,55,110,0.06)]
                     "
                 >
+
                     {/* Thumbnail */}
 
                     <div
@@ -349,6 +514,7 @@ const StudentCourseDetailPage = () => {
                     {/* Information */}
 
                     <div className="p-4 sm:p-6">
+
                         <h1
                             className="
                                 text-[20px]
@@ -399,11 +565,89 @@ const StudentCourseDetailPage = () => {
                                     text-[11px]
                                     leading-[1.7]
                                     text-[#77758A]
+                                    text-justify
                                 "
                             >
                                 {course.description ||
                                     "Chưa có mô tả cho khóa học này."}
                             </p>
+                        </div>
+
+                        {/* Enrollment action */}
+                        <div className="mt-5">
+                            {enrollment?.status === "APPROVED" ? (
+                                <button
+                                    type="button"
+                                    disabled
+                                    className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    rounded-lg
+                    bg-green-50
+                    px-5
+                    py-2.5
+                    text-sm
+                    font-semibold
+                    text-green-600
+                    cursor-not-allowed
+                "
+                                >
+                                    Đã đăng ký
+                                </button>
+                            ) : enrollment?.status === "PENDING" ? (
+                                <button
+                                    type="button"
+                                    onClick={handleCancelEnrollment}
+                                    disabled={enrolling}
+                                    className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    rounded-lg
+                    border
+                    border-red-200
+                    bg-white
+                    px-5
+                    py-2.5
+                    text-sm
+                    font-semibold
+                    text-red-500
+                    transition
+                    hover:bg-red-50
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                "
+                                >
+                                    {enrolling ? "Đang xử lý..." : "Huỷ đăng ký"}
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleEnroll}
+                                    disabled={enrolling}
+                                    className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    rounded-lg
+                    bg-[#6C5CE7]
+                    px-5
+                    py-2.5
+                    text-sm
+                    font-semibold
+                    text-white
+                    transition
+                    hover:bg-[#5b4bd6]
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                "
+                                >
+                                    {enrolling
+                                        ? "Đang đăng ký..."
+                                        : "Đăng ký khóa học"}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -423,7 +667,10 @@ const StudentCourseDetailPage = () => {
                             shadow-[0_6px_20px_rgba(60,55,110,0.05)]
                         "
                     >
-                        {/* Lessons header */}
+
+                        {/* =================================
+                            Lessons header
+                        ================================== */}
 
                         <div
                             className="
@@ -512,15 +759,58 @@ const StudentCourseDetailPage = () => {
                                                     className="text-[#3D9AD8]"
                                                 />
 
-                                                {formatDuration(course.totalDuration)}
+                                                {formatDuration(
+                                                    course.totalDuration
+                                                )}
                                             </span>
                                         </>
                                     )}
                                 </div>
                             </div>
+
+                            {/* =================================
+                                Enrollment action
+                                ================================== */}
+
+                            <div
+                                className="
+                                    mt-3
+                                    flex
+                                    items-center
+                                    justify-between
+                                    gap-3
+                                    border-t
+                                    border-[#F1F0F6]
+                                    pt-3
+                                "
+                            >
+                                <div className="min-w-0">
+                                    <p
+                                        className="
+                                            text-[11px]
+                                            font-medium
+                                            text-[#24234D]
+                                        "
+                                    >
+                                        Tham gia khóa học
+                                    </p>
+
+                                    <p
+                                        className="
+                                            mt-0.5
+                                            text-[9px]
+                                            text-[#9997AA]
+                                        "
+                                    >
+                                        Đăng ký để bắt đầu học.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Lesson list */}
+                        {/* =================================
+                            Lesson list
+                        ================================== */}
 
                         {lessons.length > 0 ? (
                             <div>
@@ -621,9 +911,7 @@ const StudentCourseDetailPage = () => {
                                                                 "
                                                                 >
                                                                     <Clock3
-                                                                        size={
-                                                                            10
-                                                                        }
+                                                                        size={10}
                                                                     />
 
                                                                     {formatDuration(
@@ -636,23 +924,13 @@ const StudentCourseDetailPage = () => {
 
                                                 {/* Lesson status */}
 
-                                                {isLocked ? (
-                                                    <LockKeyhole
-                                                        size={15}
-                                                        className="
-                                                            shrink-0
-                                                            text-[#B5B2C2]
-                                                        "
-                                                    />
-                                                ) : (
-                                                    <PlayCircle
-                                                        size={17}
-                                                        className="
-                                                            shrink-0
-                                                            text-[#6C5CE7]
-                                                        "
-                                                    />
-                                                )}
+                                                <PlayCircle
+                                                    size={17}
+                                                    className="
+                                                        shrink-0
+                                                        text-[#6C5CE7]
+                                                    "
+                                                />
                                             </button>
                                         );
                                     }
@@ -672,43 +950,6 @@ const StudentCourseDetailPage = () => {
                             </div>
                         )}
                     </div>
-                </section>
-
-                {/* =================================
-                    Enrollment
-                ================================== */}
-
-                <section className="mt-4">
-                    <button
-                        type="button"
-                        onClick={handleEnroll}
-                        className="
-                            flex
-                            w-full
-                            items-center
-                            justify-center
-                            gap-2
-                            rounded-lg
-                            bg-[#6C5CE7]
-                            px-4
-                            py-2.5
-                            text-[12px]
-                            font-semibold
-                            text-white
-                            shadow-[0_6px_18px_rgba(108,92,231,0.22)]
-                            transition
-                            hover:bg-[#5B4BD6]
-                            active:scale-[0.99]
-                        "
-                    >
-                        <GraduationCap size={16} />
-
-                        {isFree
-                            ? "Đăng ký khóa học miễn phí"
-                            : `Đăng ký khóa học · ${formatPrice(
-                                course.price
-                            )}`}
-                    </button>
                 </section>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import ScrollToTop from "../../../components/common/ScrollToTop";
 
@@ -10,6 +10,9 @@ import StudentDashboard from "../dashboard/StudentDashboard";
 import ProfilePage from "../profile/StudentProfile";
 import ExplorePage from "../explore/ExplorePage";
 import ExploreCourseDetailPage from "../explore/ExploreCourseDetailPage";
+import ExploreCoursePage from "../explore/ExploreCoursePage";
+import ExploreTeacherPage from "../explore/ExploreTeacherPage";
+import StudentCourseDetailPage from "../explore/ExploreCourseDetailPage";
 
 const StudentLayout = () => {
     const mainRef = useRef(null);
@@ -32,10 +35,32 @@ const StudentLayout = () => {
                         element={<StudentDashboard />}
                     />
 
-                    <Route
-                        path="/explore"
-                        element={<ExplorePage />}
-                    />
+                    <Route path="explore" element={<ExplorePage />}>
+                        <Route
+                            index
+                            element={<Navigate to="courses" replace />}
+                        />
+
+                        <Route
+                            path="courses"
+                            element={<ExploreCoursePage />}
+                        />
+
+                        <Route
+                            path="courses/:courseId"
+                            element={<StudentCourseDetailPage />}
+                        />
+
+                        <Route
+                            path="teachers"
+                            element={<ExploreTeacherPage />}
+                        />
+
+                        {/* <Route
+                            path="teachers/:teacherId"
+                            element={<TeacherDetailPage />}
+                        /> */}
+                    </Route>
 
                     <Route
                         path="explore/:courseId"

@@ -2,7 +2,7 @@ import { BookOpen } from "lucide-react";
 
 const Loading = ({
     text = "Đang tải...",
-    fullScreen = true,
+    fullScreen = false,
 }) => {
     return (
         <div
@@ -12,40 +12,11 @@ const Loading = ({
                 items-center
                 justify-center
                 overflow-hidden
-                bg-[#F8F7FF]
                 ${fullScreen ? "min-h-screen" : "min-h-full"}
             `}
         >
             {/* Decorative background */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                {/* Purple blob */}
-                <div
-                    className="
-                        absolute
-                        -left-20
-                        -top-20
-                        h-52
-                        w-52
-                        rounded-full
-                        bg-[#DDD8FF]/60
-                        blur-3xl
-                    "
-                />
-
-                {/* Pink blob */}
-                <div
-                    className="
-                        absolute
-                        -bottom-20
-                        -right-20
-                        h-56
-                        w-56
-                        rounded-full
-                        bg-[#FFDDEB]/60
-                        blur-3xl
-                    "
-                />
-
                 {/* Small dots */}
                 <span className="absolute left-[20%] top-[25%] h-2 w-2 rounded-full bg-[#A89DF2]/50" />
 

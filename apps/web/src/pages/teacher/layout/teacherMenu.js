@@ -1,8 +1,9 @@
 import {
     LayoutDashboard,
     BookOpen,
-    Users,
+    Bell,
 } from "lucide-react";
+
 import ProfileIcon from "../../../components/common/ProfileIcon";
 
 const teacherMenuItems = [
@@ -20,9 +21,9 @@ const teacherMenuItems = [
         isShowMenu: true,
     },
     {
-        label: "Học viên",
-        path: "/teacher/students",
-        icon: Users,
+        label: "Thông báo",
+        path: "/teacher/notifications",
+        icon: Bell,
         isShowMenu: true,
     },
     {
