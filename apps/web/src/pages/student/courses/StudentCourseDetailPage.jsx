@@ -5,10 +5,11 @@ import {
   BookOpen,
   ChevronRight,
   FileText,
-  Loader2,
   Play,
   X,
 } from "lucide-react";
+
+import Loading from "../../../components/common/Loading"
 
 import learningService from "../../../services/learningService";
 import appToast from "../../../utils/toast";
@@ -95,11 +96,7 @@ const StudentCourseDetailPage = () => {
     return (
       <div className="flex min-h-full items-center justify-center bg-[#F7F7FF] p-4">
         <div className="flex items-center gap-2 text-sm text-gray-500">
-          <Loader2
-            size={18}
-            className="animate-spin"
-          />
-          Đang tải khóa học...
+          <Loading text="Đang tải khoá học ... " />
         </div>
       </div>
     );
@@ -196,7 +193,7 @@ const StudentCourseDetailPage = () => {
       {/* Main */}
       <main className="mx-auto w-full max-w-5xl px-3 py-4 pb-8 sm:px-5 sm:py-6">
         {/* Video */}
-        <section className="overflow-hidden rounded-lg border border-[#302C4D] bg-[#17152A] shadow-sm">
+        <section className="overflow-hidden rounded-md border border-[#302C4D] bg-[#17152A] shadow-sm">
           <div className="relative aspect-video w-full">
             {selectedLesson ? (
               selectedLesson.video ? (
@@ -258,9 +255,9 @@ const StudentCourseDetailPage = () => {
         {selectedLesson && (
           <>
             {/* Lesson information */}
-            <section className="mt-4 overflow-hidden rounded-lg border border-[#E4E1F2] bg-white shadow-sm">
+            <section className="mt-4 overflow-hidden rounded-md border border-[#E4E1F2] bg-white shadow-sm">
               <div className="p-4 sm:p-5">
-                <div className="flex items-start gap-3">
+                <div className="flex items-center gap-3">
                   <div
                     className="
                                             flex
@@ -289,20 +286,7 @@ const StudentCourseDetailPage = () => {
                         }
                       </span>
 
-                      {selectedLesson.duration !=
-                        null && (
-                          <>
-                            <span className="text-gray-300">
-                              •
-                            </span>
 
-                            <span className="text-[10px] text-gray-400">
-                              {formatDuration(
-                                selectedLesson.duration
-                              )}
-                            </span>
-                          </>
-                        )}
                     </div>
 
                     <h1 className="mt-1 text-base font-semibold leading-6 text-[#252238] sm:text-lg">
@@ -315,7 +299,7 @@ const StudentCourseDetailPage = () => {
 
                 {selectedLesson.description && (
                   <div className="mt-4 border-t border-[#F0EEF7] pt-4">
-                    <p className="whitespace-pre-line text-sm leading-6 text-[#656277]">
+                    <p className="whitespace-pre-line text-sm leading-6 text-[#656277] text-justify">
                       {
                         selectedLesson.description
                       }
@@ -327,7 +311,7 @@ const StudentCourseDetailPage = () => {
 
             {/* Document */}
             {selectedLesson.document && (
-              <section className="mt-3 rounded-lg border border-[#E4E1F2] bg-white shadow-sm">
+              <section className="mt-3 rounded-md border border-[#E4E1F2] bg-white shadow-sm">
                 <a
                   href={
                     selectedLesson.document

@@ -1,7 +1,16 @@
+// src/pages/student/courses/StudentCoursesPage.jsx
+
 import { useEffect, useState } from "react";
-import { BookOpen } from "lucide-react";
+
+import {
+  BookOpen,
+  Flower2,
+  Leaf,
+  Sparkles,
+} from "lucide-react";
 
 import enrollmentService from "../../../services/enrollmentService";
+
 import appToast from "../../../utils/toast";
 
 import StudentCourseCard from "./StudentCourseCard";
@@ -9,9 +18,6 @@ import StudentCourseCard from "./StudentCourseCard";
 const StudentCoursesPage = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  console.log(enrollments);
-
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -46,141 +52,420 @@ const StudentCoursesPage = () => {
 
   if (loading) {
     return (
-      <div className="space-y-4 p-3 sm:p-5">
-        <div className="space-y-1.5">
-          <div className="h-6 w-32 animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-48 animate-pulse rounded bg-gray-200" />
+      <div className="relative min-h-full overflow-hidden bg-[#F7F7FF]">
+        {/* Background decoration */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="
+                            absolute
+                            -left-20
+                            -top-20
+                            h-64
+                            w-64
+                            rounded-full
+                            bg-[#E8E4FF]
+                            opacity-60
+                            blur-3xl
+                        "
+          />
+
+          <div
+            className="
+                            absolute
+                            -right-20
+                            top-1/3
+                            h-72
+                            w-72
+                            rounded-full
+                            bg-[#E2F3EC]
+                            opacity-60
+                            blur-3xl
+                        "
+          />
         </div>
 
-        <div className="space-y-2">
-          {[1, 2, 3].map((item) => (
-            <div
-              key={item}
-              className="
-                                flex
-                                h-24
-                                animate-pulse
-                                rounded-md
-                                bg-white
-                                shadow-sm
-                            "
-            >
-              <div className="aspect-video h-full rounded-l-md bg-gray-200" />
+        <div className="relative space-y-5 p-3 sm:p-5">
+          {/* Header skeleton */}
+          <div
+            className="
+                            h-[125px]
+                            animate-pulse
+                            rounded-lg
+                            bg-white/70
+                            shadow-sm
+                        "
+          />
 
-              <div className="flex flex-1 flex-col justify-center gap-2 px-3">
-                <div className="h-4 w-3/4 rounded bg-gray-200" />
-                <div className="h-3 w-1/3 rounded bg-gray-200" />
-                <div className="h-2 w-full rounded bg-gray-200" />
+          {/* Course skeleton */}
+          <div className="space-y-2">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="
+                                    flex
+                                    h-24
+                                    animate-pulse
+                                    overflow-hidden
+                                    rounded-lg
+                                    bg-white/80
+                                    shadow-sm
+                                "
+              >
+                <div className="h-full w-[100px] shrink-0 bg-gray-200 sm:w-[120px]" />
+
+                <div
+                  className="
+                                        flex
+                                        min-w-0
+                                        flex-1
+                                        flex-col
+                                        justify-center
+                                        gap-2
+                                        px-3
+                                    "
+                >
+                  <div className="h-4 w-3/4 rounded bg-gray-200" />
+
+                  <div className="h-3 w-1/3 rounded bg-gray-200" />
+
+                  <div className="h-2 w-full rounded bg-gray-200" />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
-  // ==========================================
-  // Render
-  // ==========================================
-
   return (
-    <div className="space-y-4 p-3 sm:p-5">
-      {/* Header */}
-      <div>
-        <h1
-          className="
-                        text-lg
-                        font-semibold
-                        tracking-tight
-                        text-[#252238]
-                        sm:text-xl
-                    "
-        >
-          Khóa học của tôi
-        </h1>
+    <div className="relative min-h-full overflow-hidden bg-[#F7F7FF]">
+      {/* ==========================================
+                Page background
+            ========================================== */}
 
-        <p
-          className="
-                        mt-0.5
-                        text-xs
-                        font-medium
-                        text-gray-500
-                        sm:text-sm
-                    "
-        >
-          {enrollments.length} khóa học
-        </p>
-      </div>
-
-      {/* Empty */}
-      {enrollments.length === 0 && (
+      <div
+        className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    overflow-hidden
+                "
+      >
+        {/* Top left purple */}
         <div
           className="
-                        rounded-md
+                        absolute
+                        -left-24
+                        -top-24
+                        h-72
+                        w-72
+                        rounded-full
+                        bg-[#E8E4FF]
+                        opacity-70
+                        blur-3xl
+                    "
+        />
+
+        {/* Top right green */}
+        <div
+          className="
+                        absolute
+                        -right-28
+                        top-24
+                        h-80
+                        w-80
+                        rounded-full
+                        bg-[#E1F2EA]
+                        opacity-70
+                        blur-3xl
+                    "
+        />
+
+        {/* Bottom purple */}
+        <div
+          className="
+                        absolute
+                        -bottom-40
+                        left-1/3
+                        h-96
+                        w-96
+                        rounded-full
+                        bg-[#EEEAFE]
+                        opacity-50
+                        blur-3xl
+                    "
+        />
+
+        {/* Decorative flower */}
+        <Flower2
+          className="
+                        absolute
+                        left-[5%]
+                        top-[34%]
+                        rotate-12
+                        text-[#B5ADEB]/30
+                    "
+          size={54}
+          strokeWidth={1}
+        />
+
+        {/* Decorative leaf */}
+        <Leaf
+          className="
+                        absolute
+                        right-[6%]
+                        top-[58%]
+                        -rotate-12
+                        text-[#8CB7A2]/30
+                    "
+          size={48}
+          strokeWidth={1.2}
+        />
+
+        {/* Small sparkle */}
+        <Sparkles
+          className="
+                        absolute
+                        right-[18%]
+                        bottom-[12%]
+                        text-[#9D95DD]/25
+                    "
+          size={32}
+          strokeWidth={1.2}
+        />
+      </div>
+
+      {/* ==========================================
+                Content
+            ========================================== */}
+
+      <div className="relative z-10 space-y-2 sm:p-5">
+
+        {/* ==========================================
+                    Header
+                ========================================== */}
+
+        <section
+          className="
+                        relative
+                        overflow-hidden
                         border
-                        border-gray-200
+                        border-[#DED8FF]
                         bg-white
-                        px-5
-                        py-14
-                        text-center
-                        shadow-sm
+                        from-[#EDEAFF]
+                        via-[#F4F2FF]
+                        to-[#EAF5F0]
+                        shadow-[0_8px_30px_rgba(108,92,231,0.08)]
+                        p-3 
+                        sm:px-6
+                        sm:py-6
                     "
         >
+
+
+          <Flower2
+            className="
+                            pointer-events-none
+                            absolute
+                            right-7
+                            top-5
+                            rotate-12
+                            text-[#8D83DC]/30
+                        "
+            size={60}
+            strokeWidth={1}
+          />
+
+          {/* Header content */}
+
+          <div className="relative z-10">
+            <h1
+              className="
+                                text-xl
+                                font-bold
+                                tracking-tight
+                                text-[#252238]
+                                sm:text-2xl
+                            "
+            >
+              Khóa học của tôi
+            </h1>
+
+            <p
+              className="
+                                mt-1
+                                max-w-lg
+                                text-xs
+                                leading-5
+                                text-[#625E75]
+                                sm:text-sm
+                            "
+            >
+              Chọn 1 khoá học để tiếp tục
+            </p>
+
+            {/* <div
+              className="
+                                mt-3
+                                inline-flex
+                                items-center
+                                gap-1.5
+                                text-xs
+                                font-medium
+                                text-[#625E75]
+                            "
+            >
+              <span
+                className="
+                                    flex
+                                    h-6
+                                    min-w-6
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    bg-white
+                                    px-1.5
+                                    font-bold
+                                    text-[#6C5CE7]
+                                    shadow-sm
+                                "
+              >
+                {enrollments.length}
+              </span>
+
+              <span>
+                {enrollments.length === 1
+                  ? "khóa học"
+                  : "khóa học"}
+              </span>
+            </div> */}
+          </div>
+        </section>
+
+        {/* ==========================================
+                    Empty
+                ========================================== */}
+
+        {enrollments.length === 0 && (
           <div
             className="
-                            mx-auto
-                            flex
-                            h-11
-                            w-11
-                            items-center
-                            justify-center
-                            rounded-full
-                            bg-[#6C5CE7]/10
-                            text-[#6C5CE7]
+                            relative
+                            overflow-hidden
+                            rounded-lg
+                            border
+                            border-white/80
+                            bg-white/75
+                            px-5
+                            py-14
+                            text-center
+                            shadow-sm
+                            backdrop-blur-sm
                         "
           >
-            <BookOpen size={21} />
-          </div>
-
-          <h2
-            className="
-                            mt-3
-                            text-sm
-                            font-semibold
-                            text-[#252238]
-                        "
-          >
-            Bạn chưa có khóa học nào
-          </h2>
-
-          <p
-            className="
-                            mx-auto
-                            mt-1.5
-                            max-w-sm
-                            text-xs
-                            leading-5
-                            text-gray-500
-                            sm:text-sm
-                        "
-          >
-            Hãy khám phá và đăng ký một khóa học
-            để bắt đầu học tập.
-          </p>
-        </div>
-      )}
-
-      {/* Course list */}
-      {enrollments.length > 0 && (
-        <div className="space-y-2">
-          {enrollments.map((enrollment) => (
-            <StudentCourseCard
-              key={enrollment.id}
-              enrollment={enrollment}
+            <div
+              className="
+                                pointer-events-none
+                                absolute
+                                -right-10
+                                -top-10
+                                h-28
+                                w-28
+                                rounded-full
+                                bg-[#E9E5FF]
+                                opacity-70
+                            "
             />
-          ))}
-        </div>
-      )}
+
+            <div
+              className="
+                                pointer-events-none
+                                absolute
+                                -bottom-10
+                                -left-10
+                                h-28
+                                w-28
+                                rounded-full
+                                bg-[#E4F3EC]
+                                opacity-70
+                            "
+            />
+
+            <div
+              className="
+                                relative
+                                z-10
+                                mx-auto
+                                flex
+                                h-12
+                                w-12
+                                items-center
+                                justify-center
+                                rounded-full
+                                bg-[#EEEAFE]
+                                text-[#6C5CE7]
+                            "
+            >
+              <BookOpen
+                size={22}
+                strokeWidth={1.8}
+              />
+            </div>
+
+            <h2
+              className="
+                                relative
+                                z-10
+                                mt-3
+                                text-sm
+                                font-semibold
+                                text-[#252238]
+                            "
+            >
+              Bạn chưa có khóa học nào
+            </h2>
+
+            <p
+              className="
+                                relative
+                                z-10
+                                mx-auto
+                                mt-1.5
+                                max-w-sm
+                                text-xs
+                                leading-5
+                                text-gray-500
+                                sm:text-sm
+                            "
+            >
+              Hãy khám phá và đăng ký một
+              khóa học để bắt đầu học tập.
+            </p>
+          </div>
+        )}
+
+        {/* ==========================================
+                    Course list
+                ========================================== */}
+
+        {enrollments.length > 0 && (
+          <section className="p-3">
+
+            <div className="space-y-2">
+              {enrollments.map(
+                (enrollment) => (
+                  <StudentCourseCard
+                    key={enrollment.id}
+                    enrollment={
+                      enrollment
+                    }
+                  />
+                )
+              )}
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 };
