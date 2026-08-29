@@ -16,7 +16,7 @@ import {
 } from "react-router-dom";
 
 import appToast from "../../../../../utils/toast";
-import getImageUrl from "../../../../../utils/getImageUrl"
+import getUrl from "../../../../../utils/getUrl"
 import lessonService from "../../../../../services/lessonService";
 
 const LessonDetailPage = () => {
@@ -760,7 +760,7 @@ const LessonDetailPage = () => {
                                     "
                                 >
                                     <video
-                                        src={getImageUrl(lesson.video)}
+                                        src={getUrl(lesson.video)}
                                         controls
                                         className="
                                             max-h-80

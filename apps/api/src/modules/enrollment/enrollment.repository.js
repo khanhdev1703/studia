@@ -229,17 +229,11 @@ const enrollmentRepository = {
     // ==========================================
     // Lấy danh sách enrollment của student
     // ==========================================
+    findByStudent: async (studentId, filters = {}) => {
+        const { status } = filters;
 
-    async findByUser(
-        userId,
-        {
-            status,
-            skip = 0,
-            take = 20,
-        } = {}
-    ) {
         const where = {
-            userId,
+            studentId,
         };
 
         if (status) {
@@ -248,10 +242,8 @@ const enrollmentRepository = {
 
         return prisma.enrollment.findMany({
             where,
-            skip,
-            take,
             orderBy: {
-                createdAt: "desc",
+                updatedAt: "desc",
             },
             include: {
                 course: {
@@ -262,12 +254,18 @@ const enrollmentRepository = {
                         thumbnail: true,
                         status: true,
                         teacherId: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        _count: {
+                            select: {
+                                lessons: true,
+                            },
+                        },
                     },
                 },
             },
         });
     },
-
     // ==========================================
     // Đếm enrollment của student
     // ==========================================
@@ -288,6 +286,8 @@ const enrollmentRepository = {
             where,
         });
     },
+
+
 };
 
 export default enrollmentRepository;

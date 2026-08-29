@@ -128,6 +128,7 @@ const courseRepository = {
                         duration: true,
                         order: true,
                         isLocked: true,
+                        video: true
                     },
 
                     orderBy: {

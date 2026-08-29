@@ -18,10 +18,10 @@ import appToast from "../../../utils/toast";
 
 import formatPrice from "../../../utils/formatPrice";
 import formatDuration from "../../../utils/formatDuration";
-import getImageUrl from "../../../utils/getImageUrl";
+import getUrl from "../../../utils/getUrl";
 import courseService from "../../../services/courseService";
 
-const StudentCourseDetailPage = () => {
+const ExploreCourseDetailPage = () => {
     const navigate = useNavigate();
     const { courseId } = useParams();
 
@@ -467,7 +467,7 @@ const StudentCourseDetailPage = () => {
                         "
                     >
                         <img
-                            src={getImageUrl(course.thumbnail)}
+                            src={getUrl(course.thumbnail)}
                             alt={course.title}
                             className="
                                 h-full
@@ -956,4 +956,4 @@ const StudentCourseDetailPage = () => {
     );
 };
 
-export default StudentCourseDetailPage;
+export default ExploreCourseDetailPage;

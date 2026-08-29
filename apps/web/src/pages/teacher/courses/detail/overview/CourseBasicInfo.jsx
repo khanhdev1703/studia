@@ -4,7 +4,7 @@ import {
     Save,
     Loader2,
 } from "lucide-react";
-import getImageUrl from "../../../../../utils/getImageUrl";
+import getUrl from "../../../../../utils/getUrl";
 
 const CourseBasicInfo = ({
     form,
@@ -121,7 +121,7 @@ const CourseBasicInfo = ({
                         >
                             {thumbnailPreview ? (
                                 <img
-                                    src={getImageUrl(thumbnailPreview)}
+                                    src={getUrl(thumbnailPreview)}
                                     alt={form.title || "Thumbnail khóa học"}
                                     className="h-full w-full object-cover"
                                 />

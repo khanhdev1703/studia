@@ -1,6 +1,6 @@
 import { ArrowRight, BookOpen, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import getImageUrl from "../../../../utils/getImageUrl";
+import getUrl from "../../../../utils/getUrl";
 
 const statusConfig = {
     DRAFT: {
@@ -24,7 +24,7 @@ const CourseCard = ({ course }) => {
     const navigate = useNavigate();
 
     const thumbnail =
-        course.thumbnail ? getImageUrl(course.thumbnail) :
+        course.thumbnail ? getUrl(course.thumbnail) :
             `https://picsum.photos/seed/${course.id}/600/340`;
 
     const status =

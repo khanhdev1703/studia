@@ -3,7 +3,7 @@ import { BookOpen, Clock3, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import formatPrice from "../../../utils/formatPrice";
-import getImageUrl from "../../../utils/getImageUrl";
+import getUrl from "../../../utils/getUrl";
 import formatDuration from "../../../utils/formatDuration";
 
 import courseService from "../../../services/courseService";
@@ -187,7 +187,7 @@ const ExploreCoursePage = () => {
                                         "
                                     >
                                         <img
-                                            src={getImageUrl(
+                                            src={getUrl(
                                                 course.thumbnail
                                             )}
                                             alt={course.title}

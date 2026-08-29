@@ -86,20 +86,12 @@ const enrollmentController = {
         try {
             const userId = req.user.userId;
 
-            const {
-                status,
-                page = 1,
-                limit = 10,
-            } = req.query;
+            const { status } = req.query;
 
             const result =
                 await enrollmentService.getMyEnrollments(
                     userId,
-                    {
-                        status,
-                        page: Number(page),
-                        limit: Number(limit),
-                    }
+                    { status }
                 );
 
             return res.status(200).json({

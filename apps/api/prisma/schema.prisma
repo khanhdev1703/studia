@@ -87,7 +87,7 @@ model Lesson {
   video       String?
   document    String?
 
-  // Thời lượng tính bằng phút
+  // Thời lượng tính bằng giây
   duration    Int?
 
   // Thứ tự bài học trong khóa học

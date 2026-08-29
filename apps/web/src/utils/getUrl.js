@@ -1,6 +1,6 @@
-// src/utils/getImageUrl.js
+// src/utils/getUrl.js
 
-const getImageUrl = (url) => {
+const getUrl = (url) => {
     if (!url) {
         return "";
     }
@@ -22,4 +22,4 @@ const getImageUrl = (url) => {
     return `${import.meta.env.VITE_API_URL}${url}`;
 };
 
-export default getImageUrl;
+export default getUrl;

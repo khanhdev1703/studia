@@ -4,6 +4,8 @@ import authRoutes from '../modules/auth/auth.routes.js';
 import courseRoutes from '../modules/course/course.routes.js';
 import lessonRoutes from '../modules/lesson/lesson.routes.js';
 import enrollmentRoutes from '../modules/enrollment/enrollment.routes.js';
+import learningRoutes from '../modules/learning/learning.routes.js';
+
 
 const router = Router();
 
@@ -34,5 +36,6 @@ router.use('/auth', authRoutes);
 router.use('/course', courseRoutes);
 router.use('/lesson', lessonRoutes);
 router.use('/enrollment', enrollmentRoutes);
+router.use("/learning", learningRoutes);
 
 export default router;

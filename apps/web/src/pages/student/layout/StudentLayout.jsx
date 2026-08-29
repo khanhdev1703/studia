@@ -1,5 +1,10 @@
 import { useRef } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+
+import {
+    Navigate,
+    Route,
+    Routes,
+} from "react-router-dom";
 
 import ScrollToTop from "../../../components/common/ScrollToTop";
 
@@ -8,11 +13,14 @@ import StudentBottomNav from "./StudentBottomNav";
 
 import StudentDashboard from "../dashboard/StudentDashboard";
 import ProfilePage from "../profile/StudentProfile";
+
 import ExplorePage from "../explore/ExplorePage";
-import ExploreCourseDetailPage from "../explore/ExploreCourseDetailPage";
 import ExploreCoursePage from "../explore/ExploreCoursePage";
+import ExploreCourseDetailPage from "../explore/ExploreCourseDetailPage";
 import ExploreTeacherPage from "../explore/ExploreTeacherPage";
-import StudentCourseDetailPage from "../explore/ExploreCourseDetailPage";
+
+import StudentCoursesPage from "../courses/StudentCoursesPage";
+import StudentCourseDetailPage from "../courses/StudentCourseDetailPage.jsx";
 
 const StudentLayout = () => {
     const mainRef = useRef(null);
@@ -27,18 +35,60 @@ const StudentLayout = () => {
             {/* Main Content */}
             <main
                 ref={mainRef}
-                className="min-h-0 flex-1 overflow-y-auto lg:ml-64 lg:h-dvh lg:overflow-y-auto"
+                className="
+                    min-h-0
+                    flex-1
+                    overflow-y-auto
+                    lg:ml-64
+                    lg:h-dvh
+                    lg:overflow-y-auto
+                "
             >
                 <Routes>
+                    {/* ==========================================
+                        Dashboard
+                    ========================================== */}
                     <Route
                         index
                         element={<StudentDashboard />}
                     />
 
-                    <Route path="explore" element={<ExplorePage />}>
+                    {/* ==========================================
+                        Học tập
+                        
+                        /student/courses
+                        /student/courses/:courseId
+                    ========================================== */}
+                    <Route
+                        path="courses"
+                        element={<StudentCoursesPage />}
+                    />
+
+                    <Route
+                        path="courses/:courseId"
+                        element={<StudentCourseDetailPage />}
+                    />
+
+                    {/* ==========================================
+                        Khám phá
+                        
+                        /student/explore
+                        /student/explore/courses
+                        /student/explore/courses/:courseId
+                        /student/explore/teachers
+                    ========================================== */}
+                    <Route
+                        path="explore"
+                        element={<ExplorePage />}
+                    >
                         <Route
                             index
-                            element={<Navigate to="courses" replace />}
+                            element={
+                                <Navigate
+                                    to="courses"
+                                    replace
+                                />
+                            }
                         />
 
                         <Route
@@ -48,29 +98,24 @@ const StudentLayout = () => {
 
                         <Route
                             path="courses/:courseId"
-                            element={<StudentCourseDetailPage />}
+                            element={
+                                <ExploreCourseDetailPage />
+                            }
                         />
 
                         <Route
                             path="teachers"
                             element={<ExploreTeacherPage />}
                         />
-
-                        {/* <Route
-                            path="teachers/:teacherId"
-                            element={<TeacherDetailPage />}
-                        /> */}
                     </Route>
 
+                    {/* ==========================================
+                        Profile
+                        
+                        /student/profile
+                    ========================================== */}
                     <Route
-                        path="explore/:courseId"
-                        element={
-                            <ExploreCourseDetailPage />
-                        }
-                    />
-
-                    <Route
-                        path="/profile/*"
+                        path="profile/*"
                         element={<ProfilePage />}
                     />
                 </Routes>

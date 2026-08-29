@@ -166,6 +166,17 @@ const enrollmentService = {
             teacherId
         );
     },
+
+    async getMyEnrollments(userId, filters = {}) {
+        const { status } = filters;
+
+        return enrollmentRepository.findByStudent(
+            userId,
+            { status }
+        );
+    },
+
+
 };
 
 export default enrollmentService;
