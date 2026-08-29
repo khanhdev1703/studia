@@ -5,48 +5,41 @@ import TeacherBottomNav from "./TeacherBottomNav";
 
 import TeacherDashboard from "../dashboard/TeacherDashboard";
 import TeacherCourses from "../courses/TeacherCourses";
-import TeacherStudents from "../students/TeacherStudents";
+import TeacherNotifications from "../notifications/TeacherNotifications"
 import TeacherProfile from "../profile/TeacherProfile";
 
 const TeacherLayout = () => {
     return (
-        <div className="min-h-screen bg-[#F7F7FF]">
+        <div className="flex h-dvh flex-col overflow-hidden bg-[#F7F7FF] lg:block">
+            {/* Sidebar */}
             <TeacherSidebar />
 
-            <div className="min-h-screen lg:pl-64">
-                <div className="mx-auto w-full max-w-7xl">
-                    <Routes>
-                        <Route
-                            index
-                            element={
-                                <TeacherDashboard />
-                            }
-                        />
+            {/* Content */}
+            <main className="min-h-0 flex-1 overflow-y-auto lg:ml-64 lg:h-dvh lg:overflow-y-auto">
+                <Routes>
+                    <Route
+                        index
+                        element={<TeacherDashboard />}
+                    />
 
-                        <Route
-                            path="courses/*"
-                            element={
-                                <TeacherCourses />
-                            }
-                        />
+                    <Route
+                        path="courses/*"
+                        element={<TeacherCourses />}
+                    />
 
-                        <Route
-                            path="students"
-                            element={
-                                <TeacherStudents />
-                            }
-                        />
+                    <Route
+                        path="notifications"
+                        element={<TeacherNotifications />}
+                    />
 
-                        <Route
-                            path="profile"
-                            element={
-                                <TeacherProfile />
-                            }
-                        />
-                    </Routes>
-                </div>
-            </div>
+                    <Route
+                        path="profile"
+                        element={<TeacherProfile />}
+                    />
+                </Routes>
+            </main>
 
+            {/* Mobile Bottom Navigation */}
             <TeacherBottomNav />
         </div>
     );

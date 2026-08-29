@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 
-const TOAST_ID = "studia-toast";
+const TOAST_ID = "stady-toast";
 
 const toastSuccess = (message) => {
     toast.success(message, {
@@ -11,6 +11,13 @@ const toastSuccess = (message) => {
 const toastError = (message) => {
     toast.error(message, {
         id: TOAST_ID,
+    });
+};
+
+const toastWarning = (message) => {
+    toast(message, {
+        id: TOAST_ID,
+        icon: "⚠️",
     });
 };
 
@@ -27,6 +34,7 @@ const toastDismiss = () => {
 const appToast = {
     success: toastSuccess,
     error: toastError,
+    warning: toastWarning,
     loading: toastLoading,
     dismiss: toastDismiss,
 };

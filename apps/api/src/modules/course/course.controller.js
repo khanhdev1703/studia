@@ -41,6 +41,25 @@ const courseController = {
         }
     },
 
+    // Student → Lấy danh sách khóa học đã published
+    async getPublishedCourses(req, res, next) {
+        try {
+            const { search } = req.query;
+
+            const courses = await courseService.getPublishedCourses({
+                search,
+            });
+
+            res.status(200).json({
+                success: true,
+                message: "Lấy danh sách khóa học thành công.",
+                data: courses,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async getCourseById(req, res, next) {
         try {
             const course =
@@ -60,12 +79,31 @@ const courseController = {
         }
     },
 
+    async getPublishedCourseDetail(req, res, next) {
+        try {
+            const course =
+                await courseService.getPublishedCourseDetail(
+                    req.params.id,
+                    req.user.userId
+                );
+
+            res.status(200).json({
+                success: true,
+                message: "Lấy thông tin khóa học thành công.",
+                data: course,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async updateCourse(req, res, next) {
         try {
             const {
                 title,
                 description,
                 status,
+                price
             } = req.body;
 
             const course =
@@ -76,6 +114,7 @@ const courseController = {
                     description,
                     status,
                     thumbnail: req.file,
+                    price
                 });
 
             res.status(200).json({
@@ -89,9 +128,10 @@ const courseController = {
         }
     },
 
-    async deleteCourse(req, res, next) {
+    // Teacher → Soft delete
+    async softDeleteCourse(req, res, next) {
         try {
-            await courseService.deleteCourse({
+            await courseService.softDeleteCourse({
                 courseId: req.params.id,
                 teacherId: req.user.userId,
             });
@@ -99,6 +139,23 @@ const courseController = {
             res.status(200).json({
                 success: true,
                 message: "Xóa khóa học thành công.",
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // Admin → Hard delete
+    async hardDeleteCourse(req, res, next) {
+        try {
+            await courseService.hardDeleteCourse({
+                courseId: req.params.id,
+            });
+
+            res.status(200).json({
+                success: true,
+                message:
+                    "Xóa khóa học vĩnh viễn thành công.",
             });
         } catch (error) {
             next(error);

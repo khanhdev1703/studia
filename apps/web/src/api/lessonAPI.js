@@ -1,7 +1,7 @@
 import apiClient from "./apiClient";
 
 const lessonAPI = {
-    // GET /course/:courseId/lessons
+    // GET /lesson/course/:courseId
     getLessonsByCourse: (courseId) => {
         return apiClient.get(
             `/lesson/course/${courseId}`
@@ -11,11 +11,11 @@ const lessonAPI = {
     // GET /lessons/:lessonId
     getById: (lessonId) => {
         return apiClient.get(
-            `/lessons/${lessonId}`
+            `/lesson/${lessonId}`
         );
     },
 
-    // POST /lessons/course/:courseId
+    // POST /lesson/course/:courseId
     create: async (
         courseId,
         data,
@@ -26,7 +26,6 @@ const lessonAPI = {
             data,
             {
                 timeout: 0,
-
                 onUploadProgress: (event) => {
                     if (!event.total) {
                         return;
@@ -46,23 +45,25 @@ const lessonAPI = {
     // PUT /lessons/:lessonId
     update: (lessonId, data) => {
         return apiClient.put(
-            `/lessons/${lessonId}`,
+            `/lesson/${lessonId}`,
             data
         );
     },
 
-    // DELETE /lessons/:lessonId
+    // DELETE /lesson/:lessonId
     delete: (lessonId) => {
         return apiClient.delete(
             `/lesson/${lessonId}`
         );
     },
 
-    // PATCH /lessons/course/:courseId/reorder
-    reorder: (courseId, lessons) => {
-        return apiClient.patch(
-            `/lessons/course/${courseId}/reorder`,
-            { lessons }
+    // PUT /lessons/:lessonId/move
+    move: (lessonId, direction) => {
+        return apiClient.put(
+            `/lesson/${lessonId}/move`,
+            {
+                direction,
+            }
         );
     },
 };

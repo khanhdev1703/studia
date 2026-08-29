@@ -10,7 +10,7 @@ const LessonLayout = () => {
     return (
         <Routes>
             <Route path="create" element={<LessonCreatePage />} />
-            <Route path=":lessionId" element={<LessonDetailPage />} />
+            <Route path=":lessonId" element={<LessonDetailPage />} />
         </Routes>
     );
 };

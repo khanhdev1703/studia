@@ -5,6 +5,7 @@ import authorize from "../../middlewares/authorize.js";
 import { imageUpload } from "../../middlewares/upload.js";
 
 import courseController from "./course.controller.js";
+import enrollmentController from "../enrollment/enrollment.controller.js";
 
 const router = Router();
 
@@ -25,7 +26,24 @@ router.get(
     courseController.getTeacherCourses
 );
 
-// Xem một khóa học
+router.get(
+    "/search",
+    authorize("STUDENT", "TEACHER", "ADMIN"),
+    courseController.getPublishedCourses
+);
+
+router.get(
+    "/published/:id",
+    authorize("STUDENT", "TEACHER", "ADMIN"),
+    courseController.getPublishedCourseDetail
+);
+
+router.post(
+    "/:courseId/enroll",
+    authorize("STUDENT"),
+    enrollmentController.enroll
+);
+
 router.get(
     "/:id",
     courseController.getCourseById
@@ -39,11 +57,20 @@ router.put(
     courseController.updateCourse
 );
 
-// Teacher xóa khóa học
+// Admin xóa khóa học vĩnh viễn
+router.delete(
+    "/:id/permanent",
+    authorize("ADMIN"),
+    courseController.hardDeleteCourse
+);
+
+// Teacher xóa khóa học (soft delete)
 router.delete(
     "/:id",
     authorize("TEACHER"),
-    courseController.deleteCourse
+    courseController.softDeleteCourse
 );
+
+
 
 export default router;

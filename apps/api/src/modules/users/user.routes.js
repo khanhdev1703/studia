@@ -1,38 +1,56 @@
-import { Router } from 'express';
+import { Router } from "express";
 
-import auth from '../../middlewares/auth.js';
-import authorize from '../../middlewares/authorize.js';
+import auth from "../../middlewares/auth.js";
 
-import userController from './user.controller.js';
+import authorize from "../../middlewares/authorize.js";
+
+import userController from "./user.controller.js";
 
 const router = Router();
 
 router.use(auth);
 
+// Admin - lấy danh sách users
 router.get(
-    '/',
-    authorize('ADMIN'),
+    "/",
+    authorize("ADMIN"),
     userController.getAllUsers
 );
 
+// Current user
 router.get(
-    '/me',
+    "/me",
     userController.getMe
 );
 
 router.put(
-    '/me',
+    "/me",
     userController.updateProfile
 );
 
 router.put(
-    '/me/password',
+    "/me/password",
     userController.updatePassword
 );
 
+// Student - tìm kiếm giáo viên
 router.get(
-    '/:id',
-    authorize('ADMIN'),
+    "/teachers",
+    authorize("STUDENT"),
+    userController.searchTeachers
+);
+
+// Teacher - tìm kiếm học sinh
+// router.get(
+//     "/students",
+//     authorize("TEACHER"),
+//     userController.searchStudents
+// );
+
+// Admin - lấy user theo ID
+router.get(
+    "/:id",
+    authorize("ADMIN"),
     userController.getUserById
 );
 

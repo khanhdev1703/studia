@@ -50,6 +50,53 @@ const userRepository = {
             },
         });
     },
+
+    async searchTeachers({ search } = {}) {
+        const keyword = search?.trim() || "";
+
+        const where = {
+            role: "TEACHER",
+        };
+
+        if (keyword) {
+            where.name = {
+                contains: keyword,
+                mode: "insensitive",
+            };
+        }
+
+        return prisma.user.findMany({
+            where,
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+
+                courses: {
+                    where: {
+                        status: "PUBLISHED",
+                        deletedAt: null,
+                    },
+                    select: {
+                        id: true,
+
+                        lessons: {
+                            where: {
+                                deletedAt: null,
+                            },
+                            select: {
+                                id: true,
+                            },
+                        },
+                    },
+                },
+            },
+            orderBy: {
+                name: "asc",
+            },
+        });
+    }
+
 };
 
 export default userRepository;

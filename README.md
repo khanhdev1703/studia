@@ -1,14 +1,14 @@
-# Studia
+# Stady
 
-Studia is a learning management platform that connects students, teachers, and courses in one place.
+Stady is a learning management platform that connects students, teachers, and courses in one place.
 
-> 🚧 Studia is currently under development (MVP).
+> 🚧 Stady is currently under development (MVP).
 
 ---
 
 ## Overview
 
-Studia is designed to provide a simple learning experience for students and teachers.
+Stady is designed to provide a simple learning experience for students and teachers.
 
 The platform will include:
 
@@ -27,7 +27,7 @@ The platform will include:
 ## Project Structure
 
 ```text
-studia/
+Stady/
 ├── apps/
 │   ├── web/          # Web application
 │   ├── api/          # Backend API

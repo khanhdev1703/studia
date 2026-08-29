@@ -1,12 +1,21 @@
 import apiClient from "./apiClient";
 
 const courseAPI = {
+    searchCourse(params = {}) {
+        return apiClient.get("/course/search", {
+            params,
+        })
+    },
     getTeacherCourses() {
         return apiClient.get("/course");
     },
 
     getCourseById(courseId) {
         return apiClient.get(`/course/${courseId}`);
+    },
+
+    getStudentCourseDetail(courseId) {
+        return apiClient.get(`/course/published/${courseId}`);
     },
 
     createCourse(data) {

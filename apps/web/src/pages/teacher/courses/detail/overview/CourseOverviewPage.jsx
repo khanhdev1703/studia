@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import {
     useOutletContext,
     useParams,
@@ -10,7 +11,9 @@ import appToast from "../../../../../utils/toast";
 import courseService from "../../../../../services/courseService";
 
 import CourseBasicInfo from "./CourseBasicInfo";
+
 import CourseDangerZone from "./CourseDangerZone";
+
 import DeleteCourseModal from "./DeleteCourseModal";
 
 const CourseOverviewPage = () => {
@@ -20,6 +23,7 @@ const CourseOverviewPage = () => {
     } = useOutletContext();
 
     const { courseId } = useParams();
+
     const navigate = useNavigate();
 
     // ==========================================
@@ -29,6 +33,7 @@ const CourseOverviewPage = () => {
     const [form, setForm] = useState({
         title: "",
         description: "",
+        price: 0,
         status: "DRAFT",
         thumbnailFile: null,
     });
@@ -60,6 +65,7 @@ const CourseOverviewPage = () => {
         setForm({
             title: course.title || "",
             description: course.description || "",
+            price: course.price ?? 0,
             status: course.status || "DRAFT",
             thumbnailFile: null,
         });
@@ -142,7 +148,7 @@ const CourseOverviewPage = () => {
         }
 
         // ======================================
-        // Validation
+        // Validate title
         // ======================================
 
         if (!form.title.trim()) {
@@ -151,6 +157,24 @@ const CourseOverviewPage = () => {
             );
 
             return;
+        }
+
+        // ======================================
+        // Validate price
+        // ======================================
+
+        let price = Number(form.price);
+
+        if (!Number.isInteger(price)) {
+            appToast.error(
+                "Giá khóa học phải là số nguyên."
+            );
+
+            return;
+        }
+
+        if (price < 0) {
+            price = 0
         }
 
         try {
@@ -173,9 +197,18 @@ const CourseOverviewPage = () => {
             );
 
             formData.append(
+                "price",
+                String(price)
+            );
+
+            formData.append(
                 "status",
                 form.status
             );
+
+            // ==================================
+            // Thumbnail
+            // ==================================
 
             // Chỉ gửi file nếu chọn ảnh mới
             if (form.thumbnailFile) {
@@ -195,21 +228,35 @@ const CourseOverviewPage = () => {
                     formData
                 );
 
-            const updatedCourse = response.data;
+            const updatedCourse =
+                response.data;
 
-            // Cập nhật CourseDetail context
+            // ==================================
+            // Update CourseDetail context
+            // ==================================
+
             setCourse(updatedCourse);
 
+            // ==================================
             // Reset thumbnail file
+            // ==================================
+
             setForm((prev) => ({
                 ...prev,
                 thumbnailFile: null,
             }));
 
-            // Preview sử dụng URL thật từ BE
+            // ==================================
+            // Update thumbnail preview
+            // ==================================
+
             setThumbnailPreview(
                 updatedCourse.thumbnail || ""
             );
+
+            // ==================================
+            // Success
+            // ==================================
 
             appToast.success(
                 response.message ||
@@ -250,6 +297,7 @@ const CourseOverviewPage = () => {
                 "Đã xóa khóa học."
             );
 
+            // Course đã soft delete ở BE
             setCourse(null);
 
             navigate("/teacher/courses", {
@@ -267,6 +315,7 @@ const CourseOverviewPage = () => {
             );
         } finally {
             setDeleting(false);
+
             setDeleteModalOpen(false);
         }
     };
@@ -292,9 +341,7 @@ const CourseOverviewPage = () => {
                 thumbnailPreview={thumbnailPreview}
                 saving={saving}
                 onFormChange={updateForm}
-                onSelectImage={
-                    handleSelectImage
-                }
+                onSelectImage={handleSelectImage}
                 onSave={handleSave}
             />
 

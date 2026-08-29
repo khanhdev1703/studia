@@ -1,5 +1,3 @@
-// src/services/lessonService.js
-
 import lessonAPI from "../api/lessonAPI";
 
 const lessonService = {
@@ -17,7 +15,11 @@ const lessonService = {
         return response.data;
     },
 
-    create: async (courseId, data, onProgress) => {
+    create: async (
+        courseId,
+        data,
+        onProgress
+    ) => {
         const response =
             await lessonAPI.create(
                 courseId,
@@ -30,7 +32,10 @@ const lessonService = {
 
     update: async (lessonId, data) => {
         const response =
-            await lessonAPI.update(lessonId, data);
+            await lessonAPI.update(
+                lessonId,
+                data
+            );
 
         return response.data;
     },
@@ -42,9 +47,13 @@ const lessonService = {
         return response.data;
     },
 
-    reorder: async (courseId, lessons) => {
+    // Di chuyển lesson lên / xuống
+    move: async (lessonId, direction) => {
         const response =
-            await lessonAPI.reorder(courseId, lessons);
+            await lessonAPI.move(
+                lessonId,
+                direction
+            );
 
         return response.data;
     },

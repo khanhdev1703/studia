@@ -9,7 +9,11 @@
       "start": "pm2-runtime src/server.js --name stady-api",
       "prisma:generate": "prisma generate",
       "prisma:migrate": "prisma migrate dev",
-      "prisma:studio": "prisma studio"
+      "prisma:studio": "prisma studio",
+      "prisma:seed": "prisma db seed"
+   },
+   "prisma": {
+      "seed": "node prisma/seed.js"
    },
    "keywords": [],
    "author": "",

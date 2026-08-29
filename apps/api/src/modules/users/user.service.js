@@ -154,6 +154,29 @@ const userService = {
             hashedPassword
         );
     },
+
+    async searchTeachers({ search } = {}) {
+        const teachers = await userRepository.searchTeachers({
+            search,
+        });
+
+        return teachers.map((teacher) => {
+            const courseCount = teacher.courses.length;
+
+            const lessonCount = teacher.courses.reduce(
+                (total, course) => total + course.lessons.length,
+                0
+            );
+
+            return {
+                id: teacher.id,
+                name: teacher.name,
+                createdAt: teacher.createdAt,
+                courseCount,
+                lessonCount,
+            };
+        });
+    }
 };
 
 export default userService;

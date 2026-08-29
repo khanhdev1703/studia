@@ -19,6 +19,13 @@ enum CourseStatus {
   ARCHIVED
 }
 
+enum EnrollmentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
@@ -26,7 +33,11 @@ model User {
   password  String
   role      Role     @default(STUDENT)
 
-  courses   Course[]
+  // Teacher
+  courses Course[]
+
+  // Student
+  enrollments Enrollment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -42,15 +53,26 @@ model Course {
   description String?
   thumbnail   String?
 
+  // Đơn vị: nghìn đồng
+  // 0 = miễn phí
+  // 299 = 299k
+  // 1200 = 1.2 triệu
+  price       Int          @default(0)
+
   status      CourseStatus @default(DRAFT)
 
   lessons     Lesson[]
+  enrollments Enrollment[]
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([teacherId])
   @@index([status])
+  @@index([deletedAt])
+  @@index([teacherId, deletedAt])
 }
 
 model Lesson {
@@ -64,13 +86,48 @@ model Lesson {
 
   video       String?
   document    String?
-  duration Int?
 
+  // Thời lượng tính bằng phút
+  duration    Int?
+
+  // Thứ tự bài học trong khóa học
   order       Int
+
+  // Student có được học bài này hay không
+  isLocked    Boolean  @default(false)
+
+  // Soft delete
+  deletedAt   DateTime?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([courseId])
   @@index([courseId, order])
+  @@index([courseId, deletedAt])
+  @@index([deletedAt])
+}
+
+model Enrollment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  studentId String   @db.ObjectId
+  student   User     @relation(fields: [studentId], references: [id])
+
+  courseId  String   @db.ObjectId
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  status    EnrollmentStatus @default(PENDING)
+
+  enrolledAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Một Student chỉ có một Enrollment đối với một Course
+  @@unique([studentId, courseId])
+
+  @@index([studentId])
+  @@index([courseId])
+  @@index([status])
+  @@index([studentId, status])
+  @@index([courseId, status])
 }
