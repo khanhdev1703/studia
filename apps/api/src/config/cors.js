@@ -1,8 +1,6 @@
 const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:5175',
-    "*"
+    'http://stady.io.vn',
+    'https://stady.io.vn',
 ];
 
 export default allowedOrigins;
