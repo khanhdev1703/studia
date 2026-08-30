@@ -9,6 +9,23 @@ const learningService = {
 
     return response.data;
   },
+  async accessLesson(lessonId) {
+    const response =
+      await learningAPI.accessLesson(
+        lessonId
+      );
+
+    return response.data;
+  },
+
+  async completeLesson(lessonId) {
+    const response =
+      await learningAPI.completeLesson(
+        lessonId
+      );
+
+    return response.data;
+  },
 };
 
 export default learningService;

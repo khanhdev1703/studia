@@ -242,9 +242,11 @@ const enrollmentRepository = {
 
         return prisma.enrollment.findMany({
             where,
+
             orderBy: {
                 updatedAt: "desc",
             },
+
             include: {
                 course: {
                     select: {
@@ -252,13 +254,20 @@ const enrollmentRepository = {
                         title: true,
                         description: true,
                         thumbnail: true,
+                        price: true,
                         status: true,
-                        teacherId: true,
+                        teacher: true,
                         createdAt: true,
                         updatedAt: true,
-                        _count: {
+
+                        // Progress của student
+                        lessons: {
                             select: {
-                                lessons: true,
+                                progresses: {
+                                    where: {
+                                        studentId,
+                                    },
+                                },
                             },
                         },
                     },

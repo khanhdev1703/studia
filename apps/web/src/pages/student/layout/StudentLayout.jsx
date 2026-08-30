@@ -92,16 +92,18 @@ const StudentLayout = () => {
                         />
 
                         <Route
-                            path="courses"
-                            element={<ExploreCoursePage />}
-                        />
-
-                        <Route
                             path="courses/:courseId"
                             element={
                                 <ExploreCourseDetailPage />
                             }
                         />
+
+                        <Route
+                            path="courses"
+                            element={<ExploreCoursePage />}
+                        />
+
+
 
                         <Route
                             path="teachers"

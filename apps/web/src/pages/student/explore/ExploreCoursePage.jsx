@@ -40,7 +40,7 @@ const ExploreCoursePage = () => {
     }, [search]);
 
     const handleCourseClick = (courseId) => {
-        navigate(`/student/explore/${courseId}`);
+        navigate(`/student/explore/courses/${courseId}`);
     };
 
     return (

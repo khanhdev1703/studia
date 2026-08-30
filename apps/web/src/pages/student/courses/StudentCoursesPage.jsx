@@ -27,6 +27,9 @@ const StudentCoursesPage = () => {
         const response =
           await enrollmentService.getMyEnrollments();
 
+        console.log(response);
+
+
         setEnrollments(response?.data || []);
       } catch (error) {
         console.error(

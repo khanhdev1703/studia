@@ -121,28 +121,8 @@ const courseRepository = {
                         deletedAt: null,
                     },
 
-                    select: {
-                        id: true,
-                        title: true,
-                        description: true,
-                        duration: true,
-                        order: true,
-                        isLocked: true,
-                        video: true
-                    },
-
                     orderBy: {
                         order: "asc",
-                    },
-                },
-
-                _count: {
-                    select: {
-                        lessons: {
-                            where: {
-                                deletedAt: null,
-                            },
-                        },
                     },
                 },
             },

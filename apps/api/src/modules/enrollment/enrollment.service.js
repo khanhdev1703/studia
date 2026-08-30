@@ -170,11 +170,41 @@ const enrollmentService = {
     async getMyEnrollments(userId, filters = {}) {
         const { status } = filters;
 
-        return enrollmentRepository.findByStudent(
-            userId,
-            { status }
-        );
-    },
+        const enrollments =
+            await enrollmentRepository.findByStudent(
+                userId,
+                { status }
+            );
+
+        return enrollments.map((enrollment) => {
+            const course = enrollment.course;
+
+            const totalLessons = course.lessons.length;
+
+            const completedLessons = course.lessons.reduce(
+                (count, lesson) => {
+                    return (
+                        count +
+                        (lesson.progresses[0]?.isCompleted
+                            ? 1
+                            : 0)
+                    );
+                },
+                0
+            );
+
+            const { lessons, _count, ...courseData } = course;
+
+            return {
+                ...enrollment,
+                course: {
+                    ...courseData,
+                    completedLessons,
+                    totalLessons,
+                },
+            };
+        });
+    }
 
 
 };
