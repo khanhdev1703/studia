@@ -1,0 +1,39 @@
+name: Deploy Stady
+
+on:
+   push:
+      branches:
+         - main
+
+jobs:
+   deploy:
+      runs-on: self-hosted
+
+      steps:
+         - name: Deploy Stady
+           shell: bash
+           run: |
+              set -e
+
+              echo "=== Deploy Stady ==="
+
+              cd /home/fire-linux/studia
+
+              echo "=== Update source code ==="
+              git fetch origin main
+              git reset --hard origin/main
+
+              echo "=== Deploy FE ==="
+              cd apps/web
+              npm ci
+              npm run build
+
+              echo "=== Deploy BE ==="
+              cd ../api
+              npm ci
+              npm run prisma:generate
+
+              echo "=== Restart BE ==="
+              pm2 restart stady-api
+
+              echo "=== Deployment completed ==="
