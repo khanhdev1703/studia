@@ -10,36 +10,45 @@ jobs:
       runs-on: self-hosted
 
       steps:
-         - name: Deploy Stady
-           shell: bash
+         - name: Update source code
            run: |
-              set -e
-
-              echo "=== Deploy Stady ==="
-
               cd /home/fire-linux/studia
-
-              echo "=== Update source code ==="
               git fetch origin main
               git reset --hard origin/main
 
-              echo "=== Deploy FE ==="
-              cd apps/web
+         - name: Deploy Frontend
+           run: |
+              cd /home/fire-linux/studia/apps/web
               npm ci
               npm run build
 
-              echo "=== Deploy BE ==="
-              cd ../api
+         - name: Deploy Backend
+           run: |
+              cd /home/fire-linux/studia/apps/api
               npm ci
               npm run prisma:generate
 
-              echo "=== Restart BE ==="
+         - name: Restart Backend
+           run: |
               pm2 restart stady-api
 
-              echo "=== Health check ==="
-              curl -f http://127.0.0.1:5000/health
+         - name: Health Check
+           shell: bash
+           run: |
+              for i in {1..10}; do
+                if curl -fsS http://127.0.0.1:5000/health; then
+                  echo ""
+                  echo "Backend is healthy."
+                  exit 0
+                fi
 
-              echo "=== PM2 status ==="
+                echo "Backend chưa sẵn sàng, thử lại sau 2 giây..."
+                sleep 2
+              done
+
+              echo "Backend không phản hồi sau 20 giây."
+              exit 1
+
+         - name: PM2 Status
+           run: |
               pm2 status stady-api
-
-              echo "=== Deployment completed ==="
