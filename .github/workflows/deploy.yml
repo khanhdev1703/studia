@@ -36,4 +36,10 @@ jobs:
               echo "=== Restart BE ==="
               pm2 restart stady-api
 
+              echo "=== Health check ==="
+              curl -f http://127.0.0.1:5000/health
+
+              echo "=== PM2 status ==="
+              pm2 status stady-api
+
               echo "=== Deployment completed ==="
