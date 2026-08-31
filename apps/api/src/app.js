@@ -91,6 +91,13 @@ app.use(globalLimiter);
 // Routes
 // ==========================================
 
+app.get("/health", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "API is healthy",
+    });
+});
+
 app.use('/api', routes);
 
 // ==========================================
