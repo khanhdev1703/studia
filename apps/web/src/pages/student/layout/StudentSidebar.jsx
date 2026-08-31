@@ -1,36 +1,8 @@
 import { NavLink } from "react-router-dom";
-import {
-    BookOpen,
-    Bell,
-    House,
-    UserRound,
-} from "lucide-react";
+
+import studentMenu from "./studentMenu"
 
 import Logo from "../../../components/common/Logo";
-
-const menuItems = [
-    {
-        label: "Tổng quan",
-        path: "/student",
-        icon: House,
-        end: true,
-    },
-    {
-        label: "Khóa học",
-        path: "/student/courses",
-        icon: BookOpen,
-    },
-    {
-        label: "Thông báo",
-        path: "/student/notifications",
-        icon: Bell,
-    },
-    {
-        label: "Hồ sơ",
-        path: "/student/profile",
-        icon: UserRound,
-    },
-];
 
 const StudentSidebar = () => {
     return (
@@ -48,7 +20,7 @@ const StudentSidebar = () => {
                 {/* Navigation */}
                 <nav className="flex-1 px-4 py-4">
                     <div className="space-y-1">
-                        {menuItems.map((item) => {
+                        {studentMenu.map((item) => {
                             const Icon = item.icon;
 
                             return (
