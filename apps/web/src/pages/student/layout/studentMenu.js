@@ -6,13 +6,13 @@ import {
 } from "lucide-react";
 
 const studentMenuItems = [
-    {
-        label: "Trang chủ",
-        path: "/student",
-        icon: House,
-        end: true,
-        isShowMenu: true,
-    },
+    // {
+    //     label: "Trang chủ",
+    //     path: "/student",
+    //     icon: House,
+    //     end: true,
+    //     isShowMenu: true,
+    // },
     {
         label: "Học tập",
         path: "/student/courses",
