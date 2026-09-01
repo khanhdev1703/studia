@@ -1,47 +1,25 @@
-import logo from '../../assets/logo-1.png';
+import { useNavigate } from "react-router-dom";
+import LogoImage from "../../assets/logo.png";
 
-function Logo({
-  size = 'md',
-  showText = false,
-  border = false,
-  borderColor = '#6C5CE7',
-  borderWidth = 2,
-}) {
-  const sizes = {
-    sm: 'h-8 w-8',
-    md: 'h-10 w-10',
-    lg: 'h-14 w-14',
+const Logo = ({ size = 200, link, className = "" }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (link) {
+      navigate(link);
+    }
   };
 
   return (
-    <div className="flex items-center">
-      <div
-        className={`
-          ${sizes[size]}
-          flex shrink-0 items-center justify-center
-          rounded-full
-          bg-white
-        `}
-        style={{
-          border: border
-            ? `${borderWidth}px solid ${borderColor}`
-            : 'none',
-        }}
-      >
-        <img
-          src={logo}
-          alt="Stady"
-          className="h-[95%] w-[95%] object-contain"
-        />
-      </div>
-
-      {showText && (
-        <span className="ml-2 text-lg font-semibold text-[#252238]">
-          Stady
-        </span>
-      )}
-    </div>
+    <img
+      src={LogoImage}
+      alt="Achan - Học tiếng Lào"
+      width={size}
+      height={size}
+      onClick={handleClick}
+      className={`${link ? "cursor-pointer" : ""} ${className}`.trim()}
+    />
   );
-}
+};
 
 export default Logo;

@@ -1,141 +1,176 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, GraduationCap } from "lucide-react";
 
-import Logo from "../components/common/Logo";
+import {
+    ArrowRight,
+    Languages,
+} from "lucide-react";
+
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
+import Brand from "../components/common/Brand";
 
 const LandingPage = () => {
     return (
-        <div className="min-h-screen bg-[#F7F7FF]">
+        <div className="min-h-screen overflow-hidden bg-[#F0F5FC] text-[#0F172A]">
             {/* Header */}
-            <header className="px-5 py-5 sm:px-8">
+            <header className="relative z-10 px-5 py-5 sm:px-8">
                 <div className="mx-auto flex max-w-6xl items-center justify-between">
-                    <Logo />
+                    {/* Brand */}
+                    <div className="flex flex-col leading-none">
+                        <Brand width={150} />
+                    </div>
 
+                    {/* Login */}
                     <Link
                         to="/login"
-                        className="rounded-lg border border-[#6C5CE7] px-4 py-2 text-sm font-semibold text-[#6C5CE7] transition hover:bg-[#6C5CE7] hover:text-white"
+                        className="rounded-full border border-[#0a479d]/25 bg-white px-5 py-2.5 text-sm font-bold text-[#0a479d] shadow-sm transition hover:border-[#0a479d] hover:bg-[#0a479d] hover:text-white"
                     >
                         Đăng nhập
                     </Link>
                 </div>
             </header>
 
-            {/* Hero */}
             <main>
-                <section className="relative overflow-hidden px-5 pb-20 pt-16 sm:px-8 sm:pb-28 sm:pt-24">
-                    {/* Decorative circles */}
-                    <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#6C5CE7]/10" />
-                    <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-[#6C5CE7]/5" />
+                {/* Hero */}
+                <section className="relative overflow-hidden px-5 pb-20 pt-10 sm:px-8 sm:pb-28 sm:pt-16">
+                    {/* Background Decorations */}
+                    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                        {/* Primary Blue blob */}
+                        <div className="absolute -right-32 -top-32 h-[420px] w-[420px] rounded-full bg-[#0a479d]/12 blur-3xl" />
 
-                    <div className="relative mx-auto max-w-4xl text-center">
-                        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-[#6C5CE7]/10">
-                            <GraduationCap
-                                size={32}
-                                className="text-[#6C5CE7]"
-                            />
-                        </div>
+                        {/* Soft Gold/Yellow blob */}
+                        <div className="absolute -bottom-40 -left-32 h-[380px] w-[380px] rounded-full bg-[#F59E0B]/12 blur-3xl" />
 
-                        <h1 className="text-4xl font-bold leading-tight text-[#252238] sm:text-5xl md:text-6xl">
-                            Học tập hôm nay,
-                            <span className="block text-[#6C5CE7]">
-                                tốt hơn ngày mai.
-                            </span>
-                        </h1>
+                        {/* Small primary blue circle */}
+                        <div className="absolute right-[12%] top-[18%] h-5 w-5 rounded-full bg-[#0a479d]/30 animate-pulse" />
 
-                        <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-gray-500 sm:text-lg">
-                            Stady giúp bạn học tập theo cách đơn giản,
-                            tập trung và hiệu quả hơn. Khám phá những
-                            khóa học phù hợp và từng bước xây dựng kiến
-                            thức của riêng mình.
-                        </p>
+                        {/* Small gold circle */}
+                        <div className="absolute left-[8%] top-[35%] h-3 w-3 rounded-full bg-[#F59E0B]/70" />
 
-                        {/* CTA */}
-                        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                            <Link
-                                to="/login"
-                                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-[#6C5CE7] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#6C5CE7]/20 transition hover:bg-[#5b4bd6] sm:w-auto"
-                            >
-                                Bắt đầu học
-
-                                <ArrowRight
-                                    size={18}
-                                    className="transition-transform group-hover:translate-x-1"
+                        {/* Dotted pattern */}
+                        <div className="absolute right-[5%] top-[42%] grid grid-cols-4 gap-2 opacity-25">
+                            {Array.from({ length: 16 }).map((_, index) => (
+                                <span
+                                    key={index}
+                                    className="h-1.5 w-1.5 rounded-full bg-[#0a479d]"
                                 />
-                            </Link>
+                            ))}
+                        </div>
 
-                            <Link
-                                to="/register"
-                                className="w-full rounded-lg border border-gray-200 bg-white px-6 py-3.5 text-center text-sm font-semibold text-gray-700 transition hover:border-[#6C5CE7] hover:text-[#6C5CE7] sm:w-auto"
-                            >
-                                Tạo tài khoản
-                            </Link>
+                        {/* Decorative plus */}
+                        <div className="absolute left-[18%] top-[16%] text-3xl font-light text-[#0a479d]/25">
+                            +
+                        </div>
+
+                        <div className="absolute bottom-[18%] right-[20%] text-4xl font-light text-[#F59E0B]/40">
+                            +
                         </div>
                     </div>
-                </section>
 
-                {/* Quotes */}
-                <section className="px-5 pb-20 sm:px-8 sm:pb-28">
-                    <div className="mx-auto grid max-w-5xl gap-5 md:grid-cols-3">
-                        <QuoteCard
-                            icon={<BookOpen size={22} />}
-                            quote="Mỗi ngày học một điều mới, mỗi ngày tiến thêm một bước."
-                        />
+                    <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+                        {/* Hero Logo */}
+                        <div className="relative flex justify-center lg:justify-end">
 
-                        <QuoteCard
-                            icon={<GraduationCap size={22} />}
-                            quote="Kiến thức không chỉ để biết, mà để tạo nên những thay đổi."
-                        />
+                            {/* Blue ring */}
+                            <div className="absolute h-[250px] w-[250px] rounded-full border-2 border-[#0a479d]/15 sm:h-[320px] sm:w-[320px]" />
 
-                        <QuoteCard
-                            icon={<ArrowRight size={22} />}
-                            quote="Đừng chờ đến khi hoàn hảo. Hãy bắt đầu từ hôm nay."
-                        />
-                    </div>
-                </section>
+                            {/* Floating gold dot */}
+                            <div className="absolute -right-3 top-10 h-5 w-5 rounded-full bg-[#F59E0B] shadow-md shadow-[#F59E0B]/30 sm:right-0" />
 
-                {/* Bottom CTA */}
-                <section className="px-5 pb-16 sm:px-8">
-                    <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl bg-[#6C5CE7] px-6 py-12 text-center sm:px-12">
-                        <h2 className="text-2xl font-bold text-white sm:text-3xl">
-                            Sẵn sàng bắt đầu hành trình học tập?
-                        </h2>
+                            {/* Floating blue dot */}
+                            <div className="absolute -left-2 top-20 h-3.5 w-3.5 rounded-full bg-[#0a479d]/80 sm:left-2" />
 
-                        <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-white/80">
-                            Bắt đầu với Stady và biến mỗi giờ học thành
-                            một bước tiến mới.
-                        </p>
+                            {/* Floating gold dot */}
+                            <div className="absolute bottom-16 right-5 h-3 w-3 rounded-full bg-[#F59E0B]/80" />
 
-                        <Link
-                            to="/login"
-                            className="mt-7 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-[#6C5CE7] transition hover:bg-gray-50"
-                        >
-                            Tham gia ngay
-                            <ArrowRight size={18} />
-                        </Link>
+                            {/* Plus */}
+                            <div className="absolute -bottom-2 left-8 text-3xl font-light text-[#0a479d]/30">
+                                +
+                            </div>
+
+                            {/* Logo */}
+                            <div className="relative w-[280px] sm:w-[380px]">
+                                <img
+                                    src="/logo.png"
+                                    alt="Achan - Học tiếng Lào"
+                                    className="relative z-10 h-auto w-full drop-shadow-xl"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Hero Content */}
+                        <div className="text-center lg:text-left">
+                            {/* Small badge */}
+                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#0a479d]/20 bg-white px-4 py-2 text-xs font-bold text-[#0a479d] shadow-sm">
+                                <Languages size={16} className="text-[#0a479d]" />
+
+                                <span>Học tiếng Lào cùng Achan</span>
+                            </div>
+
+                            {/* Heading */}
+                            <h1 className="text-4xl font-extrabold leading-[1.15] tracking-tight text-[#0F172A] sm:text-5xl md:text-6xl">
+                                Tiếng Lào
+                                <span className="block text-[#0a479d]">
+                                    không khó
+                                </span>
+                            </h1>
+
+                            {/* Slogan */}
+                            <div className="mt-4 flex items-center justify-center gap-2 lg:justify-start">
+                                <div className="h-0.5 w-8 bg-[#F59E0B]" />
+
+                                <p className="text-lg font-bold italic text-[#D97706] sm:text-xl flex">
+                                    vì có Achan
+                                    <span className="ml-1">
+                                        <FavoriteIcon />
+                                    </span>
+                                </p>
+
+                                <div className="h-0.5 w-8 bg-[#F59E0B]" />
+                            </div>
+
+                            {/* Description */}
+                            <p className="mx-auto mt-7 max-w-xl text-justify text-base leading-7 text-slate-600 sm:text-lg sm:leading-8 lg:mx-0">
+                                Học tiếng Lào theo cách đơn giản, dễ hiểu và
+                                gần gũi. Từng bài học nhỏ giúp bạn tự tin hơn
+                                trong việc nghe, nói, đọc và sử dụng tiếng Lào
+                                mỗi ngày.
+                            </p>
+
+                            {/* CTA */}
+                            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
+                                <Link
+                                    to="/login"
+                                    className="group flex w-full items-center justify-center gap-2 rounded-md bg-[#0a479d] px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#0a479d]/25 transition hover:bg-[#08387d] hover:shadow-xl sm:w-auto"
+                                >
+                                    Bắt đầu học tiếng Lào
+
+                                    <ArrowRight
+                                        size={18}
+                                        className="transition-transform group-hover:translate-x-1"
+                                    />
+                                </Link>
+
+                                <Link
+                                    to="/register"
+                                    className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-slate-200 bg-white px-7 py-3.5 text-sm font-bold text-slate-700 transition hover:border-[#0a479d] hover:text-[#0a479d] sm:w-auto"
+                                >
+                                    Tạo tài khoản
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </main>
 
             {/* Footer */}
-            <footer className="border-t border-gray-100 px-5 py-6 sm:px-8">
-                <div className="mx-auto max-w-6xl text-center text-sm text-gray-400">
-                    © {new Date().getFullYear()} Stady. Học tập mỗi ngày.
+            <footer className="border-t border-slate-200 bg-white px-5 py-7 sm:px-8">
+                <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
+                    <p className="text-xs text-slate-400">
+                        © {new Date().getFullYear()} Achan
+                    </p>
                 </div>
             </footer>
-        </div>
-    );
-};
-
-const QuoteCard = ({ icon, quote }) => {
-    return (
-        <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6C5CE7]/10 text-[#6C5CE7]">
-                {icon}
-            </div>
-
-            <p className="text-sm font-medium leading-6 text-gray-600">
-                “{quote}”
-            </p>
         </div>
     );
 };
