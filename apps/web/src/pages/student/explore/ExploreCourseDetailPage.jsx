@@ -15,7 +15,6 @@ import {
     useParams,
 } from "react-router-dom";
 
-import appToast from "../../../utils/toast";
 import formatPrice from "../../../utils/formatPrice";
 import formatDuration from "../../../utils/formatDuration";
 import getUrl from "../../../utils/getUrl";
@@ -538,7 +537,7 @@ const ExploreCourseDetailPage = () => {
                                             className="text-[#6C5CE7]"
                                         />
 
-                                        {lessons.length} bài
+                                        {lessonCount} bài
                                     </span>
 
                                     {course.totalDuration >

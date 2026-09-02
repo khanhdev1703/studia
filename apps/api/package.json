@@ -8,8 +8,6 @@
       "dev": "nodemon src/server.js",
       "start": "pm2-runtime src/server.js --name stady-api",
       "generate": "prisma generate",
-      "prisma:migrate": "prisma migrate dev",
-      "prisma:studio": "prisma studio",
       "seed": "prisma db seed"
    },
    "prisma": {
