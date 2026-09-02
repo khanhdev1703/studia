@@ -1,8 +1,8 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const ExplorePage = () => {
     return (
-        <div className="relative min-h-full overflow-hidden bg-[#F4F3FF]">
+        <div className="relative min-h-full overflow-hidden">
             {/* Background Decorations */}
 
             {/* Large purple glow */}
@@ -133,84 +133,6 @@ const ExplorePage = () => {
                         Khám phá
                     </h1>
                 </header>
-
-                {/* Tabs */}
-                <div className="mt-3 flex justify-center">
-                    <div
-                        className="
-            flex
-            w-full
-            rounded-sm
-            border
-            border-white/80
-            bg-white/70
-            p-1
-            shadow-[0_8px_25px_rgba(60,55,110,0.06)]
-            backdrop-blur-sm
-
-            sm:w-auto
-        "
-                    >
-                        <NavLink
-                            to="/student/explore/courses"
-                            className={({ isActive }) =>
-                                `
-                    flex
-                    flex-1
-                    items-center
-                    justify-center
-                    rounded-sm
-                    px-4
-                    py-2.5
-                    text-[12px]
-                    font-semibold
-                    transition-all
-                    duration-200
-
-                    sm:flex-none
-                    sm:min-w-[120px]
-
-                    ${isActive
-                                    ? "bg-[#6C5CE7] text-white shadow-sm"
-                                    : "text-[#77758A] hover:bg-white hover:text-[#6C5CE7]"
-                                }
-                `
-                            }
-                        >
-                            Khóa học
-                        </NavLink>
-
-                        <NavLink
-                            to="/student/explore/teachers"
-                            className={({ isActive }) =>
-                                `
-                    flex
-                    flex-1
-                    items-center
-                    justify-center
-                    rounded-sm
-                    px-4
-                    py-2.5
-                    text-[12px]
-                    font-semibold
-                    transition-all
-                    duration-200
-
-                    sm:flex-none
-                    sm:min-w-[120px]
-
-                    ${isActive
-                                    ? "bg-[#6C5CE7] text-white shadow-sm"
-                                    : "text-[#77758A] hover:bg-white hover:text-[#6C5CE7]"
-                                }
-                `
-                            }
-                        >
-                            Giáo viên
-                        </NavLink>
-                    </div>
-                </div>
-
                 {/* Tab Content */}
                 <Outlet />
             </div>

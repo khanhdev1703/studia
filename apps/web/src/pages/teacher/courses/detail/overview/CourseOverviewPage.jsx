@@ -172,7 +172,7 @@ const CourseOverviewPage = () => {
             durationMonths < 0
         ) {
             appToast.error(
-                "Thời hạn sở hữu phải là số nguyên không âm."
+                "Thời hạn truy cập phải là số nguyên không âm."
             );
             return;
         }

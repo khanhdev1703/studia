@@ -204,7 +204,7 @@ const CourseBasicInfo = ({
                             <div>
                                 <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-600">
                                     <Clock size={14} className="text-[#0a479d]" />
-                                    Thời hạn sở hữu
+                                    Thời hạn truy cập
                                 </label>
                                 <div className="relative">
                                     <input

@@ -1,4 +1,4 @@
-// LessonDocuments/document.constants.js
+// utils/documentConstants.js
 
 export const MAX_DOCUMENT_SIZE =
   20 * 1024 * 1024;

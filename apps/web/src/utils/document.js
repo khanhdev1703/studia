@@ -1,4 +1,4 @@
-// LessonDocuments/document.utils.js
+// utils/document.js
 
 export const formatFileSize = (bytes) => {
   if (!bytes || bytes <= 0) {

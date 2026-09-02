@@ -1,19 +1,37 @@
 import { useEffect, useState } from "react";
+
 import { useParams } from "react-router-dom";
+
 import {
   BookOpen,
-  ChevronRight,
+  Download,
+  FileSpreadsheet,
   FileText,
+  FileType,
+  Presentation,
 } from "lucide-react";
 
+import {
+  formatFileSize,
+  getDocumentIconClass,
+  getDocumentName,
+  getDocumentType,
+} from "../../../utils/document";
+
 import Loading from "../../../components/common/Loading";
+
 import learningService from "../../../services/learningService";
+
 import appToast from "../../../utils/toast";
-import getUrl from "../../../utils/getUrl";
+
+import documentService from "../../../services/documentService";
 
 import LearningHeader from "./learning/LearningHeader.jsx";
+
 import LearningVideo from "./learning/LearningVideo.jsx";
+
 import LessonDrawer from "./learning/LessonDrawer.jsx";
+import DocumentCard from "./DocumentCard.jsx";
 
 const StudentCourseDetailPage = () => {
   const { courseId } = useParams();
@@ -21,11 +39,12 @@ const StudentCourseDetailPage = () => {
   const [course, setCourse] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [selectedLesson, setSelectedLesson] = useState(null);
-
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  console.log(lessons);
+  // ==========================================
+  // Get course for learning
+  // ==========================================
 
   useEffect(() => {
     if (!courseId) {
@@ -68,6 +87,7 @@ const StudentCourseDetailPage = () => {
          * Nếu có -> chọn bài đó.
          * Nếu không có -> chọn bài đầu tiên.
          */
+
         const nextLesson = lessonList.find(
           (lesson) =>
             lesson.id === data.continueLessonId
@@ -97,21 +117,31 @@ const StudentCourseDetailPage = () => {
     fetchCourse();
   }, [courseId]);
 
-  /*
-   * Student chọn một bài học.
-   */
+  // ==========================================
+  // Student select lesson
+  // ==========================================
+
   const handleSelectLesson = async (lesson) => {
-    if (!lesson || lesson.isLocked || lesson.id === selectedLesson.id) {
+    if (
+      !lesson ||
+      lesson.id === selectedLesson?.id
+    ) {
       return;
     }
 
     try {
-      learningService.accessLesson(lesson.id);
+      await learningService.accessLesson(
+        lesson.id
+      );
 
       setSelectedLesson(lesson);
+
       setDrawerOpen(false);
     } catch (error) {
-      console.error("Access lesson error:", error);
+      console.error(
+        "Access lesson error:",
+        error
+      );
 
       appToast.error(
         error?.response?.data?.message ||
@@ -121,22 +151,33 @@ const StudentCourseDetailPage = () => {
     }
   };
 
-  /*
-   * LearningVideo gọi hàm này khi bài học hoàn thành.
-   */
+  // ==========================================
+  // Complete lesson
+  // ==========================================
+
   const handleCompleteLesson = async (lessonId) => {
     if (!lessonId) {
       return;
     }
 
     try {
-      await learningService.completeLesson(lessonId);
+      const response =
+        await learningService.completeLesson(
+          lessonId
+        );
+
+      const progress = response?.data;
+
       setLessons((prevLessons) =>
         prevLessons.map((lesson) =>
           lesson.id === lessonId
             ? {
               ...lesson,
               isCompleted: true,
+              completedAt:
+                progress?.completedAt ??
+                lesson.completedAt ??
+                null,
             }
             : lesson
         )
@@ -147,6 +188,10 @@ const StudentCourseDetailPage = () => {
           ? {
             ...prevLesson,
             isCompleted: true,
+            completedAt:
+              progress?.completedAt ??
+              prevLesson.completedAt ??
+              null,
           }
           : prevLesson
       );
@@ -164,9 +209,47 @@ const StudentCourseDetailPage = () => {
     }
   };
 
+  // ==========================================
+  // Download document
+  // ==========================================
+
+  const handleDownloadDocument = async (
+    document
+  ) => {
+    if (!document?.id) {
+      return;
+    }
+
+    try {
+      await documentService.download(
+        document.id,
+        document.name
+      );
+    } catch (error) {
+      console.error(
+        "Download document error:",
+        error
+      );
+
+      appToast.error(
+        error?.response?.data?.message ||
+        error?.message ||
+        "Không thể tải tài liệu."
+      );
+    }
+  };
+
+  // ==========================================
+  // Go back
+  // ==========================================
+
   const handleGoBack = () => {
     window.history.back();
   };
+
+  // ==========================================
+  // Loading
+  // ==========================================
 
   if (loading) {
     return (
@@ -177,6 +260,10 @@ const StudentCourseDetailPage = () => {
       </div>
     );
   }
+
+  // ==========================================
+  // Course not found
+  // ==========================================
 
   if (!course) {
     return (
@@ -194,6 +281,10 @@ const StudentCourseDetailPage = () => {
       </div>
     );
   }
+
+  // ==========================================
+  // Render
+  // ==========================================
 
   return (
     <div className="min-h-full bg-[#F7F7FF]">
@@ -227,104 +318,88 @@ const StudentCourseDetailPage = () => {
             <section className="mt-4 overflow-hidden rounded-md border border-[#E4E1F2] bg-white shadow-sm">
               <div className="p-4 sm:p-5">
                 <div className="flex items-start gap-3">
-                  {/* Lesson information */}
                   <div className="min-w-0 flex-1">
                     {/* Lesson label */}
-                    <span className="flex align-center justify-between text-sm font-medium tracking-wide text-[#8A80D9]">
-                      BÀI {selectedLesson.order}
+
+                    <div className="flex items-center justify-between text-sm font-medium tracking-wide text-[#8A80D9]">
+                      <span>
+                        BÀI{" "}
+                        {
+                          selectedLesson.order
+                        }
+                      </span>
+
                       {selectedLesson.isCompleted && (
                         <span
                           className="
-                inline-flex
-                items-center
-                rounded-full
-                bg-green-50
-                px-2
-                py-0.5
-                text-[9px]
-                font-semibold
-                text-green-500
-                sm:text-[10px]
-            "
+                                                        inline-flex
+                                                        items-center
+                                                        rounded-full
+                                                        bg-green-50
+                                                        px-2
+                                                        py-0.5
+                                                        text-[9px]
+                                                        font-semibold
+                                                        text-green-500
+                                                        sm:text-[10px]
+                                                    "
                         >
                           Đã hoàn thành
                         </span>
                       )}
-                    </span>
+                    </div>
 
                     {/* Lesson title */}
+
                     <h1 className="mt-0.5 text-base font-semibold leading-6 text-[#252238] sm:text-lg">
-                      {selectedLesson.title}
+                      {
+                        selectedLesson.title
+                      }
                     </h1>
-
-                    {/* Completed tag */}
-
                   </div>
-
                 </div>
 
                 {/* Description */}
+
                 {selectedLesson.description && (
                   <div className="mt-4 border-t border-[#F0EEF7] pt-4">
                     <p className="whitespace-pre-line text-justify text-sm leading-6 text-[#656277]">
-                      {selectedLesson.description}
+                      {
+                        selectedLesson.description
+                      }
                     </p>
                   </div>
                 )}
               </div>
             </section>
 
-            {/* Document */}
+            {/* Documents */}
 
-            {selectedLesson.document && (
-              <section className="mt-3 rounded-md border border-[#E4E1F2] bg-white shadow-sm">
-                <a
-                  href={getUrl(
-                    selectedLesson.document
+            {selectedLesson.documents?.length > 0 && (
+              <section className="mt-4">
+                <div className="mb-2 px-1">
+                  <h2 className="text-sm font-semibold text-[#252238]">
+                    Tài liệu bài học
+                  </h2>
+
+                  <p className="mt-0.5 text-[11px] text-gray-400">
+                    {selectedLesson.documents.length} tài liệu
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  {selectedLesson.documents.map(
+                    (document) => (
+                      <DocumentCard
+                        key={document.id}
+                        document={document}
+                        onDownload={
+                          handleDownloadDocument
+                        }
+                      />
+                    )
                   )}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="
-                                        flex
-                                        items-center
-                                        gap-3
-                                        p-4
-                                        transition
-                                        hover:bg-[#FAF9FF]
-                                        sm:p-5
-                                    "
-                >
-                  <div
-                    className="
-                                            flex
-                                            h-9
-                                            w-9
-                                            shrink-0
-                                            items-center
-                                            justify-center
-                                            rounded-md
-                                            bg-[#F0EEFF]
-                                            text-[#6C5CE7]
-                                        "
-                  >
-                    <FileText size={17} />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[#252238]">
-                      Tài liệu bài học
-                    </p>
-
-                    <p className="mt-0.5 text-[11px] text-gray-400">
-                      Mở tài liệu
-                    </p>
-                  </div>
-
-                  <ChevronRight
-                    size={17}
-                    className="shrink-0 text-gray-300"
-                  />
-                </a>
+                </div>
               </section>
             )}
           </>
@@ -336,11 +411,65 @@ const StudentCourseDetailPage = () => {
       <LessonDrawer
         open={drawerOpen}
         lessons={lessons}
-        selectedLessonId={selectedLesson?.id ?? null}
-        onSelectLesson={handleSelectLesson}
-        onClose={() => setDrawerOpen(false)}
+        selectedLessonId={
+          selectedLesson?.id ?? null
+        }
+        onSelectLesson={
+          handleSelectLesson
+        }
+        onClose={() =>
+          setDrawerOpen(false)
+        }
       />
     </div>
+  );
+};
+
+// ==========================================
+// Document icon
+// ==========================================
+
+const DocumentIcon = ({
+  fileName = "",
+  mimeType = "",
+}) => {
+  const type = getDocumentType(
+    fileName,
+    mimeType
+  );
+
+  if (type === "POWERPOINT") {
+    return (
+      <Presentation
+        size={19}
+        strokeWidth={1.8}
+      />
+    );
+  }
+
+  if (type === "EXCEL") {
+    return (
+      <FileSpreadsheet
+        size={19}
+        strokeWidth={1.8}
+      />
+    );
+  }
+
+  if (type === "WORD") {
+    return (
+      <FileType
+        size={19}
+        strokeWidth={1.8}
+      />
+    );
+  }
+
+  return (
+    <FileText
+      size={19}
+      strokeWidth={1.8}
+    />
   );
 };
 

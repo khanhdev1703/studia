@@ -3,6 +3,10 @@
 import apiClient from "./apiClient";
 
 const enrollmentAPI = {
+    // ==========================================
+    // TEACHER
+    // ==========================================
+
     getByCourse: (courseId) =>
         apiClient.get(
             `/enrollments/course/${courseId}`
@@ -23,7 +27,7 @@ const enrollmentAPI = {
 
     remove: (enrollmentId) =>
         apiClient.delete(
-            `/enrollment/${enrollmentId}`
+            `/enrollments/${enrollmentId}`
         ),
 };
 

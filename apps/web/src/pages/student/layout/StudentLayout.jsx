@@ -11,13 +11,12 @@ import ScrollToTop from "../../../components/common/ScrollToTop";
 import StudentSidebar from "./StudentSidebar";
 import StudentBottomNav from "./StudentBottomNav";
 
-import StudentDashboard from "../dashboard/StudentDashboard";
+// import StudentDashboard from "../dashboard/StudentDashboard";
 import ProfilePage from "../profile/StudentProfile";
 
 import ExplorePage from "../explore/ExplorePage";
 import ExploreCoursePage from "../explore/ExploreCoursePage";
 import ExploreCourseDetailPage from "../explore/ExploreCourseDetailPage";
-import ExploreTeacherPage from "../explore/ExploreTeacherPage";
 
 import StudentCoursesPage from "../courses/StudentCoursesPage";
 import StudentCourseDetailPage from "../courses/StudentCourseDetailPage.jsx";
@@ -50,7 +49,7 @@ const StudentLayout = () => {
                     ========================================== */}
                     <Route
                         index
-                        element={<StudentDashboard />}
+                        element={<Navigate to="courses" replace />}
                     />
 
                     {/* ==========================================
@@ -101,13 +100,6 @@ const StudentLayout = () => {
                         <Route
                             path="courses"
                             element={<ExploreCoursePage />}
-                        />
-
-
-
-                        <Route
-                            path="teachers"
-                            element={<ExploreTeacherPage />}
                         />
                     </Route>
 

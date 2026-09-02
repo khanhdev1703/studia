@@ -7,13 +7,13 @@ import {
 import ProfileIcon from "../../../components/common/ProfileIcon";
 
 const teacherMenuItems = [
-    {
-        label: "Tổng quan",
-        path: "/teacher",
-        icon: LayoutDashboard,
-        end: true,
-        isShowMenu: true,
-    },
+    // {
+    //     label: "Tổng quan",
+    //     path: "/teacher",
+    //     icon: LayoutDashboard,
+    //     end: true,
+    //     isShowMenu: true,
+    // },
     {
         label: "Khóa học",
         path: "/teacher/courses",

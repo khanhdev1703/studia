@@ -21,7 +21,7 @@ const ExploreCoursePage = () => {
             setLoading(true);
 
             try {
-                const response = await courseService.searchCourse({
+                const response = await courseService.searchPublishedCourses({
                     search: search.trim(),
                 });
 
@@ -311,7 +311,7 @@ const ExploreCoursePage = () => {
                                                     <Clock3 size={12} />
 
                                                     {formatDuration(
-                                                        course.duration ?? 0
+                                                        course.totalDuration ?? 0
                                                     )}
                                                 </span>
                                             </div>
@@ -319,18 +319,27 @@ const ExploreCoursePage = () => {
                                             {/* Price */}
                                             <span
                                                 className={`
-                                                    rounded-full
-                                                    px-2.5
-                                                    py-1
-                                                    text-[11px]
-                                                    font-bold
-                                                    ${isFree
+        rounded-full
+        px-2.5
+        py-1
+        text-[11px]
+        font-bold
+        ${isFree
                                                         ? "bg-[#E9F9F0] text-[#24965A]"
                                                         : "bg-[#EEEAFE] text-[#6C5CE7]"
                                                     }
-                                                `}
+    `}
                                             >
-                                                {formatPrice(course.price)}
+                                                {isFree
+                                                    ? "Miễn phí"
+                                                    : formatPrice(course.price)}
+
+                                                {course.durationMonths > 0 && (
+                                                    <span className="font-medium">
+                                                        {" "}
+                                                        / {course.durationMonths} tháng
+                                                    </span>
+                                                )}
                                             </span>
                                         </div>
                                     </div>

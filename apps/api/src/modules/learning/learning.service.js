@@ -1,189 +1,702 @@
-import enrollmentRepository from "../enrollments/enrollment.repository.js";
-import courseRepository from "../courses/course.repository.js";
-import lessonRepository from "../lessons/lesson.repository.js"
+// src/modules/learning/learning.service.js
+
 import learningRepository from "./learning.repository.js";
 
 const learningService = {
-  async getCourseForLearning(studentId, courseId) {
-    // 1. Kiểm tra course
-    const course = await courseRepository.findById(courseId);
 
-    if (!course) {
-      throw new Error("Không tìm thấy khóa học.");
-    }
-
-    if (course.status !== "PUBLISHED") {
-      throw new Error("Khóa học chưa được phát hành.");
-    }
-
-    // 2. Kiểm tra student đã enroll course
-    const enrollment =
-      await enrollmentRepository.findByStudentAndCourse(
-        studentId,
-        courseId
+  async getMyCourses({ studentId }) {
+    const enrollments =
+      await learningRepository.findByStudentId(
+        studentId
       );
 
-    if (!enrollment) {
-      throw new Error(
-        "Bạn chưa đăng ký khóa học này."
-      );
-    }
+    const courses = await Promise.all(
+      enrollments.map(async (enrollment) => {
+        const totalLessons =
+          await learningRepository.countLessonsByCourseId(
+            enrollment.courseId
+          );
 
-    // 3. Lấy lessons của course
-    const lessons =
-      await lessonRepository.findByCourseId(
-        courseId
-      );
+        const completedLessonIds =
+          await learningRepository.findCompletedLessonIdsByStudentAndCourse(
+            {
+              studentId,
+              courseId: enrollment.courseId,
+            }
+          );
 
-    // 4. Lấy progress của student
-    const lessonIds = lessons.map(
-      (lesson) => lesson.id
+        const completedLessons =
+          completedLessonIds.length;
+
+        const progress =
+          totalLessons > 0
+            ? Math.round(
+              (completedLessons /
+                totalLessons) *
+              100
+            )
+            : 0;
+
+        return {
+          ...enrollment,
+          course: {
+            ...enrollment.course,
+            totalLessons,
+            completedLessons,
+            progress,
+          },
+        };
+      })
     );
 
-    const progresses =
-      lessonIds.length > 0
-        ? await learningRepository.findProgressByStudent(
-          studentId,
-          lessonIds
-        )
-        : [];
+    return courses;
+  },
+  // ==========================================
+  // Get course for learning
+  // ==========================================
 
-    // 5. Map progress theo lessonId
+  async getCourseForLearning({
+    courseId,
+    studentId,
+  }) {
+    // ------------------------------------------
+    // 1. Find course
+    // ------------------------------------------
+
+    const course =
+      await learningRepository.findCourseById(
+        courseId
+      );
+
+    if (!course) {
+      const error = new Error(
+        "Không tìm thấy khóa học."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 2. Check soft delete
+    // ------------------------------------------
+
+    if (course.isDelete) {
+      const error = new Error(
+        "Khóa học đã bị xóa."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 3. Check course status
+    // true  = đang mở
+    // false = tạm khóa
+    // ------------------------------------------
+
+    if (!course.status) {
+      const error = new Error(
+        "Khóa học hiện đang tạm khóa."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 4. Check enrollment
+    // ------------------------------------------
+
+    const enrollment =
+      await learningRepository.findEnrollment({
+        studentId,
+        courseId,
+      });
+
+    if (!enrollment) {
+      const error = new Error(
+        "Bạn chưa tham gia khóa học này."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 5. Check enrollment expiration
+    // ------------------------------------------
+
+    const now = new Date();
+
+    if (enrollment.expiresAt <= now) {
+      const error = new Error(
+        "Thời hạn học khóa học đã hết."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 6. Get lessons
+    // ------------------------------------------
+
+    const lessons =
+      await learningRepository.findLessonsByCourseId(
+        courseId
+      );
+
+    // ------------------------------------------
+    // 7. Get student's progress
+    // ------------------------------------------
+
+    const progressList =
+      await learningRepository.findLessonProgressByCourse({
+        studentId,
+        courseId,
+      });
+
+    // ------------------------------------------
+    // 8. Create progress map
+    // ------------------------------------------
+
     const progressMap = new Map(
-      progresses.map((progress) => [
+      progressList.map((progress) => [
         progress.lessonId,
         progress,
       ])
     );
 
-    // 6. Gắn progress vào lesson
-    const resultLessons = lessons.map((lesson) => {
-      const progress = progressMap.get(
-        lesson.id
+    // ------------------------------------------
+    // 9. Merge lesson + progress
+    // ------------------------------------------
+
+    const lessonsWithProgress =
+      lessons.map((lesson) => {
+        const progress =
+          progressMap.get(lesson.id);
+
+        return {
+          ...lesson,
+
+          // completedAt có giá trị
+          // => bài học đã hoàn thành
+          isCompleted:
+            progress?.completedAt !== null &&
+            progress?.completedAt !== undefined,
+
+          completedAt:
+            progress?.completedAt ?? null,
+
+          lastAccessedAt:
+            progress?.lastAccessedAt ?? null,
+        };
+      });
+
+    // ------------------------------------------
+    // 10. Find continue lesson
+    // ------------------------------------------
+
+    const continueLesson =
+      lessonsWithProgress.find(
+        (lesson) => !lesson.isCompleted
       );
-
-      return {
-        ...lesson,
-        isCompleted:
-          progress?.isCompleted ?? false,
-        lastAccessedAt:
-          progress?.lastAccessedAt ?? null,
-      };
-    });
-
-    // 7. Tìm lesson được access gần nhất
-    const lastAccessedLesson =
-      resultLessons
-        .filter(
-          (lesson) =>
-            lesson.lastAccessedAt !== null
-        )
-        .sort(
-          (a, b) =>
-            new Date(b.lastAccessedAt) -
-            new Date(a.lastAccessedAt)
-        )[0] || null;
-
-    // 8. Xác định lesson sẽ tiếp tục học
-    let continueLesson = null;
-
-    if (lastAccessedLesson) {
-      // Bài được access gần nhất chưa hoàn thành
-      if (!lastAccessedLesson.isCompleted) {
-        continueLesson = lastAccessedLesson;
-      } else {
-        // Bài gần nhất đã hoàn thành.
-        // Vì không học theo thứ tự nên chọn
-        // một bài chưa hoàn thành bất kỳ.
-        continueLesson =
-          resultLessons.find(
-            (lesson) =>
-              !lesson.isCompleted
-          ) || null;
-      }
-    } else {
-      // Student chưa từng access lesson nào.
-      // Chọn bài đầu tiên.
-      continueLesson =
-        resultLessons[0] || null;
-    }
 
     return {
       course,
-      lessons: resultLessons,
+      lessons: lessonsWithProgress,
+
       continueLessonId:
-        continueLesson?.id ?? null,
+        continueLesson?.id ??
+        lessonsWithProgress[0]?.id ??
+        null,
+
+      enrollment: {
+        enrolledAt:
+          enrollment.enrolledAt,
+
+        expiresAt:
+          enrollment.expiresAt,
+      },
     };
   },
 
-  async accessLesson(studentId, lessonId) {
-    console.log("acees lesong serive");
+  // ==========================================
+  // Access lesson
+  // ==========================================
 
-    // 1. Kiểm tra lesson có tồn tại không
+  async accessLesson({
+    lessonId,
+    studentId,
+  }) {
+    // ------------------------------------------
+    // 1. Find lesson
+    // ------------------------------------------
+
     const lesson =
-      await lessonRepository.findById(lessonId);
+      await learningRepository.findLessonById(
+        lessonId
+      );
 
     if (!lesson) {
-      throw new Error("Không tìm thấy bài học.");
+      const error = new Error(
+        "Không tìm thấy bài học."
+      );
+      error.statusCode = 404;
+      throw error;
     }
 
-    // 2. Kiểm tra student đã đăng ký khóa học chưa
+    const course = lesson.course;
+
+    // ------------------------------------------
+    // 2. Check course
+    // ------------------------------------------
+
+    if (!course) {
+      const error = new Error(
+        "Không tìm thấy khóa học của bài học."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (course.isDelete) {
+      const error = new Error(
+        "Khóa học đã bị xóa."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (!course.status) {
+      const error = new Error(
+        "Khóa học hiện đang tạm khóa."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 3. Check enrollment
+    // ------------------------------------------
+
     const enrollment =
-      await enrollmentRepository.findByStudentAndCourse(
+      await learningRepository.findEnrollment({
         studentId,
-        lesson.courseId
-      );
-
-    if (
-      !enrollment ||
-      enrollment.status !== "APPROVED"
-    ) {
-      throw new Error(
-        "Bạn chưa được phép học khóa học này."
-      );
-    }
-
-    // 3. Cập nhật thời điểm truy cập gần nhất
-    return learningRepository.updateLessonProgress(
-      studentId,
-      lessonId,
-      {
-        lastAccessedAt: new Date(),
-      }
-    );
-  },
-
-  async completeLesson(studentId, lessonId) {
-    // 1. Kiểm tra lesson có tồn tại không
-    const lesson =
-      await lessonRepository.findById(lessonId);
-
-    if (!lesson) {
-      throw new Error("Không tìm thấy bài học.");
-    }
-
-    // 2. Kiểm tra student đã đăng ký khóa học chưa
-    const enrollment =
-      await enrollmentRepository.findByStudentAndCourse(
-        studentId,
-        lesson.courseId
-      );
+        courseId: course.id,
+      });
 
     if (!enrollment) {
-      throw new Error(
-        "Bạn chưa đăng ký khóa học này."
+      const error = new Error(
+        "Bạn chưa tham gia khóa học này."
       );
+      error.statusCode = 403;
+      throw error;
     }
 
-    // 3. Đánh dấu lesson đã hoàn thành
-    return learningRepository.updateLessonProgress(
+    // ------------------------------------------
+    // 4. Check expiration
+    // ------------------------------------------
+
+    const now = new Date();
+
+    if (enrollment.expiresAt <= now) {
+      const error = new Error(
+        "Thời hạn học khóa học đã hết."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 5. Find existing progress
+    // ------------------------------------------
+
+    const existingProgress =
+      await learningRepository.findLessonProgress({
+        studentId,
+        lessonId,
+      });
+
+    // ------------------------------------------
+    // 6. Progress already exists
+    // ------------------------------------------
+
+    if (existingProgress) {
+      return learningRepository.updateLessonProgress({
+        studentId,
+        lessonId,
+        data: {
+          lastAccessedAt: now,
+        },
+      });
+    }
+
+    // ------------------------------------------
+    // 7. Create progress
+    // ------------------------------------------
+
+    return learningRepository.createLessonProgress({
       studentId,
       lessonId,
-      {
-        isCompleted: true,
-      }
+      lastAccessedAt: now,
+    });
+  },
+
+  // ==========================================
+  // Complete lesson
+  // ==========================================
+
+  async completeLesson({
+    lessonId,
+    studentId,
+  }) {
+    // ------------------------------------------
+    // 1. Find lesson
+    // ------------------------------------------
+
+    const lesson =
+      await learningRepository.findLessonById(
+        lessonId
+      );
+
+    if (!lesson) {
+      const error = new Error(
+        "Không tìm thấy bài học."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const course = lesson.course;
+
+    // ------------------------------------------
+    // 2. Check course
+    // ------------------------------------------
+
+    if (!course) {
+      const error = new Error(
+        "Không tìm thấy khóa học của bài học."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (course.isDelete) {
+      const error = new Error(
+        "Khóa học đã bị xóa."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (!course.status) {
+      const error = new Error(
+        "Khóa học hiện đang tạm khóa."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 3. Check enrollment
+    // ------------------------------------------
+
+    const enrollment =
+      await learningRepository.findEnrollment({
+        studentId,
+        courseId: course.id,
+      });
+
+    if (!enrollment) {
+      const error = new Error(
+        "Bạn chưa tham gia khóa học này."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 4. Check expiration
+    // ------------------------------------------
+
+    const now = new Date();
+
+    if (enrollment.expiresAt <= now) {
+      const error = new Error(
+        "Thời hạn học khóa học đã hết."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 5. Find existing progress
+    // ------------------------------------------
+
+    const existingProgress =
+      await learningRepository.findLessonProgress({
+        studentId,
+        lessonId,
+      });
+
+    // ------------------------------------------
+    // 6. Progress doesn't exist
+    // ------------------------------------------
+
+    if (!existingProgress) {
+      return learningRepository.createLessonProgress({
+        studentId,
+        lessonId,
+        completedAt: now,
+        lastAccessedAt: now,
+      });
+    }
+
+    // ------------------------------------------
+    // 7. Already completed
+    // ------------------------------------------
+
+    if (existingProgress.completedAt) {
+      return existingProgress;
+    }
+
+    // ------------------------------------------
+    // 8. Mark as completed
+    // ------------------------------------------
+
+    return learningRepository.updateLessonProgress({
+      studentId,
+      lessonId,
+      data: {
+        completedAt: now,
+        lastAccessedAt: now,
+      },
+    });
+  },
+
+  // ==========================================
+  // Get course progress
+  // ==========================================
+
+  async getCourseProgress({
+    courseId,
+    studentId,
+  }) {
+    // ------------------------------------------
+    // 1. Find course
+    // ------------------------------------------
+
+    const course =
+      await learningRepository.findCourseById(
+        courseId
+      );
+
+    if (!course) {
+      const error = new Error(
+        "Không tìm thấy khóa học."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (course.isDelete) {
+      const error = new Error(
+        "Khóa học đã bị xóa."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 2. Check enrollment
+    // ------------------------------------------
+
+    const enrollment =
+      await learningRepository.findEnrollment({
+        studentId,
+        courseId,
+      });
+
+    if (!enrollment) {
+      const error = new Error(
+        "Bạn chưa tham gia khóa học này."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 3. Check expiration
+    // ------------------------------------------
+
+    const now = new Date();
+
+    if (enrollment.expiresAt <= now) {
+      const error = new Error(
+        "Thời hạn học khóa học đã hết."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 4. Get lessons
+    // ------------------------------------------
+
+    const lessons =
+      await learningRepository.findLessonsByCourseId(
+        courseId
+      );
+
+    // ------------------------------------------
+    // 5. Get progress
+    // ------------------------------------------
+
+    const progressList =
+      await learningRepository.findLessonProgressByCourse({
+        studentId,
+        courseId,
+      });
+
+    // ------------------------------------------
+    // 6. Calculate progress
+    // ------------------------------------------
+
+    const completedLessonIds = new Set(
+      progressList
+        .filter(
+          (progress) =>
+            progress.completedAt !== null
+        )
+        .map(
+          (progress) =>
+            progress.lessonId
+        )
     );
-  }
+
+    const totalLessons = lessons.length;
+
+    const completedLessons =
+      completedLessonIds.size;
+
+    const progress =
+      totalLessons > 0
+        ? Math.round(
+          (completedLessons /
+            totalLessons) *
+          100
+        )
+        : 0;
+
+    return {
+      courseId,
+      totalLessons,
+      completedLessons,
+      progress,
+    };
+  },
+
+  // ==========================================
+  // Get lesson progress
+  // ==========================================
+
+  async getLessonProgress({
+    lessonId,
+    studentId,
+  }) {
+    // ------------------------------------------
+    // 1. Find lesson
+    // ------------------------------------------
+
+    const lesson =
+      await learningRepository.findLessonById(
+        lessonId
+      );
+
+    if (!lesson) {
+      const error = new Error(
+        "Không tìm thấy bài học."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const course = lesson.course;
+
+    // ------------------------------------------
+    // 2. Check course
+    // ------------------------------------------
+
+    if (!course) {
+      const error = new Error(
+        "Không tìm thấy khóa học của bài học."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (course.isDelete) {
+      const error = new Error(
+        "Khóa học đã bị xóa."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 3. Check enrollment
+    // ------------------------------------------
+
+    const enrollment =
+      await learningRepository.findEnrollment({
+        studentId,
+        courseId: course.id,
+      });
+
+    if (!enrollment) {
+      const error = new Error(
+        "Bạn chưa tham gia khóa học này."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 4. Check expiration
+    // ------------------------------------------
+
+    const now = new Date();
+
+    if (enrollment.expiresAt <= now) {
+      const error = new Error(
+        "Thời hạn học khóa học đã hết."
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // ------------------------------------------
+    // 5. Get progress
+    // ------------------------------------------
+
+    const progress =
+      await learningRepository.findLessonProgress({
+        studentId,
+        lessonId,
+      });
+
+    return {
+      lessonId,
+
+      isCompleted:
+        progress?.completedAt !== null &&
+        progress?.completedAt !== undefined,
+
+      completedAt:
+        progress?.completedAt ?? null,
+
+      lastAccessedAt:
+        progress?.lastAccessedAt ?? null,
+    };
+  },
 };
 
 export default learningService;

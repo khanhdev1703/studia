@@ -9,7 +9,9 @@ const enrollmentService = {
 
     async getByCourse(courseId) {
         const response =
-            await enrollmentAPI.getByCourse(courseId);
+            await enrollmentAPI.getByCourse(
+                courseId
+            );
 
         return response.data;
     },
@@ -26,14 +28,18 @@ const enrollmentService = {
 
     async getById(enrollmentId) {
         const response =
-            await enrollmentAPI.getById(enrollmentId);
+            await enrollmentAPI.getById(
+                enrollmentId
+            );
 
         return response.data;
     },
 
     async remove(enrollmentId) {
         const response =
-            await enrollmentAPI.remove(enrollmentId);
+            await enrollmentAPI.remove(
+                enrollmentId
+            );
 
         return response.data;
     },

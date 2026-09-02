@@ -5,6 +5,7 @@ import courseRepository from "../courses/course.repository.js";
 import userRepository from "../users/user.repository.js";
 
 const enrollmentService = {
+
     // ==========================================
     // Get students enrolled in a course
     // ==========================================

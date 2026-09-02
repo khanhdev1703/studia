@@ -59,24 +59,6 @@ const enrollmentRepository = {
     },
 
     // ==========================================
-    // Get all enrollments of a student
-    // ==========================================
-
-    async findByStudentId(studentId) {
-        return prisma.enrollment.findMany({
-            where: {
-                studentId,
-            },
-            include: {
-                course: true,
-            },
-            orderBy: {
-                enrolledAt: "desc",
-            },
-        });
-    },
-
-    // ==========================================
     // Create enrollment
     // ==========================================
 

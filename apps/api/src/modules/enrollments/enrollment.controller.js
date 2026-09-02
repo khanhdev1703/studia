@@ -3,11 +3,13 @@
 import enrollmentService from "./enrollment.service.js";
 
 const enrollmentController = {
-    // ==========================================
-    // Get enrollments by course
-    // GET /course/:courseId/enrollments
-    // ==========================================
 
+
+    // ==========================================
+    // TEACHER
+    // Get enrollments by course
+    // GET /enrollment/course/:courseId
+    // ==========================================
     async getEnrollmentsByCourse(req, res, next) {
         try {
             const { courseId } = req.params;
@@ -31,10 +33,10 @@ const enrollmentController = {
     },
 
     // ==========================================
+    // TEACHER
     // Enroll student into course
-    // POST /course/:courseId/enrollments
+    // POST /enrollment/course/:courseId
     // ==========================================
-
     async enrollStudent(req, res, next) {
         try {
             const { courseId } = req.params;
@@ -60,10 +62,10 @@ const enrollmentController = {
     },
 
     // ==========================================
+    // TEACHER
     // Get enrollment by ID
     // GET /enrollment/:enrollmentId
     // ==========================================
-
     async getEnrollmentById(req, res, next) {
         try {
             const { enrollmentId } = req.params;
@@ -87,10 +89,10 @@ const enrollmentController = {
     },
 
     // ==========================================
+    // TEACHER
     // Remove student from course
     // DELETE /enrollment/:enrollmentId
     // ==========================================
-
     async removeEnrollment(req, res, next) {
         try {
             const { enrollmentId } = req.params;

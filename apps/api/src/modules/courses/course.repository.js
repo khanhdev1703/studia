@@ -48,13 +48,7 @@ const courseRepository = {
                         name: true,
                     },
                 },
-
-                _count: {
-                    select: {
-                        lessons: true,
-                        enrollments: true,
-                    },
-                },
+                lessons: true,
             },
         });
     },
@@ -108,11 +102,7 @@ const courseRepository = {
      */
 
     // Tìm kiếm khóa học đang mở
-    findPublishedCourses({
-        search,
-        skip,
-        take,
-    } = {}) {
+    async findPublishedCourses({ search } = {}) {
         const where = {
             status: true,
             isDelete: false,
@@ -127,8 +117,22 @@ const courseRepository = {
 
         return prisma.course.findMany({
             where,
-            skip,
-            take,
+
+            include: {
+                teacher: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+
+                lessons: {
+                    orderBy: {
+                        order: "asc",
+                    },
+                },
+            },
+
             orderBy: {
                 createdAt: "desc",
             },

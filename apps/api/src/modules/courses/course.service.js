@@ -152,48 +152,29 @@ const courseService = {
      * ==========================================
      */
 
-    async searchPublishedCourses({
-        search,
-        page = 1,
-        limit = 12,
-    } = {}) {
-        const currentPage = Math.max(
-            Number(page) || 1,
-            1
-        );
-
-        const pageLimit = Math.min(
-            Math.max(Number(limit) || 12, 1),
-            100
-        );
-
-        const skip =
-            (currentPage - 1) * pageLimit;
-
-        const [
-            courses,
-            total,
-        ] = await Promise.all([
-            courseRepository.findPublishedCourses({
+    async searchPublishedCourses({ search } = {}) {
+        const courses =
+            await courseRepository.findPublishedCourses({
                 search,
-                skip,
-                take: pageLimit,
-            }),
+            });
 
-            courseRepository.countPublishedCourses({
-                search,
-            }),
-        ]);
+        return courses.map((course) => {
+            const lessons = course.lessons || [];
 
-        return {
-            courses: courses.map((course) => ({
+            const totalDuration = lessons.reduce(
+                (total, lesson) =>
+                    total + (lesson.duration || 0),
+                0
+            );
+
+            return {
                 id: course.id,
                 title: course.title,
                 description: course.description,
                 thumbnail: course.thumbnail,
                 price: course.price,
-                durationMonths:
-                    course.durationMonths,
+                durationMonths: course.durationMonths,
+                status: course.status,
 
                 teacher: course.teacher
                     ? {
@@ -202,19 +183,10 @@ const courseService = {
                     }
                     : null,
 
-                lessonCount:
-                    course._count?.lessons || 0,
-            })),
-
-            pagination: {
-                page: currentPage,
-                limit: pageLimit,
-                total,
-                totalPages: Math.ceil(
-                    total / pageLimit
-                ),
-            },
-        };
+                lessonCount: lessons.length,
+                totalDuration,
+            };
+        });
     },
 
     /*
@@ -237,13 +209,7 @@ const courseService = {
         }
 
         return {
-            id: course.id,
-            title: course.title,
-            description: course.description,
-            thumbnail: course.thumbnail,
-            price: course.price,
-            durationMonths:
-                course.durationMonths,
+            ...course,
 
             teacher: course.teacher
                 ? {
@@ -257,9 +223,6 @@ const courseService = {
 
             enrollmentCount:
                 course._count?.enrollments || 0,
-
-            createdAt: course.createdAt,
-            updatedAt: course.updatedAt,
         };
     },
 

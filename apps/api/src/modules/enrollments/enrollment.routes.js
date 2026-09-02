@@ -11,6 +11,12 @@ const router = Router();
 
 router.use(auth);
 
+
+
+// ==========================================
+// TEACHER
+// ==========================================
+
 // GET /enrollment/course/:courseId
 router.get(
     "/course/:courseId",

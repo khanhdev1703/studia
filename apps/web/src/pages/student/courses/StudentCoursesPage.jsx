@@ -9,11 +9,10 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import enrollmentService from "../../../services/enrollmentService";
-
 import appToast from "../../../utils/toast";
 
 import StudentCourseCard from "./StudentCourseCard";
+import learningService from "../../../services/learningService";
 
 const StudentCoursesPage = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -25,11 +24,7 @@ const StudentCoursesPage = () => {
         setLoading(true);
 
         const response =
-          await enrollmentService.getMyEnrollments();
-
-        console.log(response);
-
-
+          await learningService.getMyCourses();
         setEnrollments(response?.data || []);
       } catch (error) {
         console.error(
@@ -353,6 +348,7 @@ const StudentCoursesPage = () => {
         {enrollments.length === 0 && (
           <div
             className="
+            m-3
                             relative
                             overflow-hidden
                             rounded-lg
@@ -425,7 +421,7 @@ const StudentCoursesPage = () => {
                                 text-[#252238]
                             "
             >
-              Bạn chưa có khóa học nào
+              Bạn chưa đăng ký khóa học nào
             </h2>
 
             <p
@@ -441,8 +437,7 @@ const StudentCoursesPage = () => {
                                 sm:text-sm
                             "
             >
-              Hãy khám phá và đăng ký một
-              khóa học để bắt đầu học tập.
+              Hãy khám phá để bắt đầu học tập.
             </p>
           </div>
         )}
