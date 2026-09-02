@@ -27,6 +27,7 @@ jobs:
               cd /home/fire-linux/studia/apps/api
               npm ci
               npm run prisma:generate
+              npm run prisma:push
 
          - name: Restart Backend
            run: |
