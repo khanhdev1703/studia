@@ -1,7 +1,28 @@
-import { prisma } from '../../config/database.js';
+import { prisma } from "../../config/database.js";
 
 const userRepository = {
-    async findById(id) {
+    // Tìm user đang hoạt động theo ID
+    findById(id) {
+        return prisma.user.findFirst({
+            where: {
+                id,
+                isDelete: false,
+            },
+        });
+    },
+
+    // Tìm user đang hoạt động theo email
+    findByEmail(email) {
+        return prisma.user.findFirst({
+            where: {
+                email,
+                isDelete: false,
+            },
+        });
+    },
+
+    // Tìm user kể cả đã soft delete
+    findByIdIncludeDeleted(id) {
         return prisma.user.findUnique({
             where: {
                 id,
@@ -9,7 +30,8 @@ const userRepository = {
         });
     },
 
-    async findByEmail(email) {
+    // Tìm email kể cả đã soft delete
+    findByEmailIncludeDeleted(email) {
         return prisma.user.findUnique({
             where: {
                 email,
@@ -17,21 +39,15 @@ const userRepository = {
         });
     },
 
-    async create(data) {
+    // Tạo user
+    create(data) {
         return prisma.user.create({
             data,
         });
     },
 
-    async findAll() {
-        return prisma.user.findMany({
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
-    },
-
-    async updateProfile(id, data) {
+    // Cập nhật user
+    update(id, data) {
         return prisma.user.update({
             where: {
                 id,
@@ -40,63 +56,62 @@ const userRepository = {
         });
     },
 
-    async updatePassword(id, password) {
+    // Soft delete
+    softDelete(id) {
         return prisma.user.update({
             where: {
                 id,
             },
             data: {
-                password,
+                isDelete: true,
             },
         });
     },
 
-    async searchTeachers({ search } = {}) {
-        const keyword = search?.trim() || "";
-
-        const where = {
-            role: "TEACHER",
-        };
-
-        if (keyword) {
-            where.name = {
-                contains: keyword,
-                mode: "insensitive",
-            };
-        }
-
-        return prisma.user.findMany({
-            where,
-            select: {
-                id: true,
-                name: true,
-                createdAt: true,
-
-                courses: {
-                    where: {
-                        status: "PUBLISHED",
-                        deletedAt: null,
-                    },
-                    select: {
-                        id: true,
-
-                        lessons: {
-                            where: {
-                                deletedAt: null,
-                            },
-                            select: {
-                                id: true,
-                            },
-                        },
-                    },
-                },
+    // Khôi phục user
+    restore(id) {
+        return prisma.user.update({
+            where: {
+                id,
             },
-            orderBy: {
-                name: "asc",
+            data: {
+                isDelete: false,
+            },
+        });
+    },
+
+    // Lấy danh sách user đang hoạt động
+    findMany({ where = {}, skip, take, orderBy = { createdAt: "desc", }, } = {}) {
+        return prisma.user.findMany({
+            where: {
+                ...where,
+                isDelete: false,
+            },
+            skip,
+            take,
+            orderBy,
+        });
+    },
+
+    // Đếm user đang hoạt động
+    count(where = {}) {
+        return prisma.user.count({
+            where: {
+                ...where,
+                isDelete: false,
+            },
+        });
+    },
+
+    // Tìm user đang hoạt động theo code
+    findByCode(studentCode) {
+        return prisma.user.findFirst({
+            where: {
+                studentCode,
+                isDelete: false,
             },
         });
     }
-
 };
 
 export default userRepository;

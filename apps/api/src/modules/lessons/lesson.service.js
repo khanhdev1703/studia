@@ -1,7 +1,7 @@
 // src/modules/lesson/lesson.service.js
 
 import lessonRepository from "./lesson.repository.js";
-import courseRepository from "../course/course.repository.js";
+import courseRepository from "../courses/course.repository.js";
 
 import storage from "../../utils/storage/index.js";
 import videoUtils from "../../utils/video.js";
@@ -15,8 +15,8 @@ const lessonService = {
         teacherId,
         title,
         description,
-        document,
         video,
+        isFree,
     }) {
         // ==========================================
         // Check course
@@ -28,6 +28,19 @@ const lessonService = {
         if (!course) {
             const error = new Error(
                 "Không tìm thấy khóa học."
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // ==========================================
+        // Check course deleted
+        // ==========================================
+
+        if (course.isDelete) {
+            const error = new Error(
+                "Khóa học đã bị xóa."
             );
 
             error.statusCode = 404;
@@ -51,7 +64,9 @@ const lessonService = {
         // Validate title
         // ==========================================
 
-        if (!title?.trim()) {
+        const trimmedTitle = title?.trim();
+
+        if (!trimmedTitle) {
             const error = new Error(
                 "Vui lòng nhập tên bài học."
             );
@@ -74,15 +89,40 @@ const lessonService = {
         }
 
         // ==========================================
+        // Validate isFree
+        // ==========================================
+
+        let parsedIsFree = false;
+
+        if (isFree !== undefined) {
+            if (typeof isFree === "boolean") {
+                parsedIsFree = isFree;
+            } else if (
+                isFree === "true" ||
+                isFree === "false"
+            ) {
+                parsedIsFree = isFree === "true";
+            } else {
+                const error = new Error(
+                    "isFree phải là kiểu boolean."
+                );
+
+                error.statusCode = 400;
+                throw error;
+            }
+        }
+
+        // ==========================================
         // Get current lessons
         // ==========================================
 
-        const lessons =
-            await lessonRepository.findByCourseId(
+        const result =
+            await lessonRepository.findMaxOrderByCourse(
                 courseId
             );
 
-        const order = lessons.length + 1;
+        const order =
+            (result._max.order ?? 0) + 1;
 
         // ==========================================
         // Upload video
@@ -119,13 +159,10 @@ const lessonService = {
                 await lessonRepository.create({
                     courseId,
 
-                    title: title.trim(),
+                    title: trimmedTitle,
 
                     description:
                         description?.trim() || null,
-
-                    document:
-                        document?.trim() || null,
 
                     video:
                         uploadedVideo.url,
@@ -134,9 +171,7 @@ const lessonService = {
 
                     order,
 
-                    isLocked: false,
-
-                    deletedAt: null,
+                    isFree: parsedIsFree,
                 });
 
             return lesson;
@@ -189,6 +224,19 @@ const lessonService = {
         }
 
         // ==========================================
+        // Check course deleted
+        // ==========================================
+
+        if (course.isDelete) {
+            const error = new Error(
+                "Khóa học đã bị xóa."
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // ==========================================
         // Teacher
         // ==========================================
 
@@ -208,32 +256,34 @@ const lessonService = {
         // ==========================================
 
         if (role === "STUDENT") {
-            // TODO:
-            // Sau này kiểm tra Enrollment.
-            //
-            // Student chỉ được xem lesson
-            // khi enrollment.status === "APPROVED".
-
-            // Tạm thời giữ nguyên logic hiện tại.
+            /*
+             * TODO:
+             * Kiểm tra Enrollment.
+             *
+             * Student chỉ được xem lesson
+             * khi enrollment.status === "APPROVED".
+             */
         }
 
         // ==========================================
         // Admin
         // ==========================================
 
-        // ADMIN được phép xem.
+        /*
+         * ADMIN được phép xem.
+         */
 
         // ==========================================
         // Get lessons
         // ==========================================
 
-        return lessonRepository.findByCourseId(
+        return lessonRepository.findByCourse(
             courseId
         );
     },
 
     // ==========================================
-    // Get lesson by id
+    // Get lesson by ID
     // ==========================================
     async getLessonById({
         lessonId,
@@ -277,6 +327,19 @@ const lessonService = {
         }
 
         // ==========================================
+        // Check course deleted
+        // ==========================================
+
+        if (course.isDelete) {
+            const error = new Error(
+                "Khóa học đã bị xóa."
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // ==========================================
         // Teacher
         // ==========================================
 
@@ -296,8 +359,10 @@ const lessonService = {
         // ==========================================
 
         if (role === "STUDENT") {
-            // TODO:
-            // Kiểm tra Enrollment.
+            /*
+             * TODO:
+             * Kiểm tra Enrollment.
+             */
         }
 
         // ==========================================
@@ -315,8 +380,8 @@ const lessonService = {
         teacherId,
         title,
         description,
-        document,
         video,
+        isFree,
     }) {
         // ==========================================
         // Find lesson
@@ -337,19 +402,6 @@ const lessonService = {
         }
 
         // ==========================================
-        // Cannot update deleted lesson
-        // ==========================================
-
-        if (lesson.deletedAt) {
-            const error = new Error(
-                "Bài học đã bị xóa. Vui lòng khôi phục trước khi cập nhật."
-            );
-
-            error.statusCode = 400;
-            throw error;
-        }
-
-        // ==========================================
         // Find course
         // ==========================================
 
@@ -361,6 +413,19 @@ const lessonService = {
         if (!course) {
             const error = new Error(
                 "Không tìm thấy khóa học."
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // ==========================================
+        // Check course deleted
+        // ==========================================
+
+        if (course.isDelete) {
+            const error = new Error(
+                "Khóa học đã bị xóa."
             );
 
             error.statusCode = 404;
@@ -384,28 +449,55 @@ const lessonService = {
         // Validate title
         // ==========================================
 
-        if (!title?.trim()) {
-            const error = new Error(
-                "Vui lòng nhập tên bài học."
-            );
+        if (title !== undefined) {
+            if (!title?.trim()) {
+                const error = new Error(
+                    "Vui lòng nhập tên bài học."
+                );
 
-            error.statusCode = 400;
-            throw error;
+                error.statusCode = 400;
+                throw error;
+            }
         }
 
         // ==========================================
         // Prepare update data
         // ==========================================
 
-        const updateData = {
-            title: title.trim(),
+        const updateData = {};
 
-            description:
-                description?.trim() || null,
+        if (title !== undefined) {
+            updateData.title =
+                title.trim();
+        }
 
-            document:
-                document?.trim() || null,
-        };
+        if (description !== undefined) {
+            updateData.description =
+                description?.trim() || null;
+        }
+
+        // ==========================================
+        // Validate isFree
+        // ==========================================
+
+        if (isFree !== undefined) {
+            if (typeof isFree === "boolean") {
+                updateData.isFree = isFree;
+            } else if (
+                isFree === "true" ||
+                isFree === "false"
+            ) {
+                updateData.isFree =
+                    isFree === "true";
+            } else {
+                const error = new Error(
+                    "isFree phải là kiểu boolean."
+                );
+
+                error.statusCode = 400;
+                throw error;
+            }
+        }
 
         // ==========================================
         // Update video
@@ -441,11 +533,24 @@ const lessonService = {
                     duration;
 
                 // ==================================
+                // Check nothing to update
+                // ==================================
+
+                if (
+                    Object.keys(updateData)
+                        .length === 0
+                ) {
+                    throw new Error(
+                        "Không có thông tin cần cập nhật."
+                    );
+                }
+
+                // ==================================
                 // Update database
                 // ==================================
 
                 const updatedLesson =
-                    await lessonRepository.updateById(
+                    await lessonRepository.update(
                         lessonId,
                         updateData
                     );
@@ -495,17 +600,33 @@ const lessonService = {
         }
 
         // ==========================================
-        // Update without video
+        // Check nothing to update
         // ==========================================
 
-        return lessonRepository.updateById(
+        if (
+            Object.keys(updateData)
+                .length === 0
+        ) {
+            const error = new Error(
+                "Không có thông tin cần cập nhật."
+            );
+
+            error.statusCode = 400;
+            throw error;
+        }
+
+        // ==========================================
+        // Update database
+        // ==========================================
+
+        return lessonRepository.update(
             lessonId,
             updateData
         );
     },
 
     // ==========================================
-    // Soft delete lesson
+    // Delete lesson
     // ==========================================
     async deleteLesson({
         lessonId,
@@ -526,19 +647,6 @@ const lessonService = {
             );
 
             error.statusCode = 404;
-            throw error;
-        }
-
-        // ==========================================
-        // Already deleted
-        // ==========================================
-
-        if (lesson.deletedAt) {
-            const error = new Error(
-                "Bài học đã được xóa."
-            );
-
-            error.statusCode = 400;
             throw error;
         }
 
@@ -574,16 +682,29 @@ const lessonService = {
         }
 
         // ==========================================
+        // Check course deleted
+        // ==========================================
+
+        if (course.isDelete) {
+            const error = new Error(
+                "Khóa học đã bị xóa."
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // ==========================================
         // Save current order
         // ==========================================
 
         const deletedOrder = lesson.order;
 
         // ==========================================
-        // Soft delete
+        // Delete lesson
         // ==========================================
 
-        await lessonRepository.softDelete(
+        await lessonRepository.delete(
             lessonId
         );
 
@@ -597,197 +718,23 @@ const lessonService = {
         );
 
         // ==========================================
-        // Do NOT delete video
-        //
-        // Because lesson can be restored later.
+        // Remove video
         // ==========================================
+
+        if (lesson.video) {
+            try {
+                await storage.remove(
+                    lesson.video
+                );
+            } catch (removeError) {
+                console.error(
+                    "Không thể xóa video của bài học:",
+                    removeError
+                );
+            }
+        }
 
         return true;
-    },
-
-    // ==========================================
-    // Restore lesson
-    // ==========================================
-    async restoreLesson({
-        lessonId,
-        teacherId,
-    }) {
-        // ==========================================
-        // Find lesson including deleted lesson
-        // ==========================================
-
-        const lesson =
-            await lessonRepository.findById(
-                lessonId
-            );
-
-        if (!lesson) {
-            const error = new Error(
-                "Không tìm thấy bài học."
-            );
-
-            error.statusCode = 404;
-            throw error;
-        }
-
-        // ==========================================
-        // Check deleted state
-        // ==========================================
-
-        if (!lesson.deletedAt) {
-            const error = new Error(
-                "Bài học này chưa bị xóa."
-            );
-
-            error.statusCode = 400;
-            throw error;
-        }
-
-        // ==========================================
-        // Find course
-        // ==========================================
-
-        const course =
-            await courseRepository.findById(
-                lesson.courseId
-            );
-
-        if (!course) {
-            const error = new Error(
-                "Không tìm thấy khóa học."
-            );
-
-            error.statusCode = 404;
-            throw error;
-        }
-
-        // ==========================================
-        // Check permission
-        // ==========================================
-
-        if (course.teacherId !== teacherId) {
-            const error = new Error(
-                "Bạn không có quyền khôi phục bài học này."
-            );
-
-            error.statusCode = 403;
-            throw error;
-        }
-
-        // ==========================================
-        // Get active lessons
-        // ==========================================
-
-        const lessons =
-            await lessonRepository.findByCourseId(
-                lesson.courseId
-            );
-
-        // ==========================================
-        // Put restored lesson at the end
-        // ==========================================
-
-        const order = lessons.length + 1;
-
-        return lessonRepository.restoreById(
-            lessonId,
-            order
-        );
-    },
-
-    // ==========================================
-    // Lock / Unlock lesson
-    // ==========================================
-    async toggleLock({
-        lessonId,
-        teacherId,
-        isLocked,
-    }) {
-        // ==========================================
-        // Validate isLocked
-        // ==========================================
-
-        if (typeof isLocked !== "boolean") {
-            const error = new Error(
-                "isLocked phải là kiểu boolean."
-            );
-
-            error.statusCode = 400;
-            throw error;
-        }
-
-        // ==========================================
-        // Find lesson
-        // ==========================================
-
-        const lesson =
-            await lessonRepository.findById(
-                lessonId
-            );
-
-        if (!lesson) {
-            const error = new Error(
-                "Không tìm thấy bài học."
-            );
-
-            error.statusCode = 404;
-            throw error;
-        }
-
-        // ==========================================
-        // Cannot modify deleted lesson
-        // ==========================================
-
-        if (lesson.deletedAt) {
-            const error = new Error(
-                "Không thể thay đổi trạng thái bài học đã bị xóa."
-            );
-
-            error.statusCode = 400;
-            throw error;
-        }
-
-        // ==========================================
-        // Find course
-        // ==========================================
-
-        const course =
-            await courseRepository.findById(
-                lesson.courseId
-            );
-
-        if (!course) {
-            const error = new Error(
-                "Không tìm thấy khóa học."
-            );
-
-            error.statusCode = 404;
-            throw error;
-        }
-
-        // ==========================================
-        // Check permission
-        // ==========================================
-
-        if (course.teacherId !== teacherId) {
-            const error = new Error(
-                "Bạn không có quyền thay đổi bài học này."
-            );
-
-            error.statusCode = 403;
-            throw error;
-        }
-
-        // ==========================================
-        // Update lock status
-        // ==========================================
-
-        return lessonRepository.updateById(
-            lessonId,
-            {
-                isLocked,
-            }
-        );
     },
 
     // ==========================================
@@ -811,11 +758,12 @@ const lessonService = {
             );
 
             error.statusCode = 400;
+
             throw error;
         }
 
         // ==========================================
-        // Find current lesson
+        // Find lesson
         // ==========================================
 
         const lesson =
@@ -829,19 +777,92 @@ const lessonService = {
             );
 
             error.statusCode = 404;
+
             throw error;
         }
 
         // ==========================================
-        // Cannot move deleted lesson
+        // Find course
         // ==========================================
 
-        if (lesson.deletedAt) {
-            const error = new Error(
-                "Không thể di chuyển bài học đã bị xóa."
+        const course =
+            await courseRepository.findById(
+                lesson.courseId
             );
 
-            error.statusCode = 400;
+        if (!course) {
+            const error = new Error(
+                "Không tìm thấy khóa học."
+            );
+
+            error.statusCode = 404;
+
+            throw error;
+        }
+
+        // ==========================================
+        // Check course deleted
+        // ==========================================
+
+        if (course.isDelete) {
+            const error = new Error(
+                "Khóa học đã bị xóa."
+            );
+
+            error.statusCode = 404;
+
+            throw error;
+        }
+
+        // ==========================================
+        // Check permission
+        // ==========================================
+
+        if (course.teacherId !== teacherId) {
+            const error = new Error(
+                "Bạn không có quyền sắp xếp bài học này."
+            );
+
+            error.statusCode = 403;
+
+            throw error;
+        }
+
+        // ==========================================
+        // Move lesson
+        // ==========================================
+
+        return lessonRepository.moveLesson({
+            lessonId,
+            courseId: lesson.courseId,
+            currentOrder: lesson.order,
+            direction,
+        });
+    },
+
+    // ==========================================
+    // Toggle lock lesson
+    // ==========================================
+
+    async toggleLock({
+        lessonId,
+        teacherId,
+    }) {
+        // ==========================================
+        // Find lesson
+        // ==========================================
+
+        const lesson =
+            await lessonRepository.findById(
+                lessonId
+            );
+
+        if (!lesson) {
+            const error = new Error(
+                "Không tìm thấy bài học."
+            );
+
+            error.statusCode = 404;
             throw error;
         }
 
@@ -864,12 +885,25 @@ const lessonService = {
         }
 
         // ==========================================
+        // Check course deleted
+        // ==========================================
+
+        if (course.isDelete) {
+            const error = new Error(
+                "Khóa học đã bị xóa."
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // ==========================================
         // Check permission
         // ==========================================
 
         if (course.teacherId !== teacherId) {
             const error = new Error(
-                "Bạn không có quyền sắp xếp bài học này."
+                "Bạn không có quyền khóa bài học này."
             );
 
             error.statusCode = 403;
@@ -877,42 +911,20 @@ const lessonService = {
         }
 
         // ==========================================
-        // Find adjacent lesson
+        // Toggle lock
         // ==========================================
 
-        let adjacentLesson;
-
-        if (direction === "up") {
-            adjacentLesson =
-                await lessonRepository.findPrevious(
-                    lesson.courseId,
-                    lesson.order
-                );
-        } else {
-            adjacentLesson =
-                await lessonRepository.findNext(
-                    lesson.courseId,
-                    lesson.order
-                );
-        }
+        const isLocked = !lesson.isLocked;
 
         // ==========================================
-        // Already at first / last position
+        // Update lesson
         // ==========================================
 
-        if (!adjacentLesson) {
-            return lesson;
-        }
-
-        // ==========================================
-        // Swap order
-        // ==========================================
-
-        return lessonRepository.swapOrder(
+        return lessonRepository.update(
             lessonId,
-            lesson.order,
-            adjacentLesson.id,
-            adjacentLesson.order
+            {
+                isLocked,
+            }
         );
     },
 };

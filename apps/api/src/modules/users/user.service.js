@@ -1,182 +1,162 @@
+import userRepository from "./user.repository.js";
+
+import AppError from "../../utils/appError.js";
+
 import {
     hashPassword,
     comparePassword,
-} from '../../utils/password.js';
-
-import userRepository from './user.repository.js';
-
-const removePassword = (user) => {
-    if (!user) {
-        return user;
-    }
-
-    const { password: _, ...safeUser } = user;
-
-    return safeUser;
-};
+} from "../../utils/password.js";
 
 const userService = {
-    async getUserById(id) {
-        const user = await userRepository.findById(id);
+    // Lấy thông tin user hiện tại
+    async getMe(userId) {
+        const user = await userRepository.findById(userId);
 
         if (!user) {
-            const error = new Error('User not found');
-            error.statusCode = 404;
-            throw error;
+            throw new AppError(
+                "Không tìm thấy người dùng",
+                404
+            );
         }
 
-        return removePassword(user);
+        const { password: _, ...safeUser } = user;
+
+        return safeUser;
     },
 
-    async getUserByEmail(email) {
-        const user = await userRepository.findByEmail(email);
-
-        return removePassword(user);
-    },
-
-    async getAllUsers() {
-        const users = await userRepository.findAll();
-
-        return users.map(removePassword);
-    },
-
-    async createUser(data) {
-        const existingUser =
-            await userRepository.findByEmail(data.email);
-
-        if (existingUser) {
-            const error = new Error('Email already exists');
-            error.statusCode = 409;
-            throw error;
-        }
-
-        return userRepository.create(data);
-    },
-
-    async updateProfile(id, data) {
-        const user = await userRepository.findById(id);
+    // Lấy user theo ID
+    async getById(userId) {
+        const user = await userRepository.findById(userId);
 
         if (!user) {
-            const error = new Error('User not found');
-            error.statusCode = 404;
-            throw error;
-        }
-
-        const name = data.name?.trim();
-
-        if (!name) {
-            const error = new Error(
-                'Name cannot be empty'
+            throw new AppError(
+                "Không tìm thấy người dùng",
+                404
             );
-            error.statusCode = 400;
-            throw error;
         }
 
-        if (name.length < 2) {
-            const error = new Error(
-                'Name must be at least 2 characters'
-            );
-            error.statusCode = 400;
-            throw error;
-        }
+        const { password: _, ...safeUser } = user;
 
-        const updatedUser =
-            await userRepository.updateProfile(id, {
-                name,
-            });
-
-        return removePassword(updatedUser);
+        return safeUser;
     },
 
-    async updatePassword(
-        id,
-        { currentPassword, newPassword }
-    ) {
-        if (!currentPassword) {
-            const error = new Error(
-                'Current password is required'
+    // Cập nhật thông tin cá nhân
+    async updateMe(userId, { name }) {
+        const user = await userRepository.findById(userId);
+
+        if (!user) {
+            throw new AppError(
+                "Không tìm thấy người dùng",
+                404
             );
-            error.statusCode = 400;
-            throw error;
         }
 
-        if (!newPassword) {
-            const error = new Error(
-                'New password is required'
+        const data = {};
+
+        if (name !== undefined) {
+            const trimmedName = name.trim();
+
+            if (!trimmedName) {
+                throw new AppError(
+                    "Họ tên không được để trống",
+                    400
+                );
+            }
+
+            data.name = trimmedName;
+        }
+
+        const updatedUser = await userRepository.update(
+            userId,
+            data
+        );
+
+        const { password: _, ...safeUser } = updatedUser;
+
+        return safeUser;
+    },
+
+    // Đổi mật khẩu
+    async changePassword(userId, { currentPassword, newPassword }) {
+        const user = await userRepository.findById(userId);
+
+        if (!user) {
+            throw new AppError(
+                "Không tìm thấy người dùng",
+                404
             );
-            error.statusCode = 400;
-            throw error;
+        }
+
+        const isPasswordValid = await comparePassword(
+            currentPassword,
+            user.password
+        );
+
+        if (!isPasswordValid) {
+            throw new AppError(
+                "Mật khẩu hiện tại không chính xác",
+                400
+            );
         }
 
         if (newPassword.length < 6) {
-            const error = new Error(
-                'New password must be at least 6 characters'
+            throw new AppError(
+                "Mật khẩu mới phải có ít nhất 6 ký tự",
+                400
             );
-            error.statusCode = 400;
-            throw error;
         }
 
         if (currentPassword === newPassword) {
-            const error = new Error(
-                'New password must be different from current password'
+            throw new AppError(
+                "Mật khẩu mới phải khác mật khẩu hiện tại",
+                400
             );
-            error.statusCode = 400;
-            throw error;
         }
 
-        const user = await userRepository.findById(id);
-
-        if (!user) {
-            const error = new Error('User not found');
-            error.statusCode = 404;
-            throw error;
-        }
-
-        const isPasswordValid =
-            await comparePassword(
-                currentPassword,
-                user.password
-            );
-
-        if (!isPasswordValid) {
-            const error = new Error(
-                'Current password is incorrect'
-            );
-            error.statusCode = 400;
-            throw error;
-        }
-
-        const hashedPassword =
-            await hashPassword(newPassword);
-
-        await userRepository.updatePassword(
-            id,
-            hashedPassword
+        const hashedPassword = await hashPassword(
+            newPassword
         );
+
+        await userRepository.update(userId, {
+            password: hashedPassword,
+        });
     },
 
-    async searchTeachers({ search } = {}) {
-        const teachers = await userRepository.searchTeachers({
-            search,
-        });
+    // Soft delete user
+    async delete(userId) {
+        const user = await userRepository.findById(userId);
 
-        return teachers.map((teacher) => {
-            const courseCount = teacher.courses.length;
-
-            const lessonCount = teacher.courses.reduce(
-                (total, course) => total + course.lessons.length,
-                0
+        if (!user) {
+            throw new AppError(
+                "Không tìm thấy người dùng",
+                404
             );
+        }
 
-            return {
-                id: teacher.id,
-                name: teacher.name,
-                createdAt: teacher.createdAt,
-                courseCount,
-                lessonCount,
-            };
-        });
-    }
+        await userRepository.softDelete(userId);
+    },
+
+    // Khôi phục user
+    async restore(userId) {
+        const user =
+            await userRepository.findByIdIncludeDeleted(userId);
+
+        if (!user) {
+            throw new AppError(
+                "Không tìm thấy người dùng",
+                404
+            );
+        }
+
+        if (!user.isDelete) {
+            throw new AppError(
+                "Tài khoản đang hoạt động",
+                400
+            );
+        }
+
+        await userRepository.restore(userId);
+    },
 };
 
 export default userService;

@@ -1,6 +1,7 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-import env from '../config/env.js';
+import env from "../config/env.js";
+import AppError from "../utils/appError.js";
 
 const auth = (req, res, next) => {
     try {
@@ -8,34 +9,45 @@ const auth = (req, res, next) => {
 
         // Không có Authorization header
         if (!authHeader) {
-            return res.status(401).json({
-                success: false,
-                message: 'Vui lòng đăng nhập để tiếp tục.',
-            });
+            throw new AppError(
+                "Vui lòng đăng nhập để tiếp tục.",
+                401
+            );
         }
 
         // Kiểm tra format: Bearer <token>
-        const [type, token] = authHeader.split(' ');
+        const [type, token] = authHeader.split(" ");
 
-        if (type !== 'Bearer' || !token) {
-            return res.status(401).json({
-                success: false,
-                message: 'Authorization token không hợp lệ.',
-            });
+        if (type !== "Bearer" || !token) {
+            throw new AppError(
+                "Authorization token không hợp lệ.",
+                401
+            );
         }
 
         // Verify JWT
-        const decoded = jwt.verify(token, env.JWT_SECRET);
+        const decoded = jwt.verify(
+            token,
+            env.JWT_SECRET
+        );
 
         // Lưu thông tin user vào request
         req.user = decoded;
 
         next();
     } catch (error) {
-        return res.status(401).json({
-            success: false,
-            message: 'Token không hợp lệ hoặc đã hết hạn.',
-        });
+        // Nếu đã là AppError thì giữ nguyên
+        if (error instanceof AppError) {
+            return next(error);
+        }
+
+        // Lỗi từ jwt.verify()
+        return next(
+            new AppError(
+                "Token không hợp lệ hoặc đã hết hạn.",
+                401
+            )
+        );
     }
 };
 

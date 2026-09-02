@@ -4,7 +4,7 @@ import CourseDetailPage from "./CourseDetailPage";
 import LessonLayout from "./lesson/LessonLayout"
 import CourseOverviewPage from "./overview/CourseOverviewPage"
 import CourseLessonsPage from "./lessons/CourseLessonsPage";
-import CourseStudentsPage from "./students/CourseStudentsPage"
+import CourseEnrollmentsPage from "./enrollments/CourseEnrollmentsPage";
 
 const CourseRoute = () => {
     return (
@@ -25,7 +25,7 @@ const CourseRoute = () => {
                 {/* /teach/courses/:courseId/students */}
                 <Route
                     path="students"
-                    element={<CourseStudentsPage />}
+                    element={<CourseEnrollmentsPage />}
                 />
             </Route>
             <Route path="/lessons/*" element={<LessonLayout />} />

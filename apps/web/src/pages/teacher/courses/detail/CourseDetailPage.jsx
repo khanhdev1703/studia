@@ -19,7 +19,6 @@ const CourseDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-
     useEffect(() => {
         const fetchCourse = async () => {
             try {
@@ -27,7 +26,7 @@ const CourseDetailPage = () => {
                 setError("");
 
                 const response =
-                    await courseService.getCourseById(courseId);
+                    await courseService.getCourseDetails(courseId);
 
                 setCourse(response.data);
             } catch (error) {

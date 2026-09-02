@@ -1,68 +1,72 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-import userRepository from '../users/user.repository.js';
-import { hashPassword, comparePassword } from '../../utils/password.js';
-import env from '../../config/env.js';
+import authRepository from "./auth.repository.js";
+
+import { hashPassword, comparePassword } from "../../utils/password.js";
+
+import AppError from "../../utils/appError.js";
+
+import env from "../../config/env.js";
 
 const authService = {
     async register({ name, email, password }) {
-        const existingUser = await userRepository.findByEmail(email);
+        const existingUser = await authRepository.findByEmail(email);
 
         if (existingUser) {
-            const error = new Error('Email đã được sử dụng');
-            error.statusCode = 409;
-            throw error;
+            throw new AppError(
+                "Email đã được sử dụng",
+                409
+            );
         }
 
         const hashedPassword = await hashPassword(password);
 
-        const user = await userRepository.create({
+        const user = await authRepository.create({
             name,
             email,
             password: hashedPassword,
         });
 
+        // Không trả password về client
         const { password: _, ...safeUser } = user;
 
         return safeUser;
     },
 
     async login({ email, password }) {
-        // Tìm user
-        const user = await userRepository.findByEmail(email);
+        const user = await authRepository.findUserByEmail(email);
 
         if (!user) {
-            const error = new Error('Email hoặc mật khẩu không chính xác.');
-            error.statusCode = 401;
-            throw error;
+            throw new AppError(
+                "Email hoặc mật khẩu không chính xác.",
+                401
+            );
         }
 
-        // Kiểm tra password
         const isPasswordValid = await comparePassword(
             password,
             user.password
         );
 
         if (!isPasswordValid) {
-            const error = new Error('Email hoặc mật khẩu không chính xác.');
-            error.statusCode = 401;
-            throw error;
+            throw new AppError(
+                "Email hoặc mật khẩu không chính xác.",
+                401
+            );
         }
 
-        // Tạo JWT
         const accessToken = jwt.sign(
             {
-                userId: user.id,
-                email: user.email,
+                id: user.id,
                 role: user.role,
             },
             env.JWT_SECRET,
             {
-                expiresIn: '1d',
+                expiresIn: "1h",
             }
         );
 
-        // Không trả password
+        // Không trả password về client
         const { password: _, ...safeUser } = user;
 
         return {

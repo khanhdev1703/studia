@@ -1,63 +1,30 @@
+// src/api/enrollmentAPI.js
+
 import apiClient from "./apiClient";
 
 const enrollmentAPI = {
-    // ==========================================
-    // Student
-    // ==========================================
+    getByCourse: (courseId) =>
+        apiClient.get(
+            `/enrollments/course/${courseId}`
+        ),
 
-    // Đăng ký khóa học
-    enroll: (courseId) => {
-        return apiClient.post(
-            `/enrollment/${courseId}`
-        );
-    },
-
-    // Lấy enrollment của bản thân với khóa học
-    getByCourse: (courseId) => {
-        return apiClient.get(
-            `/enrollment/course/${courseId}`
-        );
-    },
-
-    // Lấy danh sách khóa học đã đăng ký
-    getMyEnrollments: (params = {}) => {
-        return apiClient.get(
-            "/enrollment/me",
+    enrollStudent: (courseId, studentCode) =>
+        apiClient.post(
+            `/enrollments/course/${courseId}`,
             {
-                params,
+                studentCode,
             }
-        );
-    },
+        ),
 
-    // Hủy yêu cầu đăng ký
-    cancel: (courseId) => {
-        return apiClient.delete(
-            `/enrollment/${courseId}`
-        );
-    },
+    getById: (enrollmentId) =>
+        apiClient.get(
+            `/enrollments/${enrollmentId}`
+        ),
 
-    // ==========================================
-    // Teacher
-    // ==========================================
-
-    // Lấy danh sách enrollment của khóa học
-    getTeacherPendingRequests: () => {
-        return apiClient.get(`/enrollment`);
-    },
-
-    // Duyệt enrollment
-    approve: (enrollmentId) => {
-        return apiClient.patch(
-            `/enrollment/${enrollmentId}/approve`
-        );
-    },
-
-    // Từ chối enrollment
-    reject: (enrollmentId) => {
-        return apiClient.patch(
-            `/enrollment/${enrollmentId}/reject`
-        );
-    },
+    remove: (enrollmentId) =>
+        apiClient.delete(
+            `/enrollment/${enrollmentId}`
+        ),
 };
 
 export default enrollmentAPI;

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import {
     useOutletContext,
     useParams,
@@ -7,56 +6,40 @@ import {
 } from "react-router-dom";
 
 import appToast from "../../../../../utils/toast";
-
 import courseService from "../../../../../services/courseService";
 
 import CourseBasicInfo from "./CourseBasicInfo";
-
 import CourseDangerZone from "./CourseDangerZone";
-
 import DeleteCourseModal from "./DeleteCourseModal";
 
 const CourseOverviewPage = () => {
-    const {
-        course,
-        setCourse,
-    } = useOutletContext();
-
+    const { course, setCourse } = useOutletContext();
     const { courseId } = useParams();
-
     const navigate = useNavigate();
 
     // ==========================================
     // Form state
     // ==========================================
-
     const [form, setForm] = useState({
         title: "",
         description: "",
         price: 0,
-        status: "DRAFT",
+        durationMonths: 6,
+        status: true,
         thumbnailFile: null,
     });
 
     // ==========================================
     // UI state
     // ==========================================
-
-    const [thumbnailPreview, setThumbnailPreview] =
-        useState("");
-
+    const [thumbnailPreview, setThumbnailPreview] = useState("");
     const [saving, setSaving] = useState(false);
-
-    const [deleteModalOpen, setDeleteModalOpen] =
-        useState(false);
-
-    const [deleting, setDeleting] =
-        useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     // ==========================================
     // Sync course -> form
     // ==========================================
-
     useEffect(() => {
         if (!course) {
             return;
@@ -66,19 +49,31 @@ const CourseOverviewPage = () => {
             title: course.title || "",
             description: course.description || "",
             price: course.price ?? 0,
-            status: course.status || "DRAFT",
+            durationMonths: course.durationMonths ?? 0,
+            status: course.status ?? true,
             thumbnailFile: null,
         });
 
-        setThumbnailPreview(
-            course.thumbnail || ""
-        );
+        setThumbnailPreview(course.thumbnail || "");
     }, [course]);
+
+    // ==========================================
+    // Cleanup object URL
+    // ==========================================
+    useEffect(() => {
+        return () => {
+            if (
+                thumbnailPreview &&
+                thumbnailPreview.startsWith("blob:")
+            ) {
+                URL.revokeObjectURL(thumbnailPreview);
+            }
+        };
+    }, [thumbnailPreview]);
 
     // ==========================================
     // Update form
     // ==========================================
-
     const updateForm = (field, value) => {
         setForm((prev) => ({
             ...prev,
@@ -89,7 +84,6 @@ const CourseOverviewPage = () => {
     // ==========================================
     // Select thumbnail
     // ==========================================
-
     const handleSelectImage = (file) => {
         if (!file) {
             return;
@@ -97,10 +91,7 @@ const CourseOverviewPage = () => {
 
         // Max 5MB
         if (file.size > 5 * 1024 * 1024) {
-            appToast.error(
-                "Ảnh không được vượt quá 5MB."
-            );
-
+            appToast.error("Ảnh không được vượt quá 5MB.");
             return;
         }
 
@@ -115,19 +106,23 @@ const CourseOverviewPage = () => {
             appToast.error(
                 "Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP."
             );
-
             return;
         }
 
-        // Save file into form
+        // Revoke old preview URL
+        if (
+            thumbnailPreview &&
+            thumbnailPreview.startsWith("blob:")
+        ) {
+            URL.revokeObjectURL(thumbnailPreview);
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+
         setForm((prev) => ({
             ...prev,
             thumbnailFile: file,
         }));
-
-        // Preview
-        const previewUrl =
-            URL.createObjectURL(file);
 
         setThumbnailPreview(previewUrl);
     };
@@ -135,46 +130,51 @@ const CourseOverviewPage = () => {
     // ==========================================
     // Save
     // ==========================================
-
     const handleSave = async (event) => {
         event?.preventDefault();
 
         if (!courseId) {
-            appToast.error(
-                "Không tìm thấy khóa học."
-            );
-
+            appToast.error("Không tìm thấy khóa học.");
             return;
         }
 
         // ======================================
         // Validate title
         // ======================================
+        const title = form.title.trim();
 
-        if (!form.title.trim()) {
-            appToast.error(
-                "Vui lòng nhập tên khóa học."
-            );
-
+        if (!title) {
+            appToast.error("Vui lòng nhập tên khóa học.");
             return;
         }
 
         // ======================================
         // Validate price
         // ======================================
+        const price = Number(form.price);
 
-        let price = Number(form.price);
-
-        if (!Number.isInteger(price)) {
+        if (!Number.isInteger(price) || price < 0) {
             appToast.error(
-                "Giá khóa học phải là số nguyên."
+                "Giá khóa học phải là số nguyên không âm."
             );
-
             return;
         }
 
-        if (price < 0) {
-            price = 0
+        // ======================================
+        // Validate duration
+        // ======================================
+        const durationMonths = Number(
+            form.durationMonths
+        );
+
+        if (
+            !Number.isInteger(durationMonths) ||
+            durationMonths < 0
+        ) {
+            appToast.error(
+                "Thời hạn sở hữu phải là số nguyên không âm."
+            );
+            return;
         }
 
         try {
@@ -183,13 +183,9 @@ const CourseOverviewPage = () => {
             // ==================================
             // Create FormData
             // ==================================
-
             const formData = new FormData();
 
-            formData.append(
-                "title",
-                form.title.trim()
-            );
+            formData.append("title", title);
 
             formData.append(
                 "description",
@@ -202,15 +198,18 @@ const CourseOverviewPage = () => {
             );
 
             formData.append(
+                "durationMonths",
+                String(durationMonths)
+            );
+
+            formData.append(
                 "status",
-                form.status
+                Boolean(form.status)
             );
 
             // ==================================
             // Thumbnail
             // ==================================
-
-            // Chỉ gửi file nếu chọn ảnh mới
             if (form.thumbnailFile) {
                 formData.append(
                     "thumbnail",
@@ -219,36 +218,44 @@ const CourseOverviewPage = () => {
             }
 
             // ==================================
-            // Service
+            // Update course
             // ==================================
-
             const response =
                 await courseService.updateCourse(
                     courseId,
                     formData
                 );
 
-            const updatedCourse =
-                response.data;
+            const updatedCourse = response.data;
 
             // ==================================
             // Update CourseDetail context
             // ==================================
-
             setCourse(updatedCourse);
 
             // ==================================
-            // Reset thumbnail file
+            // Sync form
             // ==================================
-
-            setForm((prev) => ({
-                ...prev,
+            setForm({
+                title: updatedCourse.title || "",
+                description:
+                    updatedCourse.description || "",
+                price: updatedCourse.price ?? 0,
+                durationMonths:
+                    updatedCourse.durationMonths ?? 0,
+                status: updatedCourse.status ?? true,
                 thumbnailFile: null,
-            }));
+            });
 
             // ==================================
             // Update thumbnail preview
             // ==================================
+            if (
+                thumbnailPreview &&
+                thumbnailPreview.startsWith("blob:")
+            ) {
+                URL.revokeObjectURL(thumbnailPreview);
+            }
 
             setThumbnailPreview(
                 updatedCourse.thumbnail || ""
@@ -257,7 +264,6 @@ const CourseOverviewPage = () => {
             // ==================================
             // Success
             // ==================================
-
             appToast.success(
                 response.message ||
                 "Cập nhật khóa học thành công."
@@ -280,7 +286,6 @@ const CourseOverviewPage = () => {
     // ==========================================
     // Delete course
     // ==========================================
-
     const handleDelete = async () => {
         if (!courseId || deleting) {
             return;
@@ -289,15 +294,11 @@ const CourseOverviewPage = () => {
         try {
             setDeleting(true);
 
-            await courseService.deleteCourse(
-                courseId
-            );
+            await courseService.deleteCourse(courseId);
 
-            appToast.success(
-                "Đã xóa khóa học."
-            );
+            appToast.success("Đã xóa khóa học.");
 
-            // Course đã soft delete ở BE
+            // Soft delete ở backend
             setCourse(null);
 
             navigate("/teacher/courses", {
@@ -315,7 +316,6 @@ const CourseOverviewPage = () => {
             );
         } finally {
             setDeleting(false);
-
             setDeleteModalOpen(false);
         }
     };
@@ -323,7 +323,6 @@ const CourseOverviewPage = () => {
     // ==========================================
     // Empty
     // ==========================================
-
     if (!course) {
         return null;
     }
@@ -331,11 +330,8 @@ const CourseOverviewPage = () => {
     // ==========================================
     // Render
     // ==========================================
-
     return (
         <div className="space-y-4">
-            {/* Basic information */}
-
             <CourseBasicInfo
                 form={form}
                 thumbnailPreview={thumbnailPreview}
@@ -345,14 +341,10 @@ const CourseOverviewPage = () => {
                 onSave={handleSave}
             />
 
-            {/* Danger zone */}
-
             <CourseDangerZone
                 courseTitle={course.title}
                 deleting={deleting}
-                onDelete={() =>
-                    setDeleteModalOpen(true)
-                }
+                onDelete={() => setDeleteModalOpen(true)}
             />
 
             <DeleteCourseModal

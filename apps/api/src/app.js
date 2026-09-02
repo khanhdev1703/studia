@@ -8,8 +8,8 @@ import allowedOrigins from './config/cors.js';
 
 import routes from './routes/index.js';
 import notFound from './middlewares/notFound.js';
-import errorHandler from './middlewares/errorHandler.js';
 import { globalLimiter } from './middlewares/rateLimiter.js';
+import errorMiddleware from './middlewares/errorMiddleware.js';
 
 const app = express();
 
@@ -110,6 +110,6 @@ app.use(notFound);
 // Error handler
 // ==========================================
 
-app.use(errorHandler);
+app.use(errorMiddleware);
 
 export default app;

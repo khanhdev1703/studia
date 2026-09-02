@@ -41,6 +41,21 @@ const videoStorage = multer.diskStorage({
         cb(null, filename);
     },
 });
+const documentStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "tmp/uploads");
+    },
+
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+
+        const filename = `${Date.now()}-${Math.round(
+            Math.random() * 1e9
+        )}${ext}`;
+
+        cb(null, filename);
+    },
+});
 
 // ==========================================
 // Image upload
@@ -102,7 +117,45 @@ const videoUpload = multer({
     },
 });
 
+// ==========================================
+// Document upload
+// ==========================================
+
+const documentUpload = multer({
+    storage: documentStorage,
+    limits: {
+        fileSize: 20 * 1024 * 1024,
+        files: 10,
+    },
+    fileFilter: (req, file, cb) => {
+
+        const allowedTypes = [
+            "application/pdf",
+
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
+            "application/vnd.ms-powerpoint",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ];
+
+        if (!allowedTypes.includes(file.mimetype)) {
+            return cb(
+                new Error(
+                    "Chỉ hỗ trợ file PDF, Word, PowerPoint hoặc Excel."
+                )
+            );
+        }
+
+        cb(null, true);
+    },
+});
+
 export {
     imageUpload,
     videoUpload,
+    documentUpload,
 };

@@ -1,4 +1,6 @@
-import authService from './auth.service.js';
+import authService from "./auth.service.js";
+
+import AppError from "../../utils/appError.js";
 
 const authController = {
     async register(req, res, next) {
@@ -6,21 +8,17 @@ const authController = {
             const { name, email, password } = req.body;
 
             if (!name || !email || !password) {
-                const error = new Error(
-                    'Vui lòng nhập đầy đủ họ tên, email và mật khẩu.'
+                throw new AppError(
+                    "Vui lòng nhập đầy đủ họ tên, email và mật khẩu.",
+                    400
                 );
-
-                error.statusCode = 400;
-                throw error;
             }
 
             if (password.length < 6) {
-                const error = new Error(
-                    'Mật khẩu phải có ít nhất 6 ký tự.'
+                throw new AppError(
+                    "Mật khẩu phải có ít nhất 6 ký tự.",
+                    400
                 );
-
-                error.statusCode = 400;
-                throw error;
             }
 
             const user = await authService.register({
@@ -31,7 +29,7 @@ const authController = {
 
             res.status(201).json({
                 success: true,
-                message: 'Đăng ký tài khoản thành công.',
+                message: "Đăng ký tài khoản thành công.",
                 data: user,
             });
         } catch (error) {
@@ -44,12 +42,10 @@ const authController = {
             const { email, password } = req.body;
 
             if (!email || !password) {
-                const error = new Error(
-                    'Vui lòng nhập email và mật khẩu.'
+                throw new AppError(
+                    "Vui lòng nhập email và mật khẩu.",
+                    400
                 );
-
-                error.statusCode = 400;
-                throw error;
             }
 
             const result = await authService.login({
@@ -59,7 +55,7 @@ const authController = {
 
             res.status(200).json({
                 success: true,
-                message: 'Đăng nhập thành công.',
+                message: "Đăng nhập thành công.",
                 data: result,
             });
         } catch (error) {

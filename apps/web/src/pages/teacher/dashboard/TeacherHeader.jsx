@@ -26,9 +26,6 @@ const TeacherHeader = () => {
                 {/* Mobile: Logo */}
                 <div className="lg:hidden">
                     <Logo
-                        size="sm"
-                        showText
-                        border={false}
                     />
                 </div>
 

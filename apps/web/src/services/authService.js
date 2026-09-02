@@ -1,13 +1,10 @@
-import {
-  loginApi,
-  registerApi,
-  getMeApi,
-} from "../api/authApi";
+import authAPI from "../api/authApi";
 
 import useAuthStore from "../stores/authStore";
 
 const login = async ({ email, password }) => {
-  const response = await loginApi({
+  const response = await authAPI.login({
+
     email,
     password,
   });
@@ -35,7 +32,7 @@ const register = async ({
   email,
   password,
 }) => {
-  const response = await registerApi({
+  const response = await authAPI.register({
     name,
     email,
     password,
@@ -55,28 +52,6 @@ const register = async ({
   };
 };
 
-const getMe = async () => {
-  const response = await getMeApi();
-
-  const { success, message, data } = response.data;
-
-  if (!success || !data?.user) {
-    throw new Error(
-      message ||
-      "Không thể lấy thông tin người dùng."
-    );
-  }
-
-  useAuthStore
-    .getState()
-    .setUser(data.user);
-
-  return {
-    message,
-    data,
-  };
-};
-
 const logout = async () => {
   useAuthStore
     .getState()
@@ -86,6 +61,5 @@ const logout = async () => {
 export default {
   login,
   register,
-  getMe,
   logout,
 };

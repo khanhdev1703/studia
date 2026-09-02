@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import userRoutes from '../modules/users/user.routes.js';
 import authRoutes from '../modules/auth/auth.routes.js';
-import courseRoutes from '../modules/course/course.routes.js';
-import lessonRoutes from '../modules/lesson/lesson.routes.js';
-import enrollmentRoutes from '../modules/enrollment/enrollment.routes.js';
+import courseRoutes from '../modules/courses/course.routes.js';
+import lessonRoutes from '../modules/lessons/lesson.routes.js';
+import enrollmentRoutes from '../modules/enrollments/enrollment.routes.js';
 import learningRoutes from '../modules/learning/learning.routes.js';
-
+import documentRoutes from '../modules/documents/document.routes.js';
 
 const router = Router();
 
@@ -31,11 +31,12 @@ router.get('/health', (req, res) => {
     });
 });
 
-router.use('/user', userRoutes);
+router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
-router.use('/course', courseRoutes);
-router.use('/lesson', lessonRoutes);
-router.use('/enrollment', enrollmentRoutes);
+router.use('/courses', courseRoutes);
+router.use('/lessons', lessonRoutes);
+router.use('/enrollments', enrollmentRoutes);
 router.use("/learning", learningRoutes);
+router.use("/documents", documentRoutes);
 
 export default router;

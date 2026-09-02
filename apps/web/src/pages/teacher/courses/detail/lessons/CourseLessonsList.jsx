@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 import {
     ChevronDown,
     ChevronUp,
-    Plus,
+    Clock3,
 } from "lucide-react";
 
-import { motion } from "motion/react";
+import {
+    motion,
+    AnimatePresence,
+} from "framer-motion";
 
 import {
     Link,
@@ -23,7 +26,7 @@ const CourseLessonsList = () => {
     const [lessons, setLessons] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Lesson đang được reorder
+    // Lesson đang reorder
     const [reorderingId, setReorderingId] = useState(null);
 
     // ==========================================
@@ -122,9 +125,6 @@ const CourseLessonsList = () => {
 
         // ======================================
         // Optimistic update
-        //
-        // Đổi vị trí ngay trên FE để Motion
-        // có thể animate 2 card.
         // ======================================
 
         setLessons((prev) => {
@@ -141,17 +141,6 @@ const CourseLessonsList = () => {
                 currentLesson.id
             );
 
-            // ==================================
-            // BE chỉ cần:
-            //
-            // PUT /lesson/:id/move
-            //
-            // body:
-            // {
-            //     direction: "up" | "down"
-            // }
-            // ==================================
-
             await lessonService.move(
                 currentLesson.id,
                 direction
@@ -162,10 +151,7 @@ const CourseLessonsList = () => {
                 error
             );
 
-            // ==================================
-            // Rollback nếu BE lỗi
-            // ==================================
-
+            // Rollback
             setLessons(
                 previousLessons
             );
@@ -185,31 +171,27 @@ const CourseLessonsList = () => {
 
     if (loading) {
         return (
-            <div className="space-y-5">
-                <div className="flex items-center justify-between">
-                    <div className="space-y-2">
-                        <div className="h-6 w-40 animate-pulse rounded bg-gray-200" />
+            <div className="space-y-2">
+                <div
+                    className="
+                        h-16
+                        animate-pulse
+                        rounded-sm
+                        bg-white
+                    "
+                />
 
-                        <div className="h-3 w-20 animate-pulse rounded bg-gray-200" />
-                    </div>
-
-                    <div className="h-10 w-32 animate-pulse rounded-xl bg-gray-200" />
-                </div>
-
-                <div className="space-y-4">
-                    {[1, 2, 3].map((item) => (
-                        <div
-                            key={item}
-                            className="
-                                h-24
-                                animate-pulse
-                                rounded-xl
-                                bg-white
-                                shadow-sm
-                            "
-                        />
-                    ))}
-                </div>
+                {[1, 2, 3].map((item) => (
+                    <div
+                        key={item}
+                        className="
+                            h-20
+                            animate-pulse
+                            rounded-sm
+                            bg-white
+                        "
+                    />
+                ))}
             </div>
         );
     }
@@ -220,80 +202,88 @@ const CourseLessonsList = () => {
 
     return (
         <div className="space-y-2">
-            {/* ======================================
+            {/* ==================================
                 Header
-            ====================================== */}
+            ================================== */}
 
             <div
                 className="
                     flex
                     items-center
                     justify-between
-                    gap-4
+                    gap-3
+                    border-b
+                    border-slate-100
                     bg-white
-                    p-2
                     px-4
+                    py-3
                 "
             >
-                <div>
+                <div className="min-w-0">
                     <h2
                         className="
-                            font-semibold
+                            text-base
+                            font-bold
+                            leading-tight
                             tracking-tight
                             text-[#252238]
-                            sm:text-xl
+                            sm:text-lg
                         "
                     >
                         Nội dung
                     </h2>
 
-                    <p
-                        className="
-                            text-xs
-                            font-medium
-                            text-gray-500
-                            sm:text-sm
-                        "
-                    >
-                        {lessons.length} bài học
-                    </p>
+                    <div className="mt-0.5 flex items-center gap-1.5">
+                        <span
+                            className="
+                                h-1.5
+                                w-1.5
+                                rounded-full
+                                bg-[#0a479d]
+                            "
+                        />
+
+                        <p className="text-xs font-medium text-slate-500">
+                            {lessons.length} bài học
+                        </p>
+                    </div>
                 </div>
 
                 <Link
                     to="create"
                     className="
-                        inline-flex
                         shrink-0
-                        items-center
-                        gap-1.5
-                        rounded-sm
-                        bg-[#6C5CE7]
-                        px-3
-                        py-2.5
+                        rounded-lg
+                        bg-[#0a479d]
+                        px-3.5
+                        py-2
                         text-xs
                         font-semibold
                         text-white
                         shadow-sm
                         transition
-                        hover:bg-[#5B4BD6]
-                        active:scale-[0.98]
+                        hover:bg-[#083b82]
+                        active:scale-95
                         sm:px-4
-                        sm:text-sm
                     "
                 >
-                    <Plus size={14} />
-                    Thêm
+                    <span className="sm:hidden">
+                        Thêm
+                    </span>
+
+                    <span className="hidden sm:inline">
+                        Thêm bài học
+                    </span>
                 </Link>
             </div>
 
-            {/* ======================================
+            {/* ==================================
                 Empty
-            ====================================== */}
+            ================================== */}
 
             {lessons.length === 0 && (
                 <div
                     className="
-                        m-3
                         rounded-sm
                         border
                         border-gray-200
@@ -329,278 +319,358 @@ const CourseLessonsList = () => {
                         bắt đầu xây dựng nội dung
                         cho khóa học.
                     </p>
+
+                    <Link
+                        to="create"
+                        className="
+                            mt-5
+                            inline-flex
+                            items-center
+                            rounded-lg
+                            bg-[#0a479d]
+                            px-4
+                            py-2
+                            text-xs
+                            font-semibold
+                            text-white
+                            transition
+                            hover:bg-[#083b82]
+                        "
+                    >
+                        Thêm bài học
+                    </Link>
                 </div>
             )}
 
-            {/* ======================================
+            {/* ==================================
                 Lesson list
-            ====================================== */}
+            ================================== */}
 
             {lessons.length > 0 && (
-                <motion.div
-                    layout
-                    className="space-y-2 p-2"
-                >
-                    {lessons.map(
-                        (lesson, index) => {
-                            const hasVideo =
-                                Boolean(
-                                    lesson.video
-                                );
+                <div className="space-y-2 p-2">
+                    <AnimatePresence initial={false}>
+                        {lessons.map(
+                            (lesson, index) => {
+                                const hasDuration =
+                                    lesson.duration !==
+                                    null &&
+                                    lesson.duration !==
+                                    undefined;
 
-                            const hasDuration =
-                                hasVideo &&
-                                lesson.duration !==
-                                null &&
-                                lesson.duration !==
-                                undefined;
+                                const isReordering =
+                                    reorderingId ===
+                                    lesson.id;
 
-                            const isReordering =
-                                reorderingId ===
-                                lesson.id;
-
-                            return (
-                                <motion.div
-                                    key={lesson.id}
-                                    layout
-                                    transition={{
-                                        layout: {
-                                            duration: 0.4,
-                                            ease: "easeInOut",
-                                        },
-                                    }}
-                                    className="
-                                        group
-                                        flex
-                                        items-center
-                                        gap-3
-                                        rounded-sm
-                                        border
-                                        border-gray-200
-                                        bg-white
-                                        px-3
-                                        py-3
-                                        transition
-                                        hover:border-[#DCD6FF]
-                                        hover:shadow-sm
-                                        sm:gap-4
-                                        sm:px-4
-                                        sm:py-3.5
-                                    "
-                                >
-                                    {/* ==================================
-                                        Lesson number
-                                    ================================== */}
-
-                                    <div
-                                        className="
+                                return (
+                                    <motion.div
+                                        key={lesson.id}
+                                        layout="position"
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 350,
+                                            damping: 25,
+                                            mass: 0.8,
+                                        }}
+                                        className={`
+                                            group
+                                            relative
                                             flex
-                                            h-9
-                                            w-9
-                                            shrink-0
                                             items-center
-                                            justify-center
-                                            rounded-full
-                                            bg-[#6C5CE7]/10
-                                            text-xs
-                                            font-semibold
-                                            tabular-nums
-                                            text-[#6C5CE7]
-                                            sm:h-10
-                                            sm:w-10
-                                            sm:text-sm
-                                        "
-                                    >
-                                        {String(
-                                            index + 1
-                                        ).padStart(
-                                            2,
-                                            "0"
-                                        )}
-                                    </div>
-
-                                    {/* ==================================
-                                        Content
-                                    ================================== */}
-
-                                    <Link
-                                        to={lesson.id}
-                                        className="
-                                            min-w-0
-                                            flex-1
-                                        "
-                                    >
-                                        <h3
-                                            className="
-                                                truncate
-                                                text-sm
-                                                font-semibold
-                                                leading-5
-                                                text-[#252238]
-                                                transition
-                                                group-hover:text-[#6C5CE7]
-                                                sm:text-[15px]
-                                            "
-                                            title={
-                                                lesson.title
+                                            gap-3
+                                            rounded-sm
+                                            border
+                                            border-slate-200/80
+                                            bg-white
+                                            px-3
+                                            py-3
+                                            shadow-sm
+                                            transition
+                                            hover:border-slate-300
+                                            hover:shadow-md
+                                            sm:gap-3.5
+                                            sm:px-4
+                                            sm:py-3.5
+                                            ${isReordering
+                                                ? "pointer-events-none opacity-70"
+                                                : ""
                                             }
-                                        >
-                                            {
-                                                lesson.title
-                                            }
-                                        </h3>
+                                        `}
+                                    >
+                                        {/* ==================================
+                                            Lesson number
+                                        ================================== */}
 
                                         <div
                                             className="
-                                                mt-1.5
                                                 flex
-                                                min-w-0
+                                                h-8
+                                                w-8
+                                                shrink-0
                                                 items-center
-                                                gap-2
-                                                text-xs
-                                                leading-4
+                                                justify-center
+                                                rounded-full
+                                                bg-blue-50
+                                                text-[11px]
+                                                font-bold
+                                                tabular-nums
+                                                text-blue-600
+                                                ring-1
+                                                ring-inset
+                                                ring-blue-500/10
+                                                transition-colors
+                                                group-hover:bg-blue-600
+                                                group-hover:text-white
+                                                sm:h-9
+                                                sm:w-9
+                                                sm:text-xs
                                             "
                                         >
-                                            {/* Duration */}
-
-                                            {hasDuration && (
-                                                <span
-                                                    className="
-                                                        shrink-0
-                                                        font-medium
-                                                        tabular-nums
-                                                        text-gray-500
-                                                    "
-                                                >
-                                                    {formatTime(
-                                                        lesson.duration
-                                                    )}
-                                                </span>
+                                            {String(
+                                                index + 1
+                                            ).padStart(
+                                                2,
+                                                "0"
                                             )}
                                         </div>
-                                    </Link>
 
-                                    {/* ==================================
-                                        Reorder actions
-                                    ================================== */}
+                                        {/* ==================================
+                                            Content
+                                        ================================== */}
 
-                                    <div
-                                        className="
-                                            flex
-                                            shrink-0
-                                            items-center
-                                            gap-1
-                                        "
-                                    >
-                                        {/* Move up */}
-
-                                        <button
-                                            type="button"
-                                            disabled={
-                                                index ===
-                                                0 ||
-                                                Boolean(
-                                                    reorderingId
-                                                )
-                                            }
-                                            onClick={() =>
-                                                handleMove(
-                                                    index,
-                                                    "up"
-                                                )
-                                            }
+                                        <Link
+                                            to={lesson.id}
                                             className="
-                                                flex
-                                                h-8
-                                                w-8
-                                                items-center
-                                                justify-center
-                                                rounded-full
-                                                transition
-                                                hover:bg-[#6C5CE7]
-                                                hover:text-white
-                                                disabled:cursor-not-allowed
-                                                disabled:text-[#C9C3E8]
-                                                disabled:hover:bg-transparent
-                                                disabled:hover:text-[#C9C3E8]
+                                                min-w-0
+                                                flex-1
+                                                focus:outline-none
                                             "
-                                            title="Đưa bài học lên"
-                                            aria-label="Đưa bài học lên"
                                         >
-                                            <ChevronUp
-                                                size={
-                                                    19
+                                            <h3
+                                                title={
+                                                    lesson.title
                                                 }
-                                                strokeWidth={
-                                                    2.5
+                                                className="
+                                                    truncate
+                                                    text-sm
+                                                    font-semibold
+                                                    leading-5
+                                                    text-slate-800
+                                                    transition-colors
+                                                    group-hover:text-blue-600
+                                                    sm:text-[15px]
+                                                "
+                                            >
+                                                {
+                                                    lesson.title
                                                 }
-                                            />
-                                        </button>
+                                            </h3>
 
-                                        {/* Move down */}
+                                            <div
+                                                className="
+                                                    mt-1
+                                                    flex
+                                                    flex-wrap
+                                                    items-center
+                                                    gap-x-2
+                                                    gap-y-1
+                                                "
+                                            >
+                                                {/* Duration */}
 
-                                        <button
-                                            type="button"
-                                            disabled={
-                                                index ===
-                                                lessons.length -
-                                                1 ||
-                                                Boolean(
-                                                    reorderingId
-                                                )
-                                            }
-                                            onClick={() =>
-                                                handleMove(
-                                                    index,
-                                                    "down"
-                                                )
-                                            }
-                                            className="
-                                                flex
-                                                h-8
-                                                w-8
-                                                items-center
-                                                justify-center
-                                                rounded-full
-                                                transition
-                                                hover:bg-[#6C5CE7]
-                                                hover:text-white
-                                                disabled:cursor-not-allowed
-                                                disabled:text-[#C9C3E8]
-                                                disabled:hover:bg-transparent
-                                                disabled:hover:text-[#C9C3E8]
-                                            "
-                                            title="Đưa bài học xuống"
-                                            aria-label="Đưa bài học xuống"
-                                        >
-                                            <ChevronDown
-                                                size={
-                                                    19
-                                                }
-                                                strokeWidth={
-                                                    2.5
-                                                }
-                                            />
-                                        </button>
-                                    </div>
+                                                {hasDuration && (
+                                                    <span
+                                                        className="
+                                                            inline-flex
+                                                            items-center
+                                                            gap-1
+                                                            text-[11px]
+                                                            font-medium
+                                                            tabular-nums
+                                                            text-slate-400
+                                                        "
+                                                    >
+                                                        <Clock3
+                                                            size={12}
+                                                            strokeWidth={2}
+                                                        />
+                                                        {formatTime(
+                                                            lesson.duration
+                                                        )}
+                                                    </span>
+                                                )}
 
-                                    {/* ==================================
-                                        Reordering indicator
-                                    ================================== */}
+                                                {/* Divider */}
 
-                                    {isReordering && (
+                                                {hasDuration && (
+                                                    <span className="text-[10px] text-slate-300">
+                                                        •
+                                                    </span>
+                                                )}
+
+
+                                            </div>
+                                        </Link>
+
+                                        {/* ==================================
+                                            Reorder actions
+                                        ================================== */}
+
+                                        {/* ==================================
+    Right actions
+================================== */}
+
                                         <div
                                             className="
-                                                absolute
-                                                pointer-events-none
-                                            "
-                                        />
-                                    )}
-                                </motion.div>
-                            );
-                        }
-                    )}
-                </motion.div>
+        flex
+        shrink-0
+        items-center
+        gap-2
+        sm:gap-3
+        sm:pl-3
+    "
+                                        >
+                                            {/* Free badge */}
+
+                                            {lesson.isFree && (
+                                                <span
+                                                    className="
+                rounded-full
+                bg-emerald-50
+                px-2
+                py-1
+                text-[10px]
+                font-semibold
+                text-emerald-600
+                whitespace-nowrap
+                sm:text-[11px]
+            "
+                                                >
+                                                    Miễn phí
+                                                </span>
+                                            )}
+
+                                            {/* Reorder buttons */}
+
+                                            <div
+                                                className="
+            flex
+            flex-col
+            items-center
+            justify-center
+            border-l
+        border-slate-100
+        pl-2
+        "
+                                            >
+                                                {/* Move up */}
+
+                                                <button
+                                                    type="button"
+                                                    disabled={
+                                                        index === 0 ||
+                                                        Boolean(reorderingId)
+                                                    }
+                                                    onClick={() =>
+                                                        handleMove(index, "up")
+                                                    }
+                                                    title="Đưa bài học lên"
+                                                    aria-label="Đưa bài học lên"
+                                                    className="
+                flex
+                h-5
+                w-5
+                items-center
+                justify-center
+                rounded
+                text-slate-400
+                transition
+                hover:bg-slate-100
+                hover:text-blue-600
+                active:scale-90
+                disabled:cursor-not-allowed
+                disabled:opacity-20
+            "
+                                                >
+                                                    <ChevronUp
+                                                        size={14}
+                                                        strokeWidth={2.5}
+                                                    />
+                                                </button>
+
+                                                {/* Move down */}
+
+                                                <button
+                                                    type="button"
+                                                    disabled={
+                                                        index === lessons.length - 1 ||
+                                                        Boolean(reorderingId)
+                                                    }
+                                                    onClick={() =>
+                                                        handleMove(index, "down")
+                                                    }
+                                                    title="Đưa bài học xuống"
+                                                    aria-label="Đưa bài học xuống"
+                                                    className="
+                flex
+                h-5
+                w-5
+                items-center
+                justify-center
+                rounded
+                text-slate-400
+                transition
+                hover:bg-slate-100
+                hover:text-blue-600
+                active:scale-90
+                disabled:cursor-not-allowed
+                disabled:opacity-20
+            "
+                                                >
+                                                    <ChevronDown
+                                                        size={14}
+                                                        strokeWidth={2.5}
+                                                    />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* ==================================
+                                            Reordering overlay
+                                        ================================== */}
+
+                                        {isReordering && (
+                                            <div
+                                                className="
+                                                    absolute
+                                                    inset-0
+                                                    z-10
+                                                    flex
+                                                    items-center
+                                                    justify-center
+                                                    rounded-sm
+                                                    bg-white/60
+                                                    backdrop-blur-[1px]
+                                                "
+                                            >
+                                                <div
+                                                    className="
+                                                        h-4
+                                                        w-4
+                                                        animate-spin
+                                                        rounded-full
+                                                        border-2
+                                                        border-blue-600
+                                                        border-t-transparent
+                                                    "
+                                                />
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                );
+                            }
+                        )}
+                    </AnimatePresence>
+                </div>
             )}
         </div>
     );

@@ -1,27 +1,35 @@
-import userService from './user.service.js';
+import userService from "./user.service.js";
+import AppError from "../../utils/appError.js";
 
 const userController = {
-    async getAllUsers(req, res, next) {
+    // GET /users/me
+    async getMe(req, res, next) {
+
         try {
-            const users = await userService.getAllUsers();
+            const user = await userService.getMe(
+                req.user.id
+            );
 
             res.status(200).json({
                 success: true,
-                data: users,
+                message: "Lấy thông tin người dùng thành công.",
+                data: user,
             });
         } catch (error) {
             next(error);
         }
     },
 
-    async getUserById(req, res, next) {
+    // GET /users/:id
+    async getById(req, res, next) {
         try {
             const { id } = req.params;
 
-            const user = await userService.getUserById(id);
+            const user = await userService.getById(id);
 
             res.status(200).json({
                 success: true,
+                message: "Lấy thông tin người dùng thành công.",
                 data: user,
             });
         } catch (error) {
@@ -29,36 +37,28 @@ const userController = {
         }
     },
 
-    async getMe(req, res, next) {
+    // PUT /users/me
+    async updateMe(req, res, next) {
         try {
-            const user = await userService.getUserById(
-                req.user.userId
-            );
-
-            res.status(200).json({
-                success: true,
-                message: 'Lấy thông tin người dùng thành công.',
-                data: {
-                    user,
-                },
-            });
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    async updateProfile(req, res, next) {
-        try {
-            const userId = req.user.userId;
             const { name } = req.body;
 
-            const user = await userService.updateProfile(
-                userId,
-                { name }
+            if (name === undefined) {
+                throw new AppError(
+                    "Không có thông tin cần cập nhật.",
+                    400
+                );
+            }
+
+            const user = await userService.updateMe(
+                req.user.userId,
+                {
+                    name,
+                }
             );
 
             res.status(200).json({
                 success: true,
+                message: "Cập nhật thông tin thành công.",
                 data: user,
             });
         } catch (error) {
@@ -66,17 +66,23 @@ const userController = {
         }
     },
 
-    async updatePassword(req, res, next) {
+    // PUT /users/me/password
+    async changePassword(req, res, next) {
         try {
-            const userId = req.user.userId;
-
             const {
                 currentPassword,
                 newPassword,
             } = req.body;
 
-            await userService.updatePassword(
-                userId,
+            if (!currentPassword || !newPassword) {
+                throw new AppError(
+                    "Vui lòng nhập mật khẩu hiện tại và mật khẩu mới.",
+                    400
+                );
+            }
+
+            await userService.changePassword(
+                req.user.userId,
                 {
                     currentPassword,
                     newPassword,
@@ -85,25 +91,39 @@ const userController = {
 
             res.status(200).json({
                 success: true,
-                data: null,
-                message: 'Password updated successfully',
+                message: "Đổi mật khẩu thành công.",
             });
         } catch (error) {
             next(error);
         }
     },
 
-    async searchTeachers(req, res, next) {
+    // DELETE /users/me
+    async deleteMe(req, res, next) {
         try {
-            const { search } = req.query;
+            await userService.delete(
+                req.user.userId
+            );
 
-            const teachers = await userService.searchTeachers({
-                search,
-            });
-
-            return res.status(200).json({
+            res.status(200).json({
                 success: true,
-                data: teachers,
+                message: "Tài khoản đã được xóa.",
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // PATCH /users/:id/restore
+    async restore(req, res, next) {
+        try {
+            const { id } = req.params;
+
+            await userService.restore(id);
+
+            res.status(200).json({
+                success: true,
+                message: "Khôi phục tài khoản thành công.",
             });
         } catch (error) {
             next(error);

@@ -1,31 +1,44 @@
 import apiClient from "./apiClient";
 
 const lessonAPI = {
+    // ==========================================
+    // Get lessons by course
     // GET /lesson/course/:courseId
+    // ==========================================
+
     getLessonsByCourse: (courseId) => {
         return apiClient.get(
-            `/lesson/course/${courseId}`
+            `/lessons/course/${courseId}`
         );
     },
 
-    // GET /lessons/:lessonId
+    // ==========================================
+    // Get lesson by ID
+    // GET /lesson/:lessonId
+    // ==========================================
+
     getById: (lessonId) => {
         return apiClient.get(
-            `/lesson/${lessonId}`
+            `/lessons/${lessonId}`
         );
     },
 
+    // ==========================================
+    // Create lesson
     // POST /lesson/course/:courseId
+    // ==========================================
+
     create: async (
         courseId,
         data,
         onProgress
     ) => {
         return apiClient.post(
-            `/lesson/course/${courseId}`,
+            `/lessons/course/${courseId}`,
             data,
             {
                 timeout: 0,
+
                 onUploadProgress: (event) => {
                     if (!event.total) {
                         return;
@@ -42,28 +55,62 @@ const lessonAPI = {
         );
     },
 
-    // PUT /lessons/:lessonId
+    // ==========================================
+    // Update lesson
+    // PUT /lesson/:lessonId
+    // ==========================================
+
     update: (lessonId, data) => {
         return apiClient.put(
-            `/lesson/${lessonId}`,
+            `/lessons/${lessonId}`,
             data
         );
     },
 
+    // ==========================================
+    // Delete lesson
     // DELETE /lesson/:lessonId
+    // ==========================================
+
     delete: (lessonId) => {
         return apiClient.delete(
-            `/lesson/${lessonId}`
+            `/lessons/${lessonId}`
         );
     },
 
-    // PUT /lessons/:lessonId/move
+    // ==========================================
+    // Toggle lock lesson
+    // PATCH /lesson/:lessonId/lock
+    // ==========================================
+
+    toggleLock: (lessonId) => {
+        return apiClient.patch(
+            `/lessons/${lessonId}/lock`
+        );
+    },
+
+    // ==========================================
+    // Move lesson
+    // PATCH /lesson/:lessonId/move
+    // ==========================================
+
     move: (lessonId, direction) => {
         return apiClient.put(
-            `/lesson/${lessonId}/move`,
+            `/lessons/${lessonId}/move`,
             {
                 direction,
             }
+        );
+    },
+
+    // ==========================================
+    // Restore lesson
+    // PATCH /lesson/:lessonId/restore
+    // ==========================================
+
+    restore: (lessonId) => {
+        return apiClient.patch(
+            `/lessons/${lessonId}/restore`
         );
     },
 };

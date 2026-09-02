@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 import {
     ArrowLeft,
-    FileText,
-    Trash2,
+    LockOpen,
     Upload,
+    Trash2,
     Video,
 } from "lucide-react";
 
@@ -24,16 +24,18 @@ const LessonCreatePage = () => {
     // ==========================================
     // Form state
     // ==========================================
+
     const [form, setForm] = useState({
         title: "",
         description: "",
-        document: "",
+        isFree: false,
         videoFile: null,
     });
 
     // ==========================================
     // UI state
     // ==========================================
+
     const [videoPreview, setVideoPreview] = useState("");
     const [saving, setSaving] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -41,6 +43,7 @@ const LessonCreatePage = () => {
     // ==========================================
     // Cleanup preview
     // ==========================================
+
     useEffect(() => {
         return () => {
             if (videoPreview) {
@@ -52,6 +55,7 @@ const LessonCreatePage = () => {
     // ==========================================
     // Update form
     // ==========================================
+
     const updateForm = (field, value) => {
         setForm((prev) => ({
             ...prev,
@@ -62,6 +66,7 @@ const LessonCreatePage = () => {
     // ==========================================
     // Select video
     // ==========================================
+
     const handleSelectVideo = (event) => {
         const file = event.target.files?.[0];
 
@@ -72,6 +77,7 @@ const LessonCreatePage = () => {
         // ======================================
         // Validate type
         // ======================================
+
         const allowedTypes = [
             "video/mp4",
             "video/webm",
@@ -90,6 +96,7 @@ const LessonCreatePage = () => {
         // ======================================
         // Validate size
         // ======================================
+
         const maxSize = 500 * 1024 * 1024;
 
         if (file.size > maxSize) {
@@ -104,6 +111,7 @@ const LessonCreatePage = () => {
         // ======================================
         // Release old preview
         // ======================================
+
         if (videoPreview) {
             URL.revokeObjectURL(videoPreview);
         }
@@ -111,6 +119,7 @@ const LessonCreatePage = () => {
         // ======================================
         // Create preview
         // ======================================
+
         const previewUrl = URL.createObjectURL(file);
 
         setForm((prev) => ({
@@ -120,11 +129,15 @@ const LessonCreatePage = () => {
 
         setVideoPreview(previewUrl);
         setUploadProgress(0);
+
+        // Cho phép chọn lại cùng một file
+        event.target.value = "";
     };
 
     // ==========================================
     // Remove video
     // ==========================================
+
     const handleRemoveVideo = () => {
         if (saving) {
             return;
@@ -145,8 +158,21 @@ const LessonCreatePage = () => {
     };
 
     // ==========================================
+    // Toggle free lesson
+    // ==========================================
+
+    const handleFreeToggle = () => {
+        if (saving) {
+            return;
+        }
+
+        updateForm("isFree", !form.isFree);
+    };
+
+    // ==========================================
     // Submit
     // ==========================================
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -157,30 +183,36 @@ const LessonCreatePage = () => {
         // ======================================
         // Validate course
         // ======================================
+
         if (!courseId) {
             appToast.error(
                 "Không tìm thấy khóa học."
             );
+
             return;
         }
 
         // ======================================
         // Validate title
         // ======================================
+
         if (!form.title.trim()) {
             appToast.error(
                 "Vui lòng nhập tên bài học."
             );
+
             return;
         }
 
         // ======================================
         // Validate video
         // ======================================
+
         if (!form.videoFile) {
             appToast.error(
                 "Vui lòng chọn video cho bài học."
             );
+
             return;
         }
 
@@ -191,6 +223,7 @@ const LessonCreatePage = () => {
             // ==================================
             // FormData
             // ==================================
+
             const formData = new FormData();
 
             formData.append(
@@ -198,14 +231,16 @@ const LessonCreatePage = () => {
                 form.title.trim()
             );
 
-            formData.append(
-                "description",
-                form.description.trim()
-            );
+            if (form.description.trim()) {
+                formData.append(
+                    "description",
+                    form.description.trim()
+                );
+            }
 
             formData.append(
-                "document",
-                form.document.trim()
+                "isFree",
+                String(form.isFree)
             );
 
             formData.append(
@@ -216,12 +251,21 @@ const LessonCreatePage = () => {
             // ==================================
             // Create lesson
             // ==================================
+            //
             // Không gửi:
             // - order
             // - duration
+            // - documents
             // - isLocked
             //
-            // BE sẽ tự xử lý các giá trị này.
+            // BE sẽ tự xử lý:
+            // - order
+            // - duration
+            //
+            // documents là relation riêng:
+            // LessonDocument[]
+            //
+
             const response = await lessonService.create(
                 courseId,
                 formData,
@@ -233,6 +277,7 @@ const LessonCreatePage = () => {
             // ==================================
             // Success
             // ==================================
+
             appToast.success(
                 response?.message ||
                 "Tạo bài học thành công."
@@ -261,9 +306,11 @@ const LessonCreatePage = () => {
     // ==========================================
     // Render
     // ==========================================
+
     return (
         <div className="space-y-2">
             {/* Header */}
+
             <div className="border border-gray-100 bg-white p-4">
                 <h1 className="text-base font-semibold text-[#252238]">
                     Thêm bài học
@@ -275,6 +322,7 @@ const LessonCreatePage = () => {
             </div>
 
             {/* Back */}
+
             <div className="p-2">
                 <Link
                     to=".."
@@ -296,6 +344,7 @@ const LessonCreatePage = () => {
             </div>
 
             {/* Form */}
+
             <form
                 onSubmit={handleSubmit}
                 className="space-y-4"
@@ -303,6 +352,7 @@ const LessonCreatePage = () => {
                 {/* ==================================
                     Basic information
                 ================================== */}
+
                 <section
                     className="
                         border
@@ -314,6 +364,7 @@ const LessonCreatePage = () => {
                     "
                 >
                     {/* Title */}
+
                     <div>
                         <label
                             className="
@@ -361,6 +412,7 @@ const LessonCreatePage = () => {
                     </div>
 
                     {/* Description */}
+
                     <div className="mt-4">
                         <label
                             className="
@@ -404,11 +456,103 @@ const LessonCreatePage = () => {
                             "
                         />
                     </div>
+
+                    {/* Free lesson */}
+
+                    <div
+                        className="
+                            mt-4
+                            flex
+                            items-center
+                            justify-between
+                            gap-4
+                            rounded-lg
+                            border
+                            border-gray-100
+                            bg-gray-50
+                            p-3
+                        "
+                    >
+                        <div className="flex items-start gap-3">
+                            <div
+                                className="
+                                    flex
+                                    h-8
+                                    w-8
+                                    shrink-0
+                                    items-center
+                                    justify-center
+                                    rounded-lg
+                                    bg-[#6C5CE7]/10
+                                    text-[#6C5CE7]
+                                "
+                            >
+                                <LockOpen size={16} />
+                            </div>
+
+                            <div>
+                                <p className="text-xs font-semibold text-gray-700">
+                                    Bài học miễn phí
+                                </p>
+
+                                <p className="mt-0.5 text-[11px] leading-5 text-gray-400">
+                                    Cho phép người chưa tham gia
+                                    khóa học xem bài học này.
+                                </p>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={form.isFree}
+                            disabled={saving}
+                            onClick={handleFreeToggle}
+                            className={`
+                                relative
+                                inline-flex
+                                h-5
+                                w-9
+                                shrink-0
+                                items-center
+                                rounded-full
+                                transition-colors
+                                duration-200
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-[#6C5CE7]/20
+                                disabled:cursor-not-allowed
+                                disabled:opacity-50
+                                ${form.isFree
+                                    ? "bg-[#6C5CE7]"
+                                    : "bg-gray-300"
+                                }
+                            `}
+                        >
+                            <span
+                                className={`
+                                    inline-block
+                                    h-4
+                                    w-4
+                                    rounded-full
+                                    bg-white
+                                    shadow-md
+                                    transition-transform
+                                    duration-200
+                                    ${form.isFree
+                                        ? "translate-x-4"
+                                        : "translate-x-0.5"
+                                    }
+                                `}
+                            />
+                        </button>
+                    </div>
                 </section>
 
                 {/* ==================================
                     Video
                 ================================== */}
+
                 <section
                     className="
                         border
@@ -436,6 +580,10 @@ const LessonCreatePage = () => {
                             />
 
                             Video bài học
+
+                            <span className="text-red-500">
+                                *
+                            </span>
                         </h2>
 
                         <p className="mt-1 text-xs text-gray-400">
@@ -557,13 +705,16 @@ const LessonCreatePage = () => {
                                                 text-gray-400
                                             "
                                         >
-                                            {(
-                                                form.videoFile
-                                                    ?.size /
-                                                1024 /
-                                                1024
-                                            ).toFixed(1)}
-                                            {" MB"}
+                                            {form.videoFile
+                                                ? (
+                                                    form
+                                                        .videoFile
+                                                        .size /
+                                                    1024 /
+                                                    1024
+                                                ).toFixed(1)
+                                                : "0.0"}{" "}
+                                            MB
                                         </p>
                                     </div>
 
@@ -594,6 +745,7 @@ const LessonCreatePage = () => {
                                 </div>
 
                                 {/* Upload progress */}
+
                                 {saving && (
                                     <div className="mt-4">
                                         <div
@@ -656,77 +808,9 @@ const LessonCreatePage = () => {
                 </section>
 
                 {/* ==================================
-                    Document
-                ================================== */}
-                <section
-                    className="
-                        border
-                        border-gray-100
-                        bg-white
-                        p-4
-                        shadow-sm
-                        sm:p-5
-                    "
-                >
-                    <div className="mb-4">
-                        <h2
-                            className="
-                                flex
-                                items-center
-                                gap-2
-                                text-sm
-                                font-semibold
-                                text-[#252238]
-                            "
-                        >
-                            <FileText
-                                size={17}
-                                className="text-[#6C5CE7]"
-                            />
-
-                            Tài liệu
-                        </h2>
-
-                        <p className="mt-1 text-xs text-gray-400">
-                            Nội dung tài liệu của bài học.
-                        </p>
-                    </div>
-
-                    <textarea
-                        value={form.document}
-                        onChange={(event) =>
-                            updateForm(
-                                "document",
-                                event.target.value
-                            )
-                        }
-                        disabled={saving}
-                        rows={3}
-                        placeholder="Nhập nội dung tài liệu..."
-                        className="
-                            w-full
-                            resize-y
-                            rounded-lg
-                            border
-                            border-gray-200
-                            px-3
-                            py-2.5
-                            text-sm
-                            leading-6
-                            outline-none
-                            transition
-                            placeholder:text-gray-300
-                            focus:border-[#6C5CE7]
-                            focus:ring-2
-                            focus:ring-[#6C5CE7]/10
-                            disabled:bg-gray-50
-                        "
-                    />
-                </section>
-
-                {/* ==================================
                     Actions
                 ================================== */}
+
                 <div
                     className="
                         flex

@@ -12,20 +12,21 @@ const lessonController = {
             const {
                 title,
                 description,
-                document,
+                isFree,
             } = req.body;
 
-            const lesson =
-                await lessonService.createLesson({
-                    courseId: req.params.courseId,
-                    teacherId: req.user.userId,
-                    title,
-                    description,
-                    document,
-                    // Multer xử lý video
-                    // Service sẽ tự lấy duration từ video
-                    video: req.file,
-                });
+            const lesson = await lessonService.createLesson({
+                courseId: req.params.courseId,
+                teacherId: req.user.id,
+
+                title,
+                description,
+                isFree,
+
+                // Multer xử lý video.
+                // Service sẽ xử lý upload và duration.
+                video: req.file,
+            });
 
             res.status(201).json({
                 success: true,
@@ -46,14 +47,13 @@ const lessonController = {
             const lessons =
                 await lessonService.getLessonsByCourse({
                     courseId: req.params.courseId,
-                    userId: req.user.userId,
+                    userId: req.user.id,
                     role: req.user.role,
                 });
 
             res.status(200).json({
                 success: true,
-                message:
-                    "Lấy danh sách bài học thành công.",
+                message: "Lấy danh sách bài học thành công.",
                 data: lessons,
             });
         } catch (error) {
@@ -70,14 +70,13 @@ const lessonController = {
             const lesson =
                 await lessonService.getLessonById({
                     lessonId: req.params.id,
-                    userId: req.user.userId,
+                    userId: req.user.id,
                     role: req.user.role,
                 });
 
             res.status(200).json({
                 success: true,
-                message:
-                    "Lấy thông tin bài học thành công.",
+                message: "Lấy thông tin bài học thành công.",
                 data: lesson,
             });
         } catch (error) {
@@ -94,25 +93,26 @@ const lessonController = {
             const {
                 title,
                 description,
-                document,
+                isFree,
             } = req.body;
 
             const lesson =
                 await lessonService.updateLesson({
                     lessonId: req.params.id,
-                    teacherId: req.user.userId,
+                    teacherId: req.user.id,
+
                     title,
                     description,
-                    document,
+                    isFree,
+
                     // Nếu có video mới:
-                    // service sẽ tự tính lại duration
+                    // service sẽ upload và tính lại duration.
                     video: req.file,
                 });
 
             res.status(200).json({
                 success: true,
-                message:
-                    "Cập nhật bài học thành công.",
+                message: "Cập nhật bài học thành công.",
                 data: lesson,
             });
         } catch (error) {
@@ -121,71 +121,22 @@ const lessonController = {
     },
 
     // ==========================================
-    // Soft delete lesson
+    // Delete lesson
     // DELETE /:id
+    //
+    // Lesson hiện tại không có isDelete,
+    // nên đây là hard delete.
     // ==========================================
     async deleteLesson(req, res, next) {
         try {
             await lessonService.deleteLesson({
                 lessonId: req.params.id,
-                teacherId: req.user.userId,
+                teacherId: req.user.id,
             });
 
             res.status(200).json({
                 success: true,
                 message: "Xóa bài học thành công.",
-            });
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    // ==========================================
-    // Restore lesson
-    // PATCH /:id/restore
-    // ==========================================
-    async restoreLesson(req, res, next) {
-        try {
-            const lesson =
-                await lessonService.restoreLesson({
-                    lessonId: req.params.id,
-                    teacherId: req.user.userId,
-                });
-
-            res.status(200).json({
-                success: true,
-                message:
-                    "Khôi phục bài học thành công.",
-                data: lesson,
-            });
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    // ==========================================
-    // Lock / Unlock lesson
-    // PATCH /:id/lock
-    // ==========================================
-    async toggleLock(req, res, next) {
-        try {
-            const {
-                isLocked,
-            } = req.body;
-
-            const lesson =
-                await lessonService.toggleLock({
-                    lessonId: req.params.id,
-                    teacherId: req.user.userId,
-                    isLocked,
-                });
-
-            res.status(200).json({
-                success: true,
-                message: isLocked
-                    ? "Khóa bài học thành công."
-                    : "Mở khóa bài học thành công.",
-                data: lesson,
             });
         } catch (error) {
             next(error);
@@ -203,7 +154,7 @@ const lessonController = {
             const lesson =
                 await lessonService.moveLesson({
                     lessonId: req.params.id,
-                    teacherId: req.user.userId,
+                    teacherId: req.user.id,
                     direction,
                 });
 
@@ -213,6 +164,30 @@ const lessonController = {
                     direction === "up"
                         ? "Di chuyển bài học lên thành công."
                         : "Di chuyển bài học xuống thành công.",
+                data: lesson,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // ==========================================
+    // Toggle lock lesson
+    // PATCH /:id/lock
+    // ==========================================
+
+    async toggleLock(req, res, next) {
+        try {
+            const lesson = await lessonService.toggleLock({
+                lessonId: req.params.id,
+                teacherId: req.user.id,
+            });
+
+            res.status(200).json({
+                success: true,
+                message: lesson.isLocked
+                    ? "Khóa bài học thành công."
+                    : "Mở khóa bài học thành công.",
                 data: lesson,
             });
         } catch (error) {

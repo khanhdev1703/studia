@@ -19,10 +19,10 @@ const TeacherNotifications = () => {
         try {
             setLoading(true);
 
-            const response =
-                await enrollmentService.getTeacherPendingRequests();
+            // const response =
+            //     await enrollmentService.getTeacherPendingRequests();
 
-            setNotifications(response?.data || []);
+            setNotifications([]);
         } catch (error) {
             console.error(
                 "Get teacher notifications error:",

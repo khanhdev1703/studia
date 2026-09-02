@@ -13,129 +13,139 @@ enum Role {
   STUDENT
 }
 
-enum CourseStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-enum EnrollmentStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  CANCELLED
-}
-
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(STUDENT)
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  // Teacher
-  courses Course[]
+  name     String
+  email    String @unique
+  password String
 
-  // Student
-  enrollments Enrollment[]
+  role Role @default(STUDENT)
 
-  // Student lesson progress
+  studentCode String? @unique
+
+  courses          Course[]
+  enrollments      Enrollment[]
   lessonProgresses LessonProgress[]
+
+  // Soft delete
+  isDelete Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([isDelete])
+  @@index([role, isDelete])
 }
 
 model Course {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  teacherId   String       @db.ObjectId
-  teacher     User         @relation(fields: [teacherId], references: [id])
+  teacherId String @db.ObjectId
+  teacher   User   @relation(fields: [teacherId], references: [id])
 
   title       String
   description String?
   thumbnail   String?
 
-  // Đơn vị: nghìn đồng
+  // Giá khóa học, đơn vị: nghìn đồng
   // 0 = miễn phí
-  // 299 = 299k
-  // 1200 = 1.2 triệu
-  price       Int          @default(0)
+  // 299 = 299.000 VNĐ
+  // 599 = 599.000 VNĐ
+  // 1200 = 1.200.000 VNĐ
+  price Int @default(0)
 
-  status      CourseStatus @default(DRAFT)
+  // Thời hạn khóa học, đơn vị: tháng
+  // Ví dụ: 1, 3, 6, 12
+  durationMonths Int @default(6)
+
+  // true = mở
+  // false = đóng
+  status Boolean @default(true)
 
   lessons     Lesson[]
   enrollments Enrollment[]
 
-  deletedAt   DateTime?
+  // Soft delete
+  isDelete Boolean @default(false)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([teacherId])
   @@index([status])
-  @@index([deletedAt])
-  @@index([teacherId, deletedAt])
+  @@index([isDelete])
+  @@index([teacherId, isDelete])
 }
 
 model Lesson {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  courseId    String   @db.ObjectId
-  course      Course   @relation(fields: [courseId], references: [id])
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id])
 
   title       String
   description String?
 
-  video       String?
-  document    String?
+  // URL hoặc path của video
+  video String?
 
-  // Thời lượng tính bằng giây
-  duration    Int?
+  // Thời lượng video, đơn vị: giây
+  duration Int?
 
   // Thứ tự bài học trong khóa học
-  order       Int
+  order Int
 
-  // Student có được học bài này hay không
-  isLocked    Boolean  @default(false)
+  // true  = miễn phí
+  // false = cần tham gia khóa học
+  isFree Boolean @default(false)
 
-  // Soft delete
-  deletedAt   DateTime?
-
-  // Student progress
+  documents  LessonDocument[]
   progresses LessonProgress[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([courseId])
   @@index([courseId, order])
-  @@index([courseId, deletedAt])
-  @@index([deletedAt])
+}
+
+model LessonDocument {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  lessonId String @db.ObjectId
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+
+  name     String
+  url      String
+  mimeType String
+  size     Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([lessonId])
 }
 
 model Enrollment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  studentId String   @db.ObjectId
-  student   User     @relation(fields: [studentId], references: [id])
+  studentId String @db.ObjectId
+  student   User   @relation(fields: [studentId], references: [id])
 
-  courseId  String   @db.ObjectId
-  course    Course   @relation(fields: [courseId], references: [id])
-
-  status    EnrollmentStatus @default(PENDING)
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id])
 
   enrolledAt DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  expiresAt  DateTime
 
-  // Một Student chỉ có một Enrollment đối với một Course
+  updatedAt DateTime @updatedAt
+
   @@unique([studentId, courseId])
-
   @@index([studentId])
   @@index([courseId])
-  @@index([status])
-  @@index([studentId, status])
-  @@index([courseId, status])
+  @@index([expiresAt])
 }
 
 model LessonProgress {
@@ -147,18 +157,17 @@ model LessonProgress {
   lessonId String @db.ObjectId
   lesson   Lesson @relation(fields: [lessonId], references: [id])
 
-  // Đã hoàn thành bài học hay chưa
-  isCompleted Boolean @default(false)
+  // null = chưa hoàn thành
+  // có giá trị = đã hoàn thành
+  completedAt DateTime?
 
-  // Thời điểm student truy cập lesson gần nhất
+  // Lần cuối học sinh truy cập bài học
   lastAccessedAt DateTime @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([studentId, lessonId])
-
   @@index([studentId])
   @@index([lessonId])
-  @@index([studentId, lastAccessedAt])
 }

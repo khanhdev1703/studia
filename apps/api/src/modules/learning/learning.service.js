@@ -1,6 +1,6 @@
-import enrollmentRepository from "../enrollment/enrollment.repository.js";
-import courseRepository from "../course/course.repository.js";
-import lessonRepository from "../lesson/lesson.repository.js"
+import enrollmentRepository from "../enrollments/enrollment.repository.js";
+import courseRepository from "../courses/course.repository.js";
+import lessonRepository from "../lessons/lesson.repository.js"
 import learningRepository from "./learning.repository.js";
 
 const learningService = {

@@ -80,11 +80,7 @@ const RegisterPage = () => {
         <div className="w-full rounded-3xl border border-gray-100 bg-white p-6 shadow-lg sm:p-8">
           {/* Logo */}
           <div className="mb-4 flex justify-center">
-            <Logo
-              showText={false}
-              size="lg"
-              border={false}
-            />
+            <Logo />
           </div>
 
           {/* Heading */}

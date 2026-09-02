@@ -1,17 +1,24 @@
+import AppError from "../utils/appError.js";
+
 const authorize = (...allowedRoles) => {
+
     return (req, res, next) => {
         if (!req.user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Vui lòng đăng nhập.',
-            });
+            return next(
+                new AppError(
+                    "Vui lòng đăng nhập để tiếp tục.",
+                    401
+                )
+            );
         }
 
         if (!allowedRoles.includes(req.user.role)) {
-            return res.status(403).json({
-                success: false,
-                message: 'Bạn không có quyền thực hiện thao tác này.',
-            });
+            return next(
+                new AppError(
+                    "Bạn không có quyền thực hiện thao tác này.",
+                    403
+                )
+            );
         }
 
         next();

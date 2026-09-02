@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import LogoImage from "../../assets/logo.png";
 
-const Logo = ({ size = 200, link, className = "" }) => {
+const Logo = ({ size = 50, link, className = "" }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {

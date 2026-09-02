@@ -2,14 +2,13 @@
 
 import apiClient from "./apiClient";
 
-export const loginApi = (data) => {
-    return apiClient.post("/auth/login", data);
+const authApi = {
+    login: (data) => {
+        return apiClient.post("/auth/login", data);
+    },
+    register: (data) => {
+        return apiClient.post("/auth/register", data);
+    }
 };
 
-export const registerApi = (data) => {
-    return apiClient.post("/auth/register", data);
-};
-
-export const getMeApi = () => {
-    return apiClient.get("/user/me");
-};
+export default authApi;

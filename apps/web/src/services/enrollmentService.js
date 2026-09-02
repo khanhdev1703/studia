@@ -1,63 +1,39 @@
+// src/services/enrollmentService.js
+
 import enrollmentAPI from "../api/enrollmentAPI";
 
 const enrollmentService = {
     // ==========================================
-    // Student
+    // TEACHER
     // ==========================================
 
-    enroll: async (courseId) => {
-        const response =
-            await enrollmentAPI.enroll(courseId);
-
-        return response.data;
-    },
-
-    getByCourse: async (courseId) => {
+    async getByCourse(courseId) {
         const response =
             await enrollmentAPI.getByCourse(courseId);
 
         return response.data;
     },
 
-    getMyEnrollments: async (params = {}) => {
+    async enrollStudent(courseId, studentCode) {
         const response =
-            await enrollmentAPI.getMyEnrollments(params);
-
-        return response.data;
-    },
-
-    cancel: async (courseId) => {
-        const response =
-            await enrollmentAPI.cancel(courseId);
-
-        return response.data;
-    },
-
-    // ==========================================
-    // Teacher
-    // ==========================================
-
-    getTeacherPendingRequests: async () => {
-        const response =
-            await enrollmentAPI.getTeacherPendingRequests();
-
-        return response.data;
-    },
-
-    approve: async (enrollmentId) => {
-        const response =
-            await enrollmentAPI.approve(
-                enrollmentId
+            await enrollmentAPI.enrollStudent(
+                courseId,
+                studentCode
             );
 
         return response.data;
     },
 
-    reject: async (enrollmentId) => {
+    async getById(enrollmentId) {
         const response =
-            await enrollmentAPI.reject(
-                enrollmentId
-            );
+            await enrollmentAPI.getById(enrollmentId);
+
+        return response.data;
+    },
+
+    async remove(enrollmentId) {
+        const response =
+            await enrollmentAPI.remove(enrollmentId);
 
         return response.data;
     },

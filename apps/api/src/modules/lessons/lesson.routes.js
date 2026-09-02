@@ -2,20 +2,20 @@ import { Router } from "express";
 
 import auth from "../../middlewares/auth.js";
 import authorize from "../../middlewares/authorize.js";
+import { videoUpload } from "../../middlewares/upload.js";
 
 import lessonController from "./lesson.controller.js";
-
-import { videoUpload } from "../../middlewares/upload.js";
 
 const router = Router();
 
 router.use(auth);
 
-// ================================
+// ==========================================
 // Lesson
-// ================================
+// ==========================================
 
-// Tạo lesson
+// Tạo lesson cho course
+// POST /lesson/course/:courseId
 router.post(
     "/course/:courseId",
     authorize("TEACHER"),
@@ -24,18 +24,21 @@ router.post(
 );
 
 // Lấy danh sách lesson của course
+// GET /lesson/course/:courseId
 router.get(
     "/course/:courseId",
     lessonController.getLessonsByCourse
 );
 
-// Lấy chi tiết một lesson
+// Lấy chi tiết lesson
+// GET /lesson/:id
 router.get(
     "/:id",
     lessonController.getLessonById
 );
 
 // Cập nhật lesson
+// PUT /lesson/:id
 router.put(
     "/:id",
     authorize("TEACHER"),
@@ -43,28 +46,24 @@ router.put(
     lessonController.updateLesson
 );
 
-// Soft delete lesson
+// Xóa mềm lesson
+// DELETE /lesson/:id
 router.delete(
     "/:id",
     authorize("TEACHER"),
     lessonController.deleteLesson
 );
 
-// Khôi phục lesson đã xóa
-router.patch(
-    "/:id/restore",
-    authorize("TEACHER"),
-    lessonController.restoreLesson
-);
-
 // Khóa / mở khóa lesson
+// PATCH /lesson/:id/lock
 router.patch(
     "/:id/lock",
     authorize("TEACHER"),
     lessonController.toggleLock
 );
 
-// Di chuyển lesson lên / xuống một vị trí
+// Di chuyển lesson
+// PUT /lesson/:id/move
 router.put(
     "/:id/move",
     authorize("TEACHER"),

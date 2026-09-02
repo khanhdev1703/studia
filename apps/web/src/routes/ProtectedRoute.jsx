@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 import useAuthStore from "../stores/authStore";
-import authService from "../services/authService";
 import Loading from "../components/common/Loading";
+import userService from "../services/userService";
 
 const ProtectedRoute = ({ redirectTo = "/login" }) => {
     const accessToken = useAuthStore(
@@ -25,11 +25,10 @@ const ProtectedRoute = ({ redirectTo = "/login" }) => {
 
             try {
                 if (!user) {
-                    await authService.getMe();
+                    await userService.getMe();
                 }
             } catch (error) {
                 console.log("Protected Error:", error);
-
                 useAuthStore.getState().logout();
             } finally {
                 setLoading(false);
