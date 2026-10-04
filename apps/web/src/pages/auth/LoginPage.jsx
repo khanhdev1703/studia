@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import { Link, useNavigate } from "react-router-dom";
+
 import {
   BookOpen,
   Eye,
@@ -50,107 +52,130 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f0f5ff] px-4 py-8">
+    <div className="relative min-h-screen overflow-hidden bg-[#F8FAF7] px-4 py-6 sm:px-6 sm:py-8">
       {/* ==================================================
-          Background decorations (#0a479d Palette)
+          Soft EdTech Background
       ================================================== */}
 
-      {/* Main glow - top right of login card */}
-      <div className="pointer-events-none absolute left-1/2 top-[18%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#0a479d]/20 blur-3xl" />
+      {/* Large soft blue glow */}
+      <div className="pointer-events-none absolute left-1/2 top-[5%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#DCEEFF]/70 blur-[90px] sm:h-[560px] sm:w-[560px]" />
 
-      {/* Secondary glow - bottom left */}
-      <div className="pointer-events-none absolute bottom-[8%] left-[25%] h-[260px] w-[260px] rounded-full bg-[#3b82f6]/20 blur-3xl" />
+      {/* Soft mint glow */}
+      <div className="pointer-events-none absolute -bottom-32 -left-24 h-[380px] w-[380px] rounded-full bg-[#DDF5ED]/80 blur-[100px]" />
 
-      {/* Cyan glow - bottom right */}
-      <div className="pointer-events-none absolute bottom-[15%] right-[25%] h-[220px] w-[220px] rounded-full bg-[#06b6d4]/15 blur-3xl" />
+      {/* Warm learning accent */}
+      <div className="pointer-events-none absolute -bottom-24 -right-20 h-[300px] w-[300px] rounded-full bg-[#FFF0C9]/60 blur-[100px]" />
+
+      {/* Very subtle grid */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.28]"
+        style={{
+          backgroundImage:
+            "linear-gradient(#DDE8E3 1px, transparent 1px), linear-gradient(90deg, #DDE8E3 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+          maskImage:
+            "radial-gradient(circle at center, black 0%, transparent 72%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at center, black 0%, transparent 72%)",
+        }}
+      />
 
       {/* Decorative dots */}
-      <div className="pointer-events-none absolute left-[calc(50%-260px)] top-[28%] h-2 w-2 rounded-full bg-[#0a479d] opacity-60" />
-      <div className="pointer-events-none absolute right-[calc(50%-260px)] top-[35%] h-3 w-3 rounded-full bg-[#f59e0b] opacity-60" />
-      <div className="pointer-events-none absolute bottom-[28%] left-[calc(50%-230px)] h-2 w-2 rounded-full bg-[#0284c7] opacity-60" />
+      <div className="pointer-events-none absolute left-[10%] top-[23%] h-2 w-2 rounded-full bg-[#78B7E8]/60" />
+      <div className="pointer-events-none absolute right-[12%] top-[27%] h-2.5 w-2.5 rounded-full bg-[#F0C75E]/70" />
+      <div className="pointer-events-none absolute bottom-[23%] left-[14%] h-1.5 w-1.5 rounded-full bg-[#69BFA5]/60" />
+      <div className="pointer-events-none absolute bottom-[18%] right-[14%] h-2 w-2 rounded-full bg-[#78B7E8]/50" />
 
       {/* ==================================================
-          Floating education objects
+          Floating Education Objects
       ================================================== */}
 
-      {/* Book - left upper */}
-      <div className="group pointer-events-auto absolute left-[calc(50%-365px)] top-[30%] hidden cursor-default sm:flex">
-        <div className="flex h-14 w-14 rotate-[-10deg] items-center justify-center rounded-[18px] border border-white/80 bg-white/80 text-[#0a479d] shadow-[0_10px_30px_rgba(10,71,157,0.12)] backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:rotate-0 group-hover:scale-110 group-hover:shadow-[0_16px_35px_rgba(10,71,157,0.22)]">
-          <BookOpen size={24} strokeWidth={1.8} />
+      {/* Book */}
+      <div className="group pointer-events-none absolute left-[calc(50%-390px)] top-[29%] hidden sm:block lg:pointer-events-auto">
+        <div className="flex h-14 w-14 rotate-[-8deg] items-center justify-center rounded-[18px] border border-white/90 bg-white/75 text-[#3C82B8] shadow-[0_12px_35px_rgba(60,130,184,0.10)] backdrop-blur-xl transition-all duration-300 group-hover:-translate-y-2 group-hover:rotate-0 group-hover:scale-105">
+          <BookOpen size={23} strokeWidth={1.7} />
         </div>
       </div>
 
-      {/* Graduation cap - right upper */}
-      <div className="group pointer-events-auto absolute right-[calc(50%-365px)] top-[27%] hidden cursor-default sm:flex">
-        <div className="flex h-14 w-14 rotate-[10deg] items-center justify-center rounded-[18px] border border-white/80 bg-white/80 text-[#0284c7] shadow-[0_10px_30px_rgba(2,132,199,0.12)] backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:rotate-0 group-hover:scale-110 group-hover:shadow-[0_16px_35px_rgba(2,132,199,0.22)]">
-          <GraduationCap size={25} strokeWidth={1.8} />
+      {/* Graduation Cap */}
+      <div className="group pointer-events-none absolute right-[calc(50%-390px)] top-[26%] hidden sm:block lg:pointer-events-auto">
+        <div className="flex h-14 w-14 rotate-[8deg] items-center justify-center rounded-[18px] border border-white/90 bg-white/75 text-[#4E9BCB] shadow-[0_12px_35px_rgba(78,155,203,0.10)] backdrop-blur-xl transition-all duration-300 group-hover:-translate-y-2 group-hover:rotate-0 group-hover:scale-105">
+          <GraduationCap size={24} strokeWidth={1.7} />
         </div>
       </div>
 
-      {/* Pencil - left bottom */}
-      <div className="group pointer-events-auto absolute bottom-[25%] left-[calc(50%-345px)] hidden cursor-default sm:flex">
-        <div className="flex h-12 w-12 rotate-[-14deg] items-center justify-center rounded-[16px] border border-white/80 bg-white/80 text-[#0284c7] shadow-[0_10px_30px_rgba(2,132,199,0.12)] backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:rotate-[-5deg] group-hover:scale-110 group-hover:shadow-[0_16px_35px_rgba(2,132,199,0.22)]">
-          <Pencil size={21} strokeWidth={1.8} />
+      {/* Pencil */}
+      <div className="group pointer-events-none absolute bottom-[24%] left-[calc(50%-365px)] hidden sm:block lg:pointer-events-auto">
+        <div className="flex h-12 w-12 rotate-[-12deg] items-center justify-center rounded-[17px] border border-white/90 bg-white/75 text-[#5BAF9A] shadow-[0_12px_35px_rgba(91,175,154,0.10)] backdrop-blur-xl transition-all duration-300 group-hover:-translate-y-2 group-hover:rotate-[-4deg] group-hover:scale-105">
+          <Pencil size={20} strokeWidth={1.7} />
         </div>
       </div>
 
-      {/* Lightbulb - right bottom */}
-      <div className="group pointer-events-auto absolute bottom-[22%] right-[calc(50%-345px)] hidden cursor-default sm:flex">
-        <div className="flex h-12 w-12 rotate-[8deg] items-center justify-center rounded-[16px] border border-white/80 bg-white/80 text-[#f59e0b] shadow-[0_10px_30px_rgba(245,158,11,0.12)] backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:rotate-0 group-hover:scale-110 group-hover:shadow-[0_16px_35px_rgba(245,158,11,0.22)]">
-          <Lightbulb size={22} strokeWidth={1.8} />
+      {/* Lightbulb */}
+      <div className="group pointer-events-none absolute bottom-[21%] right-[calc(50%-365px)] hidden sm:block lg:pointer-events-auto">
+        <div className="flex h-12 w-12 rotate-[7deg] items-center justify-center rounded-[17px] border border-white/90 bg-white/75 text-[#D5A83C] shadow-[0_12px_35px_rgba(213,168,60,0.10)] backdrop-blur-xl transition-all duration-300 group-hover:-translate-y-2 group-hover:rotate-0 group-hover:scale-105">
+          <Lightbulb size={21} strokeWidth={1.7} />
         </div>
       </div>
 
-      {/* Small sparkle - near top left */}
-      <div className="group pointer-events-auto absolute left-[calc(50%-220px)] top-[22%] hidden sm:block">
+      {/* Sparkles */}
+      <div className="group pointer-events-none absolute left-[calc(50%-245px)] top-[20%] hidden sm:block">
         <Sparkles
-          size={18}
-          className="rotate-[-15deg] text-[#3b82f6] opacity-70 transition-all duration-300 group-hover:rotate-12 group-hover:scale-125 group-hover:text-[#0a479d]"
+          size={17}
+          className="rotate-[-12deg] text-[#6BA9D5]/70 transition-all duration-300 group-hover:rotate-12 group-hover:scale-125"
         />
       </div>
 
-      {/* Small sparkle - near bottom right */}
-      <div className="group pointer-events-auto absolute bottom-[20%] right-[calc(50%-220px)] hidden sm:block">
+      <div className="group pointer-events-none absolute bottom-[18%] right-[calc(50%-245px)] hidden sm:block">
         <Sparkles
           size={16}
-          className="rotate-[15deg] text-[#f59e0b] opacity-70 transition-all duration-300 group-hover:-rotate-12 group-hover:scale-125 group-hover:text-[#f97316]"
+          className="rotate-[12deg] text-[#D5A83C]/70 transition-all duration-300 group-hover:-rotate-12 group-hover:scale-125"
         />
       </div>
 
       {/* ==================================================
-          Main Area
+          Main
       ================================================== */}
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md items-center justify-center">
-        <div className="w-full">
+
+      <div className="relative z-10 flex min-h-[calc(100vh-3rem)] w-full items-center justify-center sm:min-h-[calc(100vh-4rem)]">
+        <div className="w-full max-w-[430px]">
           {/* Login Card */}
-          <div className="rounded-lg border border-white bg-white/95 p-6 shadow-[0_20px_60px_rgba(10,71,157,0.08)] backdrop-blur-xl sm:p-8">
+          <div className="relative overflow-hidden rounded-[26px] border border-[#E4EAE7] bg-white/95 p-5 shadow-[0_20px_60px_rgba(45,75,65,0.08)] backdrop-blur-xl sm:rounded-[30px] sm:p-8">
+            {/* Soft top accent */}
+            <div className="absolute left-0 right-0 top-0 h-[3px] bg-gradient-to-r from-[#4E9BCB] via-[#69BFA5] to-[#E7C45D]" />
+
+            {/* Decorative inner glow */}
+            <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-[#DCEEFF]/60 blur-3xl" />
+
             {/* Heading */}
-            <div className="text-center">
-              <div className="mb-2 flex flex-col items-center">
-                <div className="flex h-16 w-16 items-center justify-center">
+            <div className="relative text-center">
+              <div className="mb-4 flex justify-center">
+                <div className="flex h-[70px] w-[70px] items-center justify-center rounded-[21px] border border-[#E6ECEA] bg-[#FAFCFB] shadow-[0_8px_25px_rgba(60,100,90,0.06)]">
                   <Logo link={"/"} />
                 </div>
               </div>
-              <h1 className="text-[25px] font-bold tracking-tight text-[#082f63]">
+
+              <h1 className="text-[24px] font-bold tracking-[-0.025em] text-[#193B4A] sm:text-[26px]">
                 Đăng nhập
               </h1>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-              {/* Email Field */}
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="relative mt-7 space-y-5">
+              {/* Email */}
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-2 block text-[13px] font-semibold text-[#334155]"
+                  className="mb-2 block text-[13px] font-semibold text-[#405563]"
                 >
                   Email
                 </label>
 
                 <div className="relative">
                   <Mail
-                    size={19}
+                    size={18}
                     strokeWidth={1.8}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8]"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9BAEB7]"
                   />
 
                   <input
@@ -161,22 +186,22 @@ const LoginPage = () => {
                     placeholder="Nhập email của bạn"
                     autoComplete="email"
                     disabled={loading}
-                    className="w-full rounded-sm border border-[#cbd5e1] bg-[#f8fafc] py-3 pl-11 pr-4 text-[13px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#0a479d] focus:bg-white focus:ring-4 focus:ring-[#0a479d]/10 disabled:cursor-not-allowed disabled:bg-gray-100"
+                    className="h-12 w-full rounded-[13px] border border-[#DCE5E2] bg-[#F9FBFA] py-3 pl-11 pr-4 text-[13px] text-[#193B4A] outline-none transition-all placeholder:text-[#9BAEB7] hover:border-[#C9D8D3] focus:border-[#5A9FC5] focus:bg-white focus:ring-4 focus:ring-[#5A9FC5]/10 disabled:cursor-not-allowed disabled:bg-[#F1F4F3]"
                   />
                 </div>
               </div>
 
-              {/* Password Field */}
+              {/* Password */}
               <div>
                 <label
                   htmlFor="password"
-                  className="mb-2 flex items-center justify-between text-[13px] font-semibold text-[#334155]"
+                  className="mb-2 flex items-center justify-between text-[13px] font-semibold text-[#405563]"
                 >
                   <span>Mật khẩu</span>
 
                   <Link
                     to="/forgot-password"
-                    className="text-[12px] font-semibold text-[#0a479d] transition hover:text-[#063272] hover:underline"
+                    className="text-[12px] font-semibold text-[#3D82AC] transition-colors hover:text-[#286585] hover:underline"
                   >
                     Quên mật khẩu?
                   </Link>
@@ -184,9 +209,9 @@ const LoginPage = () => {
 
                 <div className="relative">
                   <LockKeyhole
-                    size={19}
+                    size={18}
                     strokeWidth={1.8}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8]"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9BAEB7]"
                   />
 
                   <input
@@ -197,7 +222,7 @@ const LoginPage = () => {
                     placeholder="Nhập mật khẩu"
                     autoComplete="current-password"
                     disabled={loading}
-                    className="w-full rounded-sm border border-[#cbd5e1] bg-[#f8fafc] py-3 pl-11 pr-12 text-[13px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#0a479d] focus:bg-white focus:ring-4 focus:ring-[#0a479d]/10 disabled:cursor-not-allowed disabled:bg-gray-100"
+                    className="h-12 w-full rounded-[13px] border border-[#DCE5E2] bg-[#F9FBFA] py-3 pl-11 pr-12 text-[13px] text-[#193B4A] outline-none transition-all placeholder:text-[#9BAEB7] hover:border-[#C9D8D3] focus:border-[#5A9FC5] focus:bg-white focus:ring-4 focus:ring-[#5A9FC5]/10 disabled:cursor-not-allowed disabled:bg-[#F1F4F3]"
                   />
 
                   <button
@@ -205,26 +230,28 @@ const LoginPage = () => {
                     onClick={() => setShowPassword((prev) => !prev)}
                     disabled={loading}
                     aria-label={
-                      showPassword ? "Ẩn mật khẩu" : "Hiển thị mật khẩu"
+                      showPassword
+                        ? "Ẩn mật khẩu"
+                        : "Hiển thị mật khẩu"
                     }
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94a3b8] transition hover:text-[#0a479d] disabled:cursor-not-allowed"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-[#9BAEB7] transition-colors hover:text-[#3D82AC] disabled:cursor-not-allowed"
                   >
                     {showPassword ? (
-                      <EyeOff size={19} />
+                      <EyeOff size={18} />
                     ) : (
-                      <Eye size={19} />
+                      <Eye size={18} />
                     )}
                   </button>
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full cursor-pointer overflow-hidden rounded-sm bg-gradient-to-r from-[#0a479d] to-[#1258ba] px-4 py-3 text-[13px] font-semibold text-white shadow-[0_8px_20px_rgba(10,71,157,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(10,71,157,0.35)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+                className="group relative mt-1 flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden rounded-[13px] bg-[#4E9BCB] px-4 text-[13px] font-semibold text-white shadow-[0_9px_22px_rgba(78,155,203,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#438DBB] hover:shadow-[0_13px_28px_rgba(78,155,203,0.28)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
               >
-                {/* Shine animation */}
+                {/* Shine */}
                 <span className="pointer-events-none absolute inset-y-0 -left-10 w-8 rotate-[20deg] bg-white/20 transition-all duration-700 group-hover:left-[110%]" />
 
                 <span className="relative">
@@ -233,12 +260,12 @@ const LoginPage = () => {
               </button>
             </form>
 
-            {/* Register Link */}
-            <div className="mt-6 text-center text-[13px] text-[#64748b]">
+            {/* Register */}
+            <div className="relative mt-6 text-center text-[13px] text-[#71818A]">
               Chưa có tài khoản?{" "}
               <Link
                 to="/register"
-                className="font-semibold text-[#0a479d] transition hover:text-[#063272] hover:underline"
+                className="font-semibold text-[#3D82AC] transition-colors hover:text-[#286585] hover:underline"
               >
                 Đăng ký
               </Link>
@@ -246,10 +273,12 @@ const LoginPage = () => {
           </div>
 
           {/* Footer */}
-          {/* <div className="mt-5 flex items-center justify-center gap-1.5 text-[10px] text-[#94a3b8]">
+          <div className="mt-5 flex items-center justify-center gap-2 text-[10px] text-[#9BAEB7]">
+            <span className="h-px w-8 bg-[#DCE5E2]" />
             <BookOpen size={12} />
-            <span>Học tập · Khám phá · Phát triển</span>
-          </div> */}
+            <span>Achan</span>
+            <span className="h-px w-8 bg-[#DCE5E2]" />
+          </div>
         </div>
       </div>
     </div>

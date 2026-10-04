@@ -1,63 +1,56 @@
 import { useRef } from "react";
-
-import {
-    Navigate,
-    Route,
-    Routes,
-} from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import ScrollToTop from "../../../components/common/ScrollToTop";
 
 import StudentSidebar from "./StudentSidebar";
-import StudentBottomNav from "./StudentBottomNav";
-
-// import StudentDashboard from "../dashboard/StudentDashboard";
-import ProfilePage from "../profile/StudentProfile";
-
-import ExplorePage from "../explore/ExplorePage";
-import ExploreCoursePage from "../explore/ExploreCoursePage";
-import ExploreCourseDetailPage from "../explore/ExploreCourseDetailPage";
 
 import StudentCoursesPage from "../courses/StudentCoursesPage";
-import StudentCourseDetailPage from "../courses/StudentCourseDetailPage.jsx";
+import StudentCourseDetailPage from "../courses/StudentCourseDetailPage";
+
+import ExplorePage from "../explore/ExplorePage";
+import ExploreCourseDetailPage from "../explore/ExploreCourseDetailPage";
+
+import ProfilePage from "../profile/StudentProfile";
+import StudentBottomNav from "./StudentBottomNav";
 
 const StudentLayout = () => {
     const mainRef = useRef(null);
 
     return (
-        <div className="flex h-dvh flex-col overflow-hidden bg-[#F7F7FF] lg:block">
+        <div className="min-h-dvh bg-[#F8FAFC]">
             <ScrollToTop scrollRef={mainRef} />
 
-            {/* Desktop Sidebar */}
             <StudentSidebar />
+            <StudentBottomNav />
 
-            {/* Main Content */}
             <main
                 ref={mainRef}
-                className="
-                    min-h-0
-                    flex-1
-                    overflow-y-auto
-                    lg:ml-64
-                    lg:h-dvh
-                    lg:overflow-y-auto
-                "
+                className={[
+                    "min-h-dvh",
+                    "overflow-y-auto",
+                    "bg-[#F8FAFC]",
+                    "pb-16",
+                    "lg:ml-64",
+                    "lg:h-dvh",
+                    "lg:min-h-0",
+                    "lg:overflow-y-auto",
+                    "lg:pb-0",
+                ].join(" ")}
             >
                 <Routes>
-                    {/* ==========================================
-                        Dashboard
-                    ========================================== */}
+                    {/* Default */}
                     <Route
                         index
-                        element={<Navigate to="courses" replace />}
+                        element={
+                            <Navigate
+                                to="courses"
+                                replace
+                            />
+                        }
                     />
 
-                    {/* ==========================================
-                        Học tập
-                        
-                        /student/courses
-                        /student/courses/:courseId
-                    ========================================== */}
+                    {/* Học tập */}
                     <Route
                         path="courses"
                         element={<StudentCoursesPage />}
@@ -68,55 +61,36 @@ const StudentLayout = () => {
                         element={<StudentCourseDetailPage />}
                     />
 
-                    {/* ==========================================
-                        Khám phá
-                        
-                        /student/explore
-                        /student/explore/courses
-                        /student/explore/courses/:courseId
-                        /student/explore/teachers
-                    ========================================== */}
+                    {/* Khám phá */}
+                    <Route
+                        path="explore/:courseId"
+                        element={<ExploreCourseDetailPage />}
+                    />
                     <Route
                         path="explore"
                         element={<ExplorePage />}
-                    >
-                        <Route
-                            index
-                            element={
-                                <Navigate
-                                    to="courses"
-                                    replace
-                                />
-                            }
-                        />
+                    />
 
-                        <Route
-                            path="courses/:courseId"
-                            element={
-                                <ExploreCourseDetailPage />
-                            }
-                        />
 
-                        <Route
-                            path="courses"
-                            element={<ExploreCoursePage />}
-                        />
-                    </Route>
 
-                    {/* ==========================================
-                        Profile
-                        
-                        /student/profile
-                    ========================================== */}
+                    {/* Tài khoản */}
                     <Route
                         path="profile/*"
                         element={<ProfilePage />}
                     />
+
+                    {/* Fallback */}
+                    <Route
+                        path="*"
+                        element={
+                            <Navigate
+                                to="courses"
+                                replace
+                            />
+                        }
+                    />
                 </Routes>
             </main>
-
-            {/* Mobile Bottom Navigation */}
-            <StudentBottomNav />
         </div>
     );
 };
