@@ -82,7 +82,7 @@ const userController = {
             }
 
             await userService.changePassword(
-                req.user.userId,
+                req.user.id,
                 {
                     currentPassword,
                     newPassword,

@@ -27,6 +27,10 @@ const userService = {
             message,
             data,
         };
+    },
+    changePassword: async (form) => {
+        const response = await userAPI.changePasswordApi(form);
+        return response.data;
     }
 };
 

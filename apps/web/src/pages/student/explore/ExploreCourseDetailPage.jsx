@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
+
 import {
     ArrowLeft,
     BookOpen,
-    Clock3,
+    CalendarDays,
     Heart,
     LockKeyhole,
     PlayCircle,
     UserRound,
     X,
 } from "lucide-react";
+
 import { useNavigate, useParams } from "react-router-dom";
 
 import courseService from "../../../services/courseService";
+
 import formatPrice from "../../../utils/formatPrice";
 import formatDuration from "../../../utils/formatDuration";
 import getUrl from "../../../utils/getUrl";
@@ -30,15 +33,13 @@ const ExploreCourseDetailPage = () => {
     };
 
     const handleLessonClick = (lesson) => {
-        if (!lesson?.isFree) {
-            return;
-        }
+        if (!lesson?.isFree) return;
 
         setPreviewLesson(lesson);
     };
 
     useEffect(() => {
-        const fetchCourse = async () => {
+        const fetchCourseDetail = async () => {
             try {
                 setLoading(true);
 
@@ -48,7 +49,7 @@ const ExploreCourseDetailPage = () => {
                 setCourse(response?.data || null);
             } catch (error) {
                 console.error(
-                    "Không thể lấy thông tin khóa học:",
+                    "Lỗi khi lấy chi tiết khóa học:",
                     error
                 );
 
@@ -59,261 +60,126 @@ const ExploreCourseDetailPage = () => {
         };
 
         if (courseId) {
-            fetchCourse();
+            fetchCourseDetail();
         }
     }, [courseId]);
 
-    /*
-     * ============================================================
-     * LOADING
-     * ============================================================
-     */
-
     if (loading) {
         return (
-            <div className="min-h-full bg-[#F8FAFC]">
-                <header className="sticky top-0 z-30 border-b border-[#E5E7EB] bg-white">
-                    <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
-                        <button
-                            type="button"
-                            onClick={handleBack}
-                            aria-label="Quay lại"
-                            className={[
-                                "flex h-9 w-9 items-center justify-center",
-                                "rounded-lg text-[#52525B]",
-                                "transition-colors",
-                                "hover:bg-[#F6F6F7]",
-                                "hover:text-[#18181B]",
-                            ].join(" ")}
-                        >
-                            <ArrowLeft
-                                size={19}
-                                strokeWidth={1.8}
-                            />
-                        </button>
+            <div className="min-h-screen bg-[#F8FAFC]">
+                <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+                    <div className="mb-6 h-6 w-40 animate-pulse rounded-lg bg-gray-200" />
 
-                        <div className="h-4 w-24 animate-pulse rounded bg-[#F1F2F4]" />
-
-                        <div className="h-9 w-9" />
+                    <div className="overflow-hidden rounded-2xl bg-white">
+                        <div className="aspect-[16/9] animate-pulse bg-gray-200 sm:aspect-[16/7]" />
                     </div>
-                </header>
 
-                <main className="mx-auto w-full max-w-7xl">
-                    <div className="aspect-[16/7] animate-pulse bg-[#F1F2F4] sm:aspect-[16/6] lg:aspect-[16/5]" />
-
-                    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-7">
-                        <div className="space-y-4 animate-pulse">
-                            <div className="h-6 w-2/3 rounded bg-[#F1F2F4]" />
-
-                            <div className="h-4 w-40 rounded bg-[#F1F2F4]" />
-
-                            <div className="h-4 w-24 rounded bg-[#F1F2F4]" />
-
-                            <div className="h-16 w-full max-w-3xl rounded bg-[#F1F2F4]" />
-
-                            <div className="border-t border-[#E5E7EB] pt-4">
-                                <div className="h-4 w-1/2 rounded bg-[#F1F2F4]" />
-                            </div>
+                    <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_260px]">
+                        <div className="space-y-4">
+                            <div className="h-7 w-3/4 animate-pulse rounded bg-gray-200" />
+                            <div className="h-4 w-48 animate-pulse rounded bg-gray-200" />
+                            <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+                            <div className="h-4 w-5/6 animate-pulse rounded bg-gray-200" />
                         </div>
 
-                        <div className="mt-8 animate-pulse">
-                            <div className="border-b border-[#E5E7EB] pb-3">
-                                <div className="h-4 w-36 rounded bg-[#F1F2F4]" />
-                            </div>
-
-                            <div className="space-y-0">
-                                {[1, 2, 3, 4].map((item) => (
-                                    <div
-                                        key={item}
-                                        className="flex items-center gap-3 border-b border-[#F0F0F1] py-4"
-                                    >
-                                        <div className="h-7 w-7 rounded bg-[#F1F2F4]" />
-
-                                        <div className="flex-1 space-y-2">
-                                            <div className="h-3.5 w-2/3 rounded bg-[#F1F2F4]" />
-                                            <div className="h-3 w-20 rounded bg-[#F1F2F4]" />
-                                        </div>
-
-                                        <div className="h-4 w-4 rounded bg-[#F1F2F4]" />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        <div className="h-36 animate-pulse rounded-2xl bg-gray-200" />
                     </div>
-                </main>
+                </div>
             </div>
         );
     }
-
-    /*
-     * ============================================================
-     * NOT FOUND
-     * ============================================================
-     */
 
     if (!course) {
         return (
-            <div className="min-h-full bg-[#F8FAFC]">
-                <header className="sticky top-0 z-30 border-b border-[#E5E7EB] bg-white">
-                    <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
-                        <div className="flex items-center gap-1.5">
-                            <button
-                                type="button"
-                                onClick={handleBack}
-                                aria-label="Quay lại"
-                                className={[
-                                    "flex h-9 w-9 items-center justify-center",
-                                    "rounded-lg text-[#52525B]",
-                                    "transition-colors",
-                                    "hover:bg-[#F6F6F7]",
-                                    "hover:text-[#18181B]",
-                                ].join(" ")}
-                            >
-                                <ArrowLeft
-                                    size={19}
-                                    strokeWidth={1.8}
-                                />
-                            </button>
-
-                            <span className="text-sm font-semibold text-[#18181B]">
-                                Chi tiết
-                            </span>
-                        </div>
-
-                        <div className="h-9 w-9" />
+            <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4">
+                <div className="text-center">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+                        <BookOpen
+                            size={24}
+                            className="text-gray-400"
+                        />
                     </div>
-                </header>
 
-                <main className="mx-auto flex min-h-[420px] w-full max-w-5xl items-center justify-center px-4">
-                    <div className="text-center">
-                        <div
-                            className={[
-                                "mx-auto flex h-11 w-11 items-center justify-center",
-                                "rounded-full bg-[#F1F2F4]",
-                                "text-[#52525B]",
-                            ].join(" ")}
-                        >
-                            <BookOpen
-                                size={20}
-                                strokeWidth={1.7}
-                            />
-                        </div>
+                    <h2 className="text-lg font-semibold text-[#18181B]">
+                        Không tìm thấy khóa học
+                    </h2>
 
-                        <h2 className="mt-4 text-sm font-semibold text-[#18181B]">
-                            Không tìm thấy khóa học
-                        </h2>
+                    <p className="mt-1 text-sm text-[#71717A]">
+                        Khóa học có thể đã bị xóa hoặc không tồn tại.
+                    </p>
 
-                        <p className="mt-1.5 text-sm text-[#71717A]">
-                            Khóa học có thể không tồn tại
-                            hoặc đã bị xóa.
-                        </p>
-                    </div>
-                </main>
+                    <button
+                        onClick={handleBack}
+                        className="mt-5 inline-flex h-10 items-center gap-2 rounded-full bg-[#2563EB] px-5 text-sm font-medium text-white transition hover:bg-[#1D4ED8]"
+                    >
+                        <ArrowLeft size={15} />
+                        Quay lại
+                    </button>
+                </div>
             </div>
         );
     }
 
-    /*
-     * ============================================================
-     * DATA
-     * ============================================================
-     */
-
     const lessons = course.lessons || [];
 
-    const lessonCount =
-        course.lessonCount ?? lessons.length;
+    const lessonCount = lessons.length;
 
     const teacherName =
         typeof course.teacher === "string"
             ? course.teacher
-            : course.teacher?.name;
+            : course.teacher?.name || "Chưa cập nhật";
 
     const isFree = Number(course.price || 0) <= 0;
 
     const isLocked = course.status === false;
 
-    /*
-     * ============================================================
-     * PAGE
-     * ============================================================
-     */
+    const durationMonths = Number(
+        course.durationMonths || 0
+    );
 
     return (
-        <div className="min-h-full bg-[#F8FAFC]">
-            {/* =====================================================
-                HEADER
-            ===================================================== */}
+        <div className="min-h-screen bg-white text-[#18181B]">
+            {/* HEADER */}
+            <header className="border-b border-[#E5E7EB] bg-white">
+                <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+                    <button
+                        onClick={handleBack}
+                        className="inline-flex items-center gap-2 text-[13px] font-medium text-[#52525B] transition hover:text-[#18181B]"
+                    >
+                        <ArrowLeft
+                            size={17}
+                            strokeWidth={2}
+                        />
 
-            <header className="sticky top-0 z-30 border-b border-[#E5E7EB] bg-white">
-                <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
-                    <div className="flex items-center gap-1.5">
-                        <button
-                            type="button"
-                            onClick={handleBack}
-                            aria-label="Quay lại"
-                            className={[
-                                "flex h-9 w-9 items-center justify-center",
-                                "rounded-lg text-[#52525B]",
-                                "transition-colors",
-                                "hover:bg-[#F6F6F7]",
-                                "hover:text-[#18181B]",
-                            ].join(" ")}
-                        >
-                            <ArrowLeft
-                                size={19}
-                                strokeWidth={1.8}
-                            />
-                        </button>
-
-                        <span className="text-sm font-semibold text-[#18181B]">
-                            Chi tiết
-                        </span>
-                    </div>
+                        <span>Chi tiết khóa học</span>
+                    </button>
 
                     <button
                         type="button"
                         onClick={() =>
                             setIsFavorite((prev) => !prev)
                         }
-                        aria-label={
-                            isFavorite
-                                ? "Bỏ yêu thích"
-                                : "Thêm vào yêu thích"
-                        }
-                        className={[
-                            "flex h-9 w-9 items-center justify-center",
-                            "rounded-lg text-[#52525B]",
-                            "transition-colors",
-                            "hover:bg-[#F6F6F7]",
-                            "hover:text-[#18181B]",
-                        ].join(" ")}
+                        aria-label="Yêu thích"
+                        className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[#F4F4F5]"
                     >
                         <Heart
-                            size={19}
+                            size={18}
                             strokeWidth={1.8}
-                            fill={
+                            className={
                                 isFavorite
-                                    ? "currentColor"
-                                    : "none"
+                                    ? "fill-red-500 text-red-500"
+                                    : "text-[#71717A]"
                             }
                         />
                     </button>
                 </div>
             </header>
 
-            {/* =====================================================
-                MAIN
-            ===================================================== */}
-
-            <main className="w-full">
-                {/* =================================================
-                    THUMBNAIL
-                ================================================= */}
-
-                <div className="w-full bg-[#F1F2F4]">
-                    <div className="mx-auto w-full max-w-7xl">
-                        <div className="relative aspect-[16/7] overflow-hidden sm:aspect-[16/6] lg:aspect-[16/5]">
+            <main className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
+                {/* THUMBNAIL */}
+                <section>
+                    <div className="relative overflow-hidden rounded-xl bg-[#F1F2F4]">
+                        <div className="aspect-[16/9] sm:aspect-[16/7] lg:aspect-[16/6]">
                             {course.thumbnail ? (
                                 <img
                                     src={getUrl(
@@ -323,208 +189,169 @@ const ExploreCourseDetailPage = () => {
                                     className="h-full w-full object-cover"
                                 />
                             ) : (
-                                <div className="flex h-full items-center justify-center text-[#A1A1AA]">
+                                <div className="flex h-full w-full items-center justify-center">
                                     <BookOpen
-                                        size={40}
-                                        strokeWidth={1.3}
+                                        size={48}
+                                        strokeWidth={1.2}
+                                        className="text-gray-400"
                                     />
                                 </div>
                             )}
+                        </div>
 
-                            {isLocked && (
-                                <div className="absolute left-4 top-4">
-                                    <span
-                                        className={[
-                                            "inline-flex items-center gap-1.5",
-                                            "rounded-md bg-black/60",
-                                            "px-2 py-1",
-                                            "text-[11px] font-medium text-white",
-                                            "backdrop-blur-sm",
-                                        ].join(" ")}
-                                    >
-                                        <LockKeyhole size={11} />
-                                        Tạm khóa
-                                    </span>
-                                </div>
-                            )}
+                        {/* OVERLAY */}
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+
+                        {/* LOCKED */}
+                        {isLocked && (
+                            <div className="absolute left-3 top-3 sm:left-4 sm:top-4">
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1.5 text-[10px] font-medium text-white backdrop-blur-md">
+                                    <LockKeyhole size={11} />
+                                    Tạm khóa
+                                </span>
+                            </div>
+                        )}
+
+                        {/* PRICE */}
+                        <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4">
+                            <span
+                                className={[
+                                    "inline-flex items-center rounded-full",
+                                    "px-3 py-1.5",
+                                    "text-[11px] font-semibold",
+                                    "shadow-sm backdrop-blur-md",
+                                    isFree
+                                        ? "bg-[#ECFDF3]/95 text-[#15803D]"
+                                        : "bg-white/95 text-[#18181B]",
+                                ].join(" ")}
+                            >
+                                {isFree
+                                    ? "Miễn phí"
+                                    : formatPrice(
+                                        course.price
+                                    )}
+                            </span>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                {/* =================================================
-                    COURSE INFORMATION
-                ================================================= */}
+                {/* COURSE INFO */}
+                <section className="mt-5">
+                    <div className="min-w-0">
+                        {/* TITLE */}
+                        <h1 className="text-[18px] font-semibold leading-6 tracking-[-0.01em] text-[#18181B] sm:text-[20px]">
+                            {course.title}
+                        </h1>
 
-                <section className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-7">
-                    {/* TITLE */}
 
-                    <h1 className="max-w-3xl text-xl font-semibold leading-7 tracking-tight text-[#18181B] sm:text-[22px]">
-                        {course.title}
-                    </h1>
-
-                    {/* TEACHER */}
-
-                    <div className="mt-2 flex items-center gap-1.5 text-[13px] text-[#71717A]">
-                        <UserRound
-                            size={14}
-                            strokeWidth={1.7}
-                        />
-
-                        <span>
-                            {teacherName || "Chưa cập nhật"}
-                        </span>
-                    </div>
-
-                    {/* PRICE */}
-
-                    <div className="mt-4 flex items-baseline gap-2">
-                        <span
-                            className={[
-                                "text-[15px] font-semibold",
-                                isFree
-                                    ? "text-[#166534]"
-                                    : "text-[#18181B]",
-                            ].join(" ")}
-                        >
-                            {isFree
-                                ? "Miễn phí"
-                                : formatPrice(course.price)}
-                        </span>
-
-                        {course.durationMonths > 0 && (
-                            <span className="text-xs text-[#A1A1AA]">
-                                / {course.durationMonths} tháng
-                            </span>
-                        )}
-                    </div>
-
-                    {/* DESCRIPTION */}
-
-                    {course.description?.trim() && (
-                        <p className="mt-4 max-w-3xl text-[13px] leading-6 text-[#52525B]">
-                            {course.description}
-                        </p>
-                    )}
-
-                    {/* META */}
-
-                    <div className="mt-5 flex items-center gap-5 border-t border-[#E5E7EB] pt-4">
-                        <span className="flex items-center gap-1.5 text-xs text-[#71717A]">
-                            <BookOpen
-                                size={14}
-                                strokeWidth={1.7}
-                            />
-
-                            {lessonCount} bài học
-                        </span>
-
-                        {course.totalDuration > 0 && (
-                            <span className="flex items-center gap-1.5 text-xs text-[#71717A]">
-                                <Clock3
+                        {/* COURSE META */}
+                        <div className="mt-4 flex flex-wrap items-center gap-3 sm:flex-nowrap sm:gap-6">
+                            <div className="flex items-center gap-2 text-[12px] text-[#71717A]">
+                                <UserRound
                                     size={14}
-                                    strokeWidth={1.7}
+                                    className="text-[#71717A]"
                                 />
 
-                                {formatDuration(
-                                    course.totalDuration
-                                )}
-                            </span>
+                                <span className="font-medium text-[#52525B]">
+                                    {teacherName}
+                                </span>
+                            </div>
+                            <span className="h-1 w-1 rounded-full bg-[#18181B]" />
+                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#52525B]">
+                                <CalendarDays
+                                    size={18}
+                                    strokeWidth={1.8}
+                                    className="text-[#71717A]"
+                                />
+
+                                <span>
+                                    {durationMonths}{" "}
+                                    {durationMonths === 1
+                                        ? "tháng"
+                                        : "tháng"}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* DESCRIPTION */}
+                        {course.description && (
+                            <div className="mt-5">
+                                <p className="max-w-3xl whitespace-pre-line text-[13px] leading-6 text-[#52525B]">
+                                    {course.description}
+                                </p>
+                            </div>
                         )}
                     </div>
                 </section>
 
-                {/* =================================================
-                    LESSONS
-                ================================================= */}
+                {/* LESSONS */}
+                <section className="mt-4 border-t border-[#E5E7EB] pt-5">
+                    <div className="mb-3">
+                        <h2 className="text-[15px] font-semibold text-[#18181B]">
+                            Nội dung khóa học
+                        </h2>
 
-                <section className="mx-auto w-full max-w-5xl px-4 pb-10 sm:px-6 sm:pb-12">
-                    {/* SECTION HEADER */}
-
-                    <div className="flex items-end justify-between gap-4 border-b border-[#E5E7EB] pb-3">
-                        <div>
-                            <h2 className="text-sm font-semibold text-[#18181B]">
-                                Nội dung khóa học
-                            </h2>
-
-                            <p className="mt-1 text-xs text-[#71717A]">
-                                {lessonCount} bài học
-                            </p>
-                        </div>
-
-                        {course.totalDuration > 0 && (
-                            <span className="shrink-0 text-xs text-[#71717A]">
-                                {formatDuration(
-                                    course.totalDuration
-                                )}
-                            </span>
-                        )}
+                        <p className="mt-1 text-[11px] text-[#71717A]">
+                            {lessonCount} bài học
+                        </p>
                     </div>
 
-                    {/* LESSON LIST */}
-
-                    {lessons.length > 0 ? (
-                        <div>
-                            {lessons.map((lesson, index) => {
+                    <div className="overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white">
+                        {lessons.length > 0 ? (
+                            lessons.map((lesson, index) => {
                                 const lessonLocked =
                                     !lesson.isFree;
 
                                 return (
                                     <div
-                                        key={lesson.id}
+                                        key={
+                                            lesson.id ||
+                                            lesson._id ||
+                                            index
+                                        }
                                         className={[
-                                            "flex items-center gap-3",
+                                            "group flex min-h-[62px]",
+                                            "items-center gap-3",
                                             "border-b border-[#F0F0F1]",
-                                            "py-3.5",
-                                            "transition-colors",
-                                            !lessonLocked
+                                            "px-3.5 py-3",
+                                            "last:border-b-0",
+                                            "transition",
+                                            lesson.isFree
                                                 ? "hover:bg-[#FAFAFA]"
-                                                : "",
+                                                : "bg-white",
                                         ].join(" ")}
                                     >
                                         {/* NUMBER */}
-
-                                        <span className="w-7 shrink-0 text-xs font-medium text-[#A1A1AA]">
+                                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F4F5] text-[10px] font-semibold text-[#71717A]">
                                             {String(
-                                                lesson.order ??
                                                 index + 1
                                             ).padStart(2, "0")}
-                                        </span>
+                                        </div>
 
                                         {/* CONTENT */}
-
                                         <div className="min-w-0 flex-1">
-                                            <p
+                                            <div
                                                 className={[
-                                                    "truncate text-[13px] font-medium",
+                                                    "truncate text-[12px] font-medium",
                                                     lessonLocked
                                                         ? "text-[#71717A]"
-                                                        : "text-[#18181B]",
+                                                        : "text-[#27272A]",
                                                 ].join(" ")}
                                             >
                                                 {lesson.title}
-                                            </p>
+                                            </div>
 
-                                            <div className="mt-1 flex items-center gap-2 text-[11px] text-[#A1A1AA]">
-                                                {lesson.duration !=
-                                                    null && (
-                                                        <span className="flex items-center gap-1">
-                                                            <Clock3
-                                                                size={
-                                                                    11
-                                                                }
-                                                                strokeWidth={
-                                                                    1.8
-                                                                }
-                                                            />
-
-                                                            {formatDuration(
-                                                                lesson.duration
-                                                            )}
-                                                        </span>
-                                                    )}
+                                            <div className="mt-1 flex items-center gap-2">
+                                                {lesson.duration && (
+                                                    <span className="text-[10px] text-[#A1A1AA]">
+                                                        {formatDuration(
+                                                            lesson.duration
+                                                        )}
+                                                    </span>
+                                                )}
 
                                                 {lesson.isFree && (
-                                                    <span className="rounded bg-[#F0FDF4] px-1.5 py-0.5 text-[10px] font-medium text-[#166534]">
+                                                    <span className="inline-flex items-center rounded-full bg-[#ECFDF3] px-2 py-0.5 text-[9px] font-medium text-[#15803D]">
                                                         Miễn phí
                                                     </span>
                                                 )}
@@ -532,118 +359,119 @@ const ExploreCourseDetailPage = () => {
                                         </div>
 
                                         {/* ACTION */}
-
-                                        {lessonLocked ? (
-                                            <LockKeyhole
-                                                size={15}
-                                                strokeWidth={1.8}
-                                                className="shrink-0 text-[#A1A1AA]"
-                                            />
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    handleLessonClick(
-                                                        lesson
-                                                    )
-                                                }
-                                                aria-label={`Xem trước ${lesson.title}`}
-                                                className={[
-                                                    "flex h-8 w-8 shrink-0",
-                                                    "items-center justify-center",
-                                                    "rounded-full",
-                                                    "text-[#71717A]",
-                                                    "transition-colors",
-                                                    "hover:bg-[#F1F2F4]",
-                                                    "hover:text-[#18181B]",
-                                                ].join(" ")}
-                                            >
-                                                <PlayCircle
-                                                    size={18}
-                                                    strokeWidth={
-                                                        1.8
+                                        <div className="shrink-0">
+                                            {lessonLocked ? (
+                                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F4F4F5]">
+                                                    <LockKeyhole
+                                                        size={14}
+                                                        className="text-[#A1A1AA]"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleLessonClick(
+                                                            lesson
+                                                        )
                                                     }
-                                                />
-                                            </button>
-                                        )}
+                                                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB] transition hover:bg-[#DBEAFE]"
+                                                    aria-label={`Xem ${lesson.title}`}
+                                                >
+                                                    <PlayCircle
+                                                        size={16}
+                                                        strokeWidth={
+                                                            1.8
+                                                        }
+                                                    />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 );
-                            })}
-                        </div>
-                    ) : (
-                        <div className="py-12 text-center text-sm text-[#71717A]">
-                            Khóa học chưa có bài học.
-                        </div>
-                    )}
+                            })
+                        ) : (
+                            <div className="px-5 py-10 text-center">
+                                <BookOpen
+                                    size={28}
+                                    className="mx-auto text-[#A1A1AA]"
+                                    strokeWidth={1.5}
+                                />
+
+                                <p className="mt-3 text-[12px] text-[#71717A]">
+                                    Khóa học chưa có bài học.
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </section>
             </main>
 
-            {/* =====================================================
-                FREE LESSON PREVIEW
-            ===================================================== */}
-
+            {/* PREVIEW MODAL */}
             {previewLesson && (
                 <div
-                    className={[
-                        "fixed inset-0 z-[100]",
-                        "flex items-center justify-center",
-                        "bg-black/70 p-4",
-                    ].join(" ")}
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-0 backdrop-blur-sm sm:p-6"
                     onClick={() => setPreviewLesson(null)}
                 >
                     <div
-                        className={[
-                            "w-full max-w-4xl overflow-hidden",
-                            "rounded-xl bg-white",
-                            "shadow-2xl",
-                        ].join(" ")}
-                        onClick={(event) =>
-                            event.stopPropagation()
-                        }
+                        className="flex h-full w-full flex-col overflow-hidden bg-white sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:rounded-xl sm:shadow-2xl"
+                        onClick={(event) => event.stopPropagation()}
                     >
-                        {/* MODAL HEADER */}
+                        {/* HEADER */}
+                        <div className="flex h-14 shrink-0 items-center justify-between border-b border-[#E5E7EB] bg-white px-4 sm:px-5">
+                            <div className="min-w-0 pr-4">
+                                <div className="flex min-w-0 items-center gap-3">
+                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] text-[10px] font-semibold text-[#2563EB]">
+                                        {String(
+                                            lessons.findIndex(
+                                                (lesson) =>
+                                                    lesson.id === previewLesson.id ||
+                                                    lesson._id === previewLesson._id
+                                            ) + 1
+                                        ).padStart(2, "0")}
+                                    </span>
 
-                        <div className="flex h-12 items-center justify-between gap-4 border-b border-[#E5E7EB] pl-4">
-                            <h3 className="min-w-0 truncate text-sm font-semibold text-[#18181B]">
-                                Bài{" "}
-                                {previewLesson.order}:{" "}
-                                {previewLesson.title}
-                            </h3>
+                                    <p className="truncate text-[12px] font-medium text-[#18181B]">
+                                        {previewLesson.title}
+                                    </p>
+                                </div>
+                            </div>
 
                             <button
                                 type="button"
-                                onClick={() =>
-                                    setPreviewLesson(null)
-                                }
+                                onClick={() => setPreviewLesson(null)}
+                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#71717A] transition hover:bg-[#F4F4F5] hover:text-[#18181B]"
                                 aria-label="Đóng"
-                                className={[
-                                    "flex h-10 w-10 shrink-0",
-                                    "items-center justify-center",
-                                    "text-[#71717A]",
-                                    "transition-colors",
-                                    "hover:bg-[#F6F6F7]",
-                                    "hover:text-[#18181B]",
-                                ].join(" ")}
                             >
-                                <X size={18} />
+                                <X size={19} strokeWidth={1.8} />
                             </button>
                         </div>
 
                         {/* VIDEO */}
+                        <div className="mt-2 relative flex min-h-0 flex-1 items-start justify-center bg-[#F4F4F5] sm:items-center">
+                            {previewLesson.video ? (
+                                <video
+                                    src={getUrl(previewLesson.video)}
+                                    className="w-full object-contain sm:max-h-[75vh]"
+                                    controls
+                                    controlsList="nodownload noplaybackrate"
+                                    disablePictureInPicture
+                                    autoPlay
+                                    playsInline
+                                />
+                            ) : (
+                                <div className="flex aspect-video w-full flex-col items-center justify-center bg-[#F4F4F5]">
+                                    <PlayCircle
+                                        size={42}
+                                        strokeWidth={1.2}
+                                        className="text-[#A1A1AA]"
+                                    />
 
-                        <div className="aspect-video w-full bg-black">
-                            <video
-                                key={previewLesson.id}
-                                src={getUrl(
-                                    previewLesson.video
-                                )}
-                                controls
-                                controlsList="nodownload noplaybackrate"
-                                disablePictureInPicture
-                                autoPlay
-                                playsInline
-                                className="h-full w-full object-contain"
-                            />
+                                    <p className="mt-4 text-[12px] text-[#71717A]">
+                                        Video chưa khả dụng
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

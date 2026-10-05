@@ -201,6 +201,9 @@ const courseService = {
                 courseId
             );
 
+        console.log(course);
+
+
         if (!course) {
             throw new AppError(
                 "Không tìm thấy khóa học.",
@@ -217,12 +220,6 @@ const courseService = {
                     name: course.teacher.name,
                 }
                 : null,
-
-            lessonCount:
-                course._count?.lessons || 0,
-
-            enrollmentCount:
-                course._count?.enrollments || 0,
         };
     },
 

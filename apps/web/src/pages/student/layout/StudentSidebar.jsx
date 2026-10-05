@@ -23,7 +23,7 @@ const StudentSidebar = () => {
                 "hidden lg:flex",
                 "w-64 flex-col",
                 "border-r border-[#E5E7EB]",
-                "bg-[#FAFAFA]",
+                "bg-white",
             ].join(" ")}
         >
             <div className="flex h-16 shrink-0 items-center px-5">

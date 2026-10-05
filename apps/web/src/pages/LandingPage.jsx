@@ -11,7 +11,7 @@ import Brand from "../components/common/Brand";
 
 const LandingPage = () => {
     return (
-        <div className="flex min-h-screen flex-col overflow-x-hidden bg-[#F8FAF7] text-[#193B4A]">
+        <div className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#193B4A]">
             {/* Header */}
             <header className="relative z-30 border-b border-[#E4EAE7] bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
                 <div className="mx-auto flex h-[68px] max-w-6xl items-center justify-between sm:h-[76px]">
@@ -314,13 +314,13 @@ const LandingPage = () => {
             </main>
 
             {/* Footer */}
-            <footer className="border-t border-[#E4EAE7] bg-white px-4 py-6 sm:px-6 sm:py-7 md:px-8">
+            {/* <footer className="border-t border-[#E4EAE7] bg-white px-4 py-6 sm:px-6 sm:py-7 md:px-8">
                 <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
                     <p className="text-[11px] font-medium text-[#9BAEB7] sm:text-xs">
                         © {new Date().getFullYear()} Achan
                     </p>
                 </div>
-            </footer>
+            </footer> */}
         </div>
     );
 };

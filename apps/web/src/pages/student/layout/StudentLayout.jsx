@@ -13,6 +13,8 @@ import ExploreCourseDetailPage from "../explore/ExploreCourseDetailPage";
 
 import ProfilePage from "../profile/StudentProfile";
 import StudentBottomNav from "./StudentBottomNav";
+import HelpPage from "../profile/HelpPage";
+import ChangePasswordPage from "../profile/ChangePasswordPage";
 
 const StudentLayout = () => {
     const mainRef = useRef(null);
@@ -75,8 +77,24 @@ const StudentLayout = () => {
 
                     {/* Tài khoản */}
                     <Route
-                        path="profile/*"
+                        path="profile"
                         element={<ProfilePage />}
+                    />
+                    {/* <Route
+                        path="profile/personal"
+                        element={<PersonalProfilePage />}
+                    /> */}
+                    {/* <Route
+                        path="profile/settings"
+                        element={<ProfileSettingsPage />}
+                    /> */}
+                    <Route
+                        path="profile/password"
+                        element={<ChangePasswordPage />}
+                    />
+                    <Route
+                        path="profile/help"
+                        element={<HelpPage />}
                     />
 
                     {/* Fallback */}
