@@ -41,7 +41,8 @@ const userService = {
     },
 
     // Cập nhật thông tin cá nhân
-    async updateMe(userId, { name }) {
+    async updateMe(userId, data) {
+
         const user = await userRepository.findById(userId);
 
         if (!user) {
@@ -51,10 +52,10 @@ const userService = {
             );
         }
 
-        const data = {};
+        const updateData = {};
 
-        if (name !== undefined) {
-            const trimmedName = name.trim();
+        if (data.name !== undefined) {
+            const trimmedName = data.name.trim();
 
             if (!trimmedName) {
                 throw new AppError(
@@ -63,12 +64,23 @@ const userService = {
                 );
             }
 
-            data.name = trimmedName;
+            updateData.name = trimmedName;
+        }
+
+        if (data.avatar !== undefined) {
+            if (typeof data.avatar !== "string" || !data.avatar.trim()) {
+                throw new AppError(
+                    "Avatar không hợp lệ",
+                    400
+                );
+            }
+
+            updateData.avatar = data.avatar.trim();
         }
 
         const updatedUser = await userRepository.update(
             userId,
-            data
+            updateData
         );
 
         const { password: _, ...safeUser } = updatedUser;

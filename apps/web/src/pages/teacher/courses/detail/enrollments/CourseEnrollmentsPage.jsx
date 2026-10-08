@@ -1,61 +1,135 @@
-// src/pages/teacher/courses/CourseEnrollmentsPage.jsx
+import { useCallback, useEffect, useState } from "react";
 
-import { useEffect, useState } from "react";
-
-import {
-    ChevronRight,
-    Plus,
-    Users,
-    X,
-} from "lucide-react";
+import { ArrowRight, Plus, Users } from "lucide-react";
 
 import { useNavigate, useOutletContext } from "react-router-dom";
 
-import enrollmentService from "../../../../../services/enrollmentService";
 import appToast from "../../../../../utils/toast";
+import formatDate from "../../../../../utils/formatDate";
+import enrollmentService from "../../../../../services/enrollmentService";
 
-const formatDate = (date) => {
-    if (!date) return "--";
+import AddStudentModal from "./AddStudentModal";
 
-    return new Intl.DateTimeFormat("vi-VN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    }).format(new Date(date));
+
+// ==========================================
+// Helpers
+// ==========================================
+
+const getRemainingDays = (expiresAt) => {
+    if (!expiresAt) return null;
+
+    const expiry = new Date(expiresAt);
+
+    if (Number.isNaN(expiry.getTime())) {
+        return null;
+    }
+
+    const now = new Date();
+
+    // So sánh theo ngày, không phụ thuộc giờ/phút
+    const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+    const expiryDate = new Date(
+        expiry.getFullYear(),
+        expiry.getMonth(),
+        expiry.getDate()
+    );
+
+    const diffTime = expiryDate.getTime() - today.getTime();
+
+    return Math.ceil(
+        diffTime / (1000 * 60 * 60 * 24)
+    );
 };
 
-const CourseEnrollmentsPage = () => {
-    const { course } = useOutletContext();
+
+const getRemainingLabel = (expiresAt) => {
+    const remainingDays = getRemainingDays(expiresAt);
+
+    if (remainingDays === null) {
+        return "Không giới hạn";
+    }
+
+    if (remainingDays < 0) {
+        return "Đã hết hạn";
+    }
+
+    if (remainingDays === 0) {
+        return "Hết hạn hôm nay";
+    }
+
+    if (remainingDays === 1) {
+        return "Còn 1 ngày";
+    }
+
+    return `Còn ${remainingDays} ngày`;
+};
+
+
+const getRemainingClassName = (expiresAt) => {
+    const remainingDays = getRemainingDays(expiresAt);
+
+    if (remainingDays === null) {
+        return "text-[#52525B]";
+    }
+
+    if (remainingDays < 0) {
+        return "text-[#DC2626]";
+    }
+
+    if (remainingDays <= 7) {
+        return "text-[#D97706]";
+    }
+
+    return "text-[#16A34A]";
+};
+
+
+// ==========================================
+// Component
+// ==========================================
+
+export default function CourseEnrollmentsPage() {
     const navigate = useNavigate();
+
+    const { course } = useOutletContext();
 
     const [enrollments, setEnrollments] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    // Add student modal
     const [showAddModal, setShowAddModal] = useState(false);
-    const [studentId, setStudentId] = useState("");
-    const [adding, setAdding] = useState(false);
+
+    const courseId = course?.id;
+
+
+    // ==========================================
+    // Fetch enrollments
+    // ==========================================
 
     useEffect(() => {
-        const courseId = course?.id;
-
-        if (!courseId) return;
+        if (!courseId) {
+            setEnrollments([]);
+            setLoading(false);
+            return;
+        }
 
         const fetchEnrollments = async () => {
             try {
                 setLoading(true);
 
-                const response =
+                const res =
                     await enrollmentService.getByCourse(
                         courseId
                     );
 
-                setEnrollments(
-                    response?.data ?? response ?? []
-                );
+                setEnrollments(res.data || []);
             } catch (error) {
+                console.error(error);
+
                 appToast.error(
-                    error?.response?.data?.message ||
                     "Không thể tải danh sách học sinh."
                 );
             } finally {
@@ -64,354 +138,300 @@ const CourseEnrollmentsPage = () => {
         };
 
         fetchEnrollments();
-    }, [course?.id]);
+    }, [courseId]);
 
-    const handleOpenAddModal = () => {
-        setStudentId("");
-        setShowAddModal(true);
-    };
 
-    const handleCloseAddModal = () => {
-        if (adding) return;
+    // ==========================================
+    // Student added
+    // ==========================================
 
-        setShowAddModal(false);
-        setStudentId("");
-    };
-
-    const handleViewStudent = (enrollmentId) => {
-        if (!course?.id || !enrollmentId) return;
-
-        navigate(
-            `/teacher/courses/${course.id}/enrollments/${enrollmentId}`
-        );
-    };
-
-    const handleAddStudent = async (e) => {
-        e.preventDefault();
-
-        const trimmedStudentId = studentId.trim();
-
-        if (!trimmedStudentId) {
-            appToast.error(
-                "Vui lòng nhập mã học sinh."
-            );
-            return;
-        }
-
-        if (!course?.id) {
-            appToast.error(
-                "Không xác định được khóa học."
-            );
-            return;
-        }
-
-        try {
-            setAdding(true);
-
-            const response =
-                await enrollmentService.enrollStudent(
-                    course.id,
-                    trimmedStudentId
-                );
-
-            const newEnrollment =
-                response?.data ?? response;
+    const handleStudentAdded = useCallback(
+        (newEnrollment) => {
+            if (!newEnrollment) return;
 
             setEnrollments((prev) => [
                 newEnrollment,
                 ...prev,
             ]);
+        },
+        []
+    );
 
-            appToast.success(
-                "Thêm học sinh vào khóa học thành công."
-            );
 
-            setShowAddModal(false);
-            setStudentId("");
-        } catch (error) {
-            appToast.error(
-                error?.response?.data?.message ||
-                "Không thể thêm học sinh vào khóa học."
+    // ==========================================
+    // View student detail
+    // ==========================================
+
+    const handleViewStudent = useCallback(
+        (enrollmentId) => {
+            if (!courseId || !enrollmentId) return;
+
+            navigate(
+                `/teacher/courses/${courseId}/enrollments/${enrollmentId}`
             );
-        } finally {
-            setAdding(false);
-        }
-    };
+        },
+        [courseId, navigate]
+    );
+
+
+    // ==========================================
+    // Render
+    // ==========================================
 
     return (
         <>
-            <section className="overflow-hidden border border-gray-100 bg-white shadow-sm">
-                {/* Header */}
-                <div className="flex items-center justify-between border-b border-gray-100 px-4 py-4 sm:px-5">
+            <section className="overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white">
+
+                {/* ======================================
+                    Header
+                ======================================= */}
+
+                <div className="flex gap-3 border-b border-[#F0F0F1] px-4 py-4 sm:flex-row sm:items-center justify-between sm:px-5">
+
                     <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
-                            <Users
-                                size={18}
-                                strokeWidth={1.8}
-                            />
+
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#2563EB]">
+                            <Users size={17} />
                         </div>
 
                         <div className="min-w-0">
-                            <h2 className="text-sm font-semibold text-gray-800">
+                            <h2 className="truncate text-[14px] font-semibold text-[#18181B]">
                                 Học sinh tham gia
                             </h2>
 
-                            <p className="mt-0.5 text-xs text-gray-400">
+                            <p className="mt-0.5 text-[11px] text-[#71717A]">
                                 {enrollments.length} học sinh
                             </p>
                         </div>
+
                     </div>
+
 
                     <button
                         type="button"
-                        onClick={handleOpenAddModal}
-                        className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-violet-600 px-3 text-xs font-medium text-white shadow-sm shadow-violet-200 transition hover:bg-violet-700 active:scale-[0.98]"
+                        onClick={() =>
+                            setShowAddModal(true)
+                        }
+                        className="flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#2563EB] px-3.5 text-[12px] font-medium text-white transition hover:bg-[#1D4ED8] sm:w-auto"
                     >
-                        <Plus
-                            size={15}
-                            strokeWidth={2}
-                        />
-
-                        <span>Thêm</span>
+                        <Plus size={15} />
+                        Thêm
                     </button>
+
                 </div>
 
-                {/* Loading */}
+
+                {/* ======================================
+                    Loading
+                ======================================= */}
+
                 {loading ? (
-                    <div className="divide-y divide-gray-100">
-                        {Array.from({ length: 5 }).map(
-                            (_, index) => (
-                                <div
-                                    key={index}
-                                    className="flex items-center gap-3 px-4 py-4 sm:px-5"
-                                >
-                                    {/* Number */}
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center">
-                                        <div className="h-3 w-3 animate-pulse rounded bg-gray-100" />
-                                    </div>
+                    <div className="divide-y divide-[#F0F0F1]">
 
-                                    {/* Student */}
-                                    <div className="min-w-0 flex-1">
-                                        <div className="h-3 w-32 animate-pulse rounded bg-gray-100" />
+                        {[1, 2, 3].map((item) => (
+                            <div
+                                key={item}
+                                className="flex items-center gap-3 px-4 py-4 sm:gap-4 sm:px-5"
+                            >
 
-                                        <div className="mt-2 h-2.5 w-40 max-w-full animate-pulse rounded bg-gray-100" />
+                                {/* Index */}
+                                <div className="h-8 w-8 shrink-0 animate-pulse rounded-lg bg-[#F4F4F5]" />
 
-                                        <div className="mt-2 h-2.5 w-24 animate-pulse rounded bg-gray-100" />
-                                    </div>
+                                {/* Student */}
+                                <div className="min-w-0 flex-1">
 
-                                    {/* Action */}
-                                    <div className="h-8 w-8 shrink-0 animate-pulse rounded-lg bg-gray-100" />
+                                    <div className="h-3.5 w-32 animate-pulse rounded bg-[#F4F4F5]" />
+
+                                    <div className="mt-2 h-3 w-40 animate-pulse rounded bg-[#F4F4F5]" />
+
                                 </div>
-                            )
-                        )}
+
+                                {/* Expiry */}
+                                <div className="hidden w-24 shrink-0 sm:block">
+
+                                    <div className="ml-auto h-3.5 w-16 animate-pulse rounded bg-[#F4F4F5]" />
+
+                                    <div className="mt-2 ml-auto h-3 w-20 animate-pulse rounded bg-[#F4F4F5]" />
+
+                                </div>
+
+                                {/* Action */}
+                                <div className="h-8 w-8 shrink-0 animate-pulse rounded-lg bg-[#F4F4F5]" />
+
+                            </div>
+                        ))}
+
                     </div>
-                ) : enrollments.length > 0 ? (
-                    /* Student List */
-                    <div className="divide-y divide-gray-100">
-                        {enrollments.map(
-                            (enrollment, index) => (
-                                <button
-                                    key={enrollment.id}
-                                    type="button"
-                                    onClick={() =>
-                                        handleViewStudent(
-                                            enrollment.id
-                                        )
-                                    }
-                                    className="group flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-violet-50/30 active:bg-gray-50 sm:px-5"
-                                >
-                                    {/* STT */}
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center">
-                                        <span className="text-xs font-medium text-gray-400">
-                                            {index + 1}
-                                        </span>
-                                    </div>
+                ) : enrollments.length === 0 ? (
 
-                                    {/* Student Info */}
-                                    <div className="min-w-0 flex-1">
-                                        <p className="truncate text-xs font-semibold text-gray-800">
-                                            {enrollment.student
-                                                ?.name ||
-                                                enrollment.studentName ||
-                                                "Học sinh"}
-                                        </p>
+                    /* ======================================
+                       Empty
+                    ======================================= */
 
-                                        <p className="mt-0.5 truncate text-[11px] text-gray-400">
-                                            {enrollment.student
-                                                ?.email ||
-                                                enrollment.studentEmail ||
-                                                "--"}
-                                        </p>
+                    <div className="px-5 py-14 text-center">
 
-                                        <p className="mt-1.5 text-[11px] text-gray-500">
-                                            Hết hạn{" "}
-                                            <span className="font-medium text-gray-600">
-                                                {formatDate(
-                                                    enrollment.expiresAt
-                                                )}
-                                            </span>
-                                        </p>
-                                    </div>
-
-                                    {/* View */}
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-300 transition group-hover:bg-violet-50 group-hover:text-violet-600">
-                                        <ChevronRight
-                                            size={18}
-                                            strokeWidth={1.8}
-                                        />
-                                    </div>
-                                </button>
-                            )
-                        )}
-                    </div>
-                ) : (
-                    /* Empty */
-                    <div className="flex min-h-[280px] flex-col items-center justify-center px-5 text-center">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-50 text-violet-500">
-                            <Users
-                                size={22}
-                                strokeWidth={1.6}
-                            />
+                        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-[#F4F4F5] text-[#71717A]">
+                            <Users size={18} />
                         </div>
 
-                        <h3 className="mt-4 text-sm font-semibold text-gray-700">
+                        <p className="mt-3 text-[13px] font-medium text-[#52525B]">
                             Chưa có học sinh
-                        </h3>
+                        </p>
 
-                        <p className="mt-1 text-xs text-gray-400">
-                            Thêm học sinh vào khóa học để
-                            bắt đầu.
+                        <p className="mt-1 text-[11px] text-[#A1A1AA]">
+                            Thêm học sinh đầu tiên vào khóa học.
                         </p>
 
                         <button
                             type="button"
-                            onClick={handleOpenAddModal}
-                            className="mt-4 inline-flex h-8 items-center gap-1.5 rounded-lg bg-violet-600 px-3 text-xs font-medium text-white transition hover:bg-violet-700 active:scale-[0.98]"
+                            onClick={() =>
+                                setShowAddModal(true)
+                            }
+                            className="mx-auto mt-4 flex h-8 items-center gap-1.5 rounded-lg border border-[#E4E4E7] px-3 text-[11px] font-medium text-[#52525B] transition hover:bg-[#FAFAFA]"
                         >
-                            <Plus
-                                size={15}
-                                strokeWidth={2}
-                            />
-
-                            <span>
-                                Thêm học sinh
-                            </span>
+                            <Plus size={14} />
+                            Thêm học sinh
                         </button>
+
+                    </div>
+
+                ) : (
+
+                    /* ======================================
+                       Enrollment list
+                    ======================================= */
+
+                    <div className="divide-y divide-[#F0F0F1]">
+
+                        {enrollments.map(
+                            (enrollment, index) => {
+
+                                const studentName =
+                                    enrollment.student?.name ||
+                                    enrollment.studentName ||
+                                    "Chưa có tên";
+
+                                const studentCode =
+                                    enrollment.student?.studentCode ||
+                                    enrollment.studentCode ||
+                                    "—";
+
+                                const expiresAt =
+                                    enrollment.expiresAt;
+
+                                const remainingLabel =
+                                    getRemainingLabel(
+                                        expiresAt
+                                    );
+
+                                const remainingClass =
+                                    getRemainingClassName(
+                                        expiresAt
+                                    );
+
+                                return (
+                                    <div
+                                        key={enrollment.id}
+                                        className="flex items-center gap-3 px-4 py-4 transition hover:bg-[#FAFAFA] sm:gap-4 sm:px-5"
+                                    >
+
+                                        {/* ==================================
+                                            Index
+                                        =================================== */}
+
+                                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F4F4F5] text-[11px] font-medium text-[#71717A]">
+                                            {index + 1}
+                                        </div>
+
+
+                                        {/* ==================================
+                                            Student information
+                                        =================================== */}
+
+                                        <div className="min-w-0 flex-1">
+
+                                            <p className="truncate text-[13px] font-medium text-[#18181B]">
+                                                {studentName}
+                                            </p>
+
+                                            <p className="mt-0.5 truncate text-[11px] text-[#71717A]">
+                                                {studentCode}
+                                            </p>
+
+                                        </div>
+
+
+                                        {/* ==================================
+                                            Expiration
+                                        =================================== */}
+
+                                        <div className="shrink-0 text-right">
+
+                                            <p
+                                                className={`text-[12px] font-semibold ${remainingClass}`}
+                                            >
+                                                {remainingLabel}
+                                            </p>
+
+                                            {expiresAt ? (
+                                                <p className="mt-0.5 text-[10px] text-[#A1A1AA]">
+                                                    Hết hạn{" "}
+                                                    {formatDate(
+                                                        expiresAt
+                                                    )}
+                                                </p>
+                                            ) : (
+                                                <p className="mt-0.5 text-[10px] text-[#A1A1AA]">
+                                                    Không giới hạn
+                                                </p>
+                                            )}
+
+                                        </div>
+
+
+                                        {/* ==================================
+                                            View detail
+                                        =================================== */}
+
+                                        <button
+                                            type="button"
+                                            aria-label={`Xem chi tiết ${studentName}`}
+                                            onClick={() =>
+                                                handleViewStudent(
+                                                    enrollment.id
+                                                )
+                                            }
+                                            className="group flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#E4E4E7] text-[#71717A] transition hover:border-[#BFDBFE] hover:bg-[#EFF6FF] hover:text-[#2563EB]"
+                                        >
+                                            <ArrowRight
+                                                size={15}
+                                                className="transition group-hover:translate-x-0.5"
+                                            />
+                                        </button>
+
+                                    </div>
+                                );
+                            }
+                        )}
+
                     </div>
                 )}
+
             </section>
 
-            {/* Add Student Modal */}
-            {showAddModal && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4 backdrop-blur-[2px]"
-                    onMouseDown={handleCloseAddModal}
-                >
-                    <div
-                        className="w-full max-w-md rounded-2xl bg-white shadow-xl"
-                        onMouseDown={(e) =>
-                            e.stopPropagation()
-                        }
-                    >
-                        {/* Modal Header */}
-                        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-800">
-                                    Thêm học sinh
-                                </h3>
 
-                                <p className="mt-1 text-xs text-gray-400">
-                                    Nhập mã học sinh để thêm
-                                    vào khóa học.
-                                </p>
-                            </div>
+            {/* ==========================================
+                Add Student Modal
+            =========================================== */}
 
-                            <button
-                                type="button"
-                                onClick={
-                                    handleCloseAddModal
-                                }
-                                disabled={adding}
-                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
-                                aria-label="Đóng"
-                            >
-                                <X
-                                    size={17}
-                                    strokeWidth={1.8}
-                                />
-                            </button>
-                        </div>
-
-                        {/* Modal Body */}
-                        <form
-                            onSubmit={handleAddStudent}
-                        >
-                            <div className="px-5 py-5">
-                                <label
-                                    htmlFor="studentId"
-                                    className="mb-1.5 block text-xs font-medium text-gray-700"
-                                >
-                                    Mã học sinh
-                                </label>
-
-                                <input
-                                    id="studentId"
-                                    type="text"
-                                    value={studentId}
-                                    onChange={(e) =>
-                                        setStudentId(
-                                            e.target.value
-                                        )
-                                    }
-                                    placeholder="Nhập mã học sinh"
-                                    autoFocus
-                                    disabled={adding}
-                                    className="h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-gray-50"
-                                />
-
-                                <p className="mt-2 text-[11px] text-gray-400">
-                                    Mã học sinh là ID của tài
-                                    khoản có vai trò học sinh.
-                                </p>
-                            </div>
-
-                            {/* Modal Footer */}
-                            <div className="flex justify-end gap-2 border-t border-gray-100 px-5 py-4">
-                                <button
-                                    type="button"
-                                    onClick={
-                                        handleCloseAddModal
-                                    }
-                                    disabled={adding}
-                                    className="h-9 rounded-lg border border-gray-200 px-4 text-xs font-medium text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    Hủy
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    disabled={
-                                        adding ||
-                                        !studentId.trim()
-                                    }
-                                    className="inline-flex h-9 items-center justify-center rounded-lg bg-violet-600 px-4 text-xs font-medium text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    {adding ? (
-                                        <>
-                                            <span className="mr-2 h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                                            Đang thêm...
-                                        </>
-                                    ) : (
-                                        "Thêm học sinh"
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <AddStudentModal
+                open={showAddModal}
+                courseId={courseId}
+                onClose={() =>
+                    setShowAddModal(false)
+                }
+                onAdded={handleStudentAdded}
+            />
         </>
     );
-};
-
-export default CourseEnrollmentsPage;
+}

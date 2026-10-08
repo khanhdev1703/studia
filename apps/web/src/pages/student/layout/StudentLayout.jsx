@@ -15,6 +15,7 @@ import ProfilePage from "../profile/StudentProfile";
 import StudentBottomNav from "./StudentBottomNav";
 import HelpPage from "../profile/HelpPage";
 import ChangePasswordPage from "../profile/ChangePasswordPage";
+import PersonalProfilePage from "../profile/PersonalProfilePage";
 
 const StudentLayout = () => {
     const mainRef = useRef(null);
@@ -80,10 +81,10 @@ const StudentLayout = () => {
                         path="profile"
                         element={<ProfilePage />}
                     />
-                    {/* <Route
+                    <Route
                         path="profile/personal"
                         element={<PersonalProfilePage />}
-                    /> */}
+                    />
                     {/* <Route
                         path="profile/settings"
                         element={<ProfileSettingsPage />}

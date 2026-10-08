@@ -31,7 +31,12 @@ const userService = {
     changePassword: async (form) => {
         const response = await userAPI.changePasswordApi(form);
         return response.data;
-    }
+    },
+
+    updateMe: async (data) => {
+        const response = await userAPI.updateMeApi(data);
+        return response;
+    },
 };
 
 export default userService;

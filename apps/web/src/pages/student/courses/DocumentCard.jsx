@@ -16,8 +16,7 @@ const DocumentCard = ({
     return null;
   }
 
-  const fileName =
-    document.name || "Tài liệu";
+  const fileName = document.name || "Tài liệu";
 
   const fileType = getDocumentType(
     fileName,
@@ -33,85 +32,51 @@ const DocumentCard = ({
   );
 
   return (
-    <div
-      className="
-                flex
-                items-center
-                gap-3
-                rounded-md
-                border
-                border-[#E4E1F2]
-                bg-white
-                px-3.5
-                py-3
-                shadow-sm
-            "
-    >
+    <div className="flex items-center gap-3 px-4 py-3 sm:px-5">
       {/* File icon */}
-
       <div
-        className={`
-                    flex
-                    h-10
-                    w-10
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-md
-                    ${iconClass}
-                `}
+        className={[
+          "flex h-9 w-9 shrink-0 items-center justify-center",
+          "rounded-lg",
+          iconClass,
+        ].join(" ")}
       >
         <DocumentIcon
           sx={{
-            fontSize: 20,
+            fontSize: 19,
           }}
         />
       </div>
 
       {/* File information */}
-
       <div className="min-w-0 flex-1">
         <p
-          className="
-                        truncate
-                        text-sm
-                        font-medium
-                        text-[#252238]
-                    "
+          className="truncate text-xs font-medium text-[#3F3F46]"
           title={fileName}
         >
           {fileName}
         </p>
 
-        <div className="mt-1 flex items-center gap-2">
-          {/* File type */}
-
+        <div className="mt-0.5 flex items-center gap-1.5">
           <span
-            className="
-                            rounded
-                            bg-gray-100
-                            px-1.5
-                            py-0.5
-                            text-[10px]
-                            font-medium
-                            text-gray-500
-                        "
+            className={[
+              "text-[10px] font-medium",
+              iconClass.split(" ").find((className) =>
+                className.startsWith("text-")
+              ),
+            ].join(" ")}
           >
             {fileType}
           </span>
 
-          {/* File size */}
-
           {document.size > 0 && (
             <>
-              <span className="text-[10px] text-gray-300">
-                •
+              <span className="text-[10px] text-[#D4D4D8]">
+                ·
               </span>
 
-              <span className="text-[10px] text-gray-400">
-                {formatFileSize(
-                  document.size
-                )}
+              <span className="text-[10px] text-[#A1A1AA]">
+                {formatFileSize(document.size)}
               </span>
             </>
           )}
@@ -119,47 +84,34 @@ const DocumentCard = ({
       </div>
 
       {/* Download */}
-
       <button
         type="button"
-        onClick={() =>
-          onDownload?.(document)
-        }
-        disabled={
-          downloading ||
-          !onDownload
-        }
+        onClick={() => onDownload?.(document)}
+        disabled={downloading || !onDownload}
         title="Tải xuống"
-        className="
-                    flex
-                    h-9
-                    w-9
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-md
-                    text-gray-400
-                    transition
-                    hover:bg-[#F0EEFF]
-                    hover:text-[#6C5CE7]
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                "
+        aria-label={`Tải xuống ${fileName}`}
+        className={[
+          "flex h-8 w-8 shrink-0 items-center justify-center",
+          "rounded-lg",
+          "text-[#A1A1AA]",
+          "transition-colors",
+          "hover:bg-[#F4F4F5] hover:text-[#18181B]",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+        ].join(" ")}
       >
         {downloading ? (
           <span
-            className="
-                            h-4
-                            w-4
-                            animate-spin
-                            rounded-full
-                            border-2
-                            border-gray-200
-                            border-t-[#6C5CE7]
-                        "
+            className={[
+              "h-4 w-4 animate-spin rounded-full",
+              "border-2 border-[#E4E4E7]",
+              "border-t-[#71717A]",
+            ].join(" ")}
           />
         ) : (
-          <Download size={18} />
+          <Download
+            size={16}
+            strokeWidth={1.8}
+          />
         )}
       </button>
     </div>

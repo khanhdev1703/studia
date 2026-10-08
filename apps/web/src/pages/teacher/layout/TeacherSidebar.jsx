@@ -215,11 +215,10 @@ const TeacherSidebar = () => {
             ========================================================= */}
             <header
                 className={[
-                    "fixed inset-x-0 top-0 z-50",
                     "flex h-16 lg:hidden",
                     "items-center justify-between",
                     "border-b border-[#E5E7EB]",
-                    "bg-[#FAFAFA]",
+                    "bg-white",
                     "px-4",
                 ].join(" ")}
             >

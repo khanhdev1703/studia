@@ -3,8 +3,6 @@
 import enrollmentService from "./enrollment.service.js";
 
 const enrollmentController = {
-
-
     // ==========================================
     // TEACHER
     // Get enrollments by course
@@ -23,9 +21,36 @@ const enrollmentController = {
 
             return res.status(200).json({
                 success: true,
-                message:
-                    "Lấy danh sách học sinh thành công.",
+                message: "Lấy danh sách học sinh thành công.",
                 data: enrollments,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // ==========================================
+    // TEACHER
+    // Check student enrollment status
+    // GET /enrollment/course/:courseId/check?studentCode=STU001
+    // ==========================================
+    async checkEnrollment(req, res, next) {
+        try {
+            const { courseId } = req.params;
+            const { studentCode } = req.query;
+            const teacherId = req.user.id;
+
+            const result =
+                await enrollmentService.checkEnrollment({
+                    courseId,
+                    studentCode,
+                    teacherId,
+                });
+
+            return res.status(200).json({
+                success: true,
+                message: "Kiểm tra học sinh thành công.",
+                data: result,
             });
         } catch (error) {
             next(error);
@@ -40,7 +65,7 @@ const enrollmentController = {
     async enrollStudent(req, res, next) {
         try {
             const { courseId } = req.params;
-            const { studentCode } = req.body;
+            const { studentCode, expiresAt } = req.body;
             const teacherId = req.user.id;
 
             const enrollment =
@@ -48,12 +73,12 @@ const enrollmentController = {
                     courseId,
                     studentCode,
                     teacherId,
+                    expiresAt,
                 });
 
             return res.status(201).json({
                 success: true,
-                message:
-                    "Thêm học sinh vào khóa học thành công.",
+                message: "Thêm học sinh vào khóa học thành công.",
                 data: enrollment,
             });
         } catch (error) {
@@ -79,8 +104,7 @@ const enrollmentController = {
 
             return res.status(200).json({
                 success: true,
-                message:
-                    "Lấy thông tin tham gia khóa học thành công.",
+                message: "Lấy thông tin tham gia khóa học thành công.",
                 data: enrollment,
             });
         } catch (error) {
@@ -106,8 +130,7 @@ const enrollmentController = {
 
             return res.status(200).json({
                 success: true,
-                message:
-                    "Xóa học sinh khỏi khóa học thành công.",
+                message: "Xóa học sinh khỏi khóa học thành công.",
                 data: enrollment,
             });
         } catch (error) {

@@ -16,11 +16,23 @@ const enrollmentService = {
         return response.data;
     },
 
-    async enrollStudent(courseId, studentCode) {
+    // Check student's enrollment status
+    async checkEnrollment(courseId, studentCode) {
+        const response =
+            await enrollmentAPI.checkEnrollment(
+                courseId,
+                studentCode
+            );
+
+        return response.data;
+    },
+
+    async enrollStudent(courseId, studentCode, data = {}) {
         const response =
             await enrollmentAPI.enrollStudent(
                 courseId,
-                studentCode
+                studentCode,
+                data
             );
 
         return response.data;

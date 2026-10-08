@@ -62,7 +62,9 @@ const LearningVideo = ({ lesson, onComplete }) => {
             key={lesson.id}
             src={getUrl(lesson.video)}
             controls
-            playsInline
+            disablePictureInPicture
+            disableRemotePlayback
+            controlsList="nodownload noremoteplayback"
             onEnded={handleVideoEnded}
             className="h-full w-full object-contain"
           />

@@ -98,7 +98,15 @@ const StudentSidebar = () => {
             <div className="border-t border-[#E5E7EB] p-3">
                 <div className="flex items-center gap-3 px-2 py-2">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F0F0F1] text-[#52525B]">
-                        <User size={17} strokeWidth={1.9} />
+                        {user?.avatar ? (
+                            <img
+                                src={user.avatar}
+                                alt="Avatar"
+                                className="h-full w-full rounded-full object-cover"
+                            />
+                        ) : (
+                            <User size={18} strokeWidth={1.8} />
+                        )}
                     </div>
 
                     <div className="min-w-0">

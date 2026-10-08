@@ -1,50 +1,20 @@
 import {
+    ArrowUpRight,
     ChevronDown,
     ChevronLeft,
     CircleHelp,
-    Mail,
-    MessageCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Logo from "/logo.png";
+import { faqs } from "../../../constants/faqs";
+
+const FB_URL = "https://www.facebook.com/achan.phuong";
 
 const HelpPage = () => {
     const navigate = useNavigate();
 
     const [openIndex, setOpenIndex] = useState(null);
-
-    const faqs = [
-        {
-            question: "Làm thế nào để tham gia một khóa học?",
-            answer:
-                "Bạn vào mục Khám phá, chọn khóa học muốn học và xem thông tin chi tiết. Sau đó thực hiện đăng ký khóa học theo hướng dẫn.",
-        },
-        {
-            question: "Làm thế nào để xem bài học?",
-            answer:
-                "Sau khi tham gia khóa học, bạn có thể vào khóa học từ danh sách khóa học của mình để xem các bài học và nội dung được mở.",
-        },
-        {
-            question: "Tôi có thể xem trước bài học không?",
-            answer:
-                "Một số bài học được giảng viên cho phép xem trước miễn phí. Những bài học này sẽ có nhãn Miễn phí và bạn có thể mở để xem ngay.",
-        },
-        {
-            question: "Tôi quên mật khẩu thì phải làm gì?",
-            answer:
-                "Tại màn hình đăng nhập, chọn Quên mật khẩu và thực hiện các bước xác minh để đặt lại mật khẩu.",
-        },
-        {
-            question: "Làm thế nào để thay đổi thông tin cá nhân?",
-            answer:
-                "Vào Hồ sơ → Thông tin cá nhân để cập nhật tên, ảnh đại diện và các thông tin tài khoản được phép thay đổi.",
-        },
-        {
-            question: "Tôi cần hỗ trợ thêm thì liên hệ ở đâu?",
-            answer:
-                "Bạn có thể liên hệ với đội ngũ hỗ trợ thông qua email hỗ trợ được cung cấp bên dưới.",
-        },
-    ];
 
     const toggleFaq = (index) => {
         setOpenIndex((currentIndex) =>
@@ -141,55 +111,67 @@ const HelpPage = () => {
                 </section>
 
                 {/* CONTACT */}
-                <section className="mt-5">
-                    <h3 className="mb-2.5 text-[13px] font-semibold text-[#18181B]">
-                        Cần hỗ trợ thêm?
-                    </h3>
 
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        <a
-                            href="mailto:support@example.com"
-                            className="flex items-center gap-3 rounded-2xl border border-[#E4E4E7] bg-white p-4 transition hover:border-[#BFDBFE] hover:bg-[#F8FBFF]"
-                        >
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#2563EB]">
-                                <Mail
-                                    size={17}
-                                    strokeWidth={1.8}
+                <section className="mt-6">
+                    <div className="mb-2.5">
+                        <h3 className="text-[13px] font-semibold text-[#18181B]">
+                            Cần hỗ trợ thêm?
+                        </h3>
+                        <p className="mt-0.5 text-[11px] text-[#71717A]">
+                            Liên hệ trực tiếp với người phụ trách.
+                        </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-[#E4E4E7] bg-white p-4">
+                        <div className="flex items-center gap-3">
+                            {/* Avatar */}
+                            <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[#EFF6FF]">
+                                <img
+                                    src={Logo}
+                                    alt="Achan Phương"
+                                    className="h-full w-full object-cover"
                                 />
                             </div>
 
-                            <div className="min-w-0">
-                                <p className="text-[12px] font-medium text-[#18181B]">
-                                    Email hỗ trợ
-                                </p>
+                            {/* Info */}
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                    <p className="truncate text-[13px] font-semibold text-[#18181B]">
+                                        Achan Phương
+                                    </p>
 
-                                <p className="mt-0.5 truncate text-[10px] text-[#71717A]">
-                                    support@example.com
-                                </p>
-                            </div>
-                        </a>
+                                    <span className="shrink-0 rounded-full bg-[#F0FDF4] px-1.5 py-0.5 text-[9px] font-medium text-[#16A34A]">
+                                        Giáo viên
+                                    </span>
+                                </div>
 
-                        <button
-                            type="button"
-                            className="flex items-center gap-3 rounded-2xl border border-[#E4E4E7] bg-white p-4 text-left transition hover:border-[#BFDBFE] hover:bg-[#F8FBFF]"
-                        >
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4F4F5] text-[#52525B]">
-                                <MessageCircle
-                                    size={17}
-                                    strokeWidth={1.8}
-                                />
+                                <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-[#94A3B8]">
+                                    {/* <Facebook size={12} /> */}
+                                    <span className="truncate">
+                                        {FB_URL.replace("https://www.", "")}
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="min-w-0">
-                                <p className="text-[12px] font-medium text-[#18181B]">
-                                    Liên hệ hỗ trợ
-                                </p>
-
-                                <p className="mt-0.5 text-[10px] text-[#71717A]">
-                                    Gửi yêu cầu hỗ trợ
-                                </p>
-                            </div>
-                        </button>
+                            {/* Facebook button */}
+                            <a
+                                href={FB_URL}
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label="Liên hệ Facebook"
+                                className={[
+                                    "flex h-9 w-9 shrink-0 items-center justify-center",
+                                    "rounded-xl",
+                                    "bg-[#EFF6FF]",
+                                    "text-[#2563EB]",
+                                    "transition-all duration-200",
+                                    "hover:bg-[#DBEAFE]",
+                                    "hover:text-[#1D4ED8]",
+                                ].join(" ")}
+                            >
+                                <ArrowUpRight size={16} strokeWidth={2} />
+                            </a>
+                        </div>
                     </div>
                 </section>
             </div>

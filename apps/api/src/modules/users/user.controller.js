@@ -40,9 +40,9 @@ const userController = {
     // PUT /users/me
     async updateMe(req, res, next) {
         try {
-            const { name } = req.body;
+            const { name, avatar } = req.body;
 
-            if (name === undefined) {
+            if (name === undefined && avatar === undefined) {
                 throw new AppError(
                     "Không có thông tin cần cập nhật.",
                     400
@@ -50,9 +50,10 @@ const userController = {
             }
 
             const user = await userService.updateMe(
-                req.user.userId,
+                req.user.id,
                 {
-                    name,
+                    ...(name !== undefined && { name }),
+                    ...(avatar !== undefined && { avatar }),
                 }
             );
 

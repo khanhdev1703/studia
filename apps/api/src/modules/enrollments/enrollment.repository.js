@@ -49,6 +49,7 @@ const enrollmentRepository = {
                         id: true,
                         name: true,
                         email: true,
+                        studentCode: true,
                     },
                 },
             },

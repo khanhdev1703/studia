@@ -331,7 +331,7 @@ const CourseOverviewPage = () => {
     // Render
     // ==========================================
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 p-2">
             <CourseBasicInfo
                 form={form}
                 thumbnailPreview={thumbnailPreview}

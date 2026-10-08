@@ -10,7 +10,7 @@ import env from "../../config/env.js";
 
 const authService = {
     async register({ name, email, password }) {
-        const existingUser = await authRepository.findByEmail(email);
+        const existingUser = await authRepository.findUserByEmail(email);
 
         if (existingUser) {
             throw new AppError(
@@ -21,10 +21,16 @@ const authService = {
 
         const hashedPassword = await hashPassword(password);
 
-        const user = await authRepository.create({
-            name,
-            email,
+        const studentCount = await authRepository.countStudents();
+
+        const studentCode = `HS${String(studentCount + 1).padStart(4, "0")}`;
+
+        const user = await authRepository.createUser({
+            name: name.trim(),
+            email: email.trim().toLowerCase(),
             password: hashedPassword,
+            role: "STUDENT",
+            studentCode,
         });
 
         // Không trả password về client

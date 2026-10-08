@@ -375,7 +375,7 @@ const ExploreCourseDetailPage = () => {
                                                             lesson
                                                         )
                                                     }
-                                                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB] transition hover:bg-[#DBEAFE]"
+                                                    className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB] transition hover:bg-[#DBEAFE]"
                                                     aria-label={`Xem ${lesson.title}`}
                                                 >
                                                     <PlayCircle
@@ -408,74 +408,82 @@ const ExploreCourseDetailPage = () => {
             </main>
 
             {/* PREVIEW MODAL */}
-            {previewLesson && (
+            <div
+                className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 backdrop-blur-sm transition-all duration-200 sm:p-6 ${previewLesson
+                    ? "visible opacity-100"
+                    : "invisible pointer-events-none opacity-0"
+                    }`}
+                onClick={() => setPreviewLesson(null)}
+            >
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-0 backdrop-blur-sm sm:p-6"
-                    onClick={() => setPreviewLesson(null)}
+                    className={`flex w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-200 ${previewLesson
+                        ? "translate-y-0 scale-100"
+                        : "translate-y-2 scale-[0.98]"
+                        }`}
+                    onClick={(event) => event.stopPropagation()}
                 >
-                    <div
-                        className="flex h-full w-full flex-col overflow-hidden bg-white sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:rounded-xl sm:shadow-2xl"
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        {/* HEADER */}
-                        <div className="flex h-14 shrink-0 items-center justify-between border-b border-[#E5E7EB] bg-white px-4 sm:px-5">
-                            <div className="min-w-0 pr-4">
-                                <div className="flex min-w-0 items-center gap-3">
-                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] text-[10px] font-semibold text-[#2563EB]">
-                                        {String(
+                    {/* HEADER */}
+                    <div className="flex h-14 shrink-0 items-center justify-between border-b border-[#E5E7EB] bg-white px-4 sm:px-5">
+                        <div className="min-w-0 pr-4">
+                            <div className="flex min-w-0 items-center gap-3">
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] text-[10px] font-semibold text-[#2563EB]">
+                                    {previewLesson
+                                        ? String(
                                             lessons.findIndex(
                                                 (lesson) =>
                                                     lesson.id === previewLesson.id ||
                                                     lesson._id === previewLesson._id
                                             ) + 1
-                                        ).padStart(2, "0")}
-                                    </span>
+                                        ).padStart(2, "0")
+                                        : "01"}
+                                </span>
 
-                                    <p className="truncate text-[12px] font-medium text-[#18181B]">
-                                        {previewLesson.title}
-                                    </p>
-                                </div>
+                                <p className="truncate text-[12px] font-medium text-[#18181B]">
+                                    {previewLesson?.title || ""}
+                                </p>
                             </div>
-
-                            <button
-                                type="button"
-                                onClick={() => setPreviewLesson(null)}
-                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#71717A] transition hover:bg-[#F4F4F5] hover:text-[#18181B]"
-                                aria-label="Đóng"
-                            >
-                                <X size={19} strokeWidth={1.8} />
-                            </button>
                         </div>
 
-                        {/* VIDEO */}
-                        <div className="mt-2 relative flex min-h-0 flex-1 items-start justify-center bg-[#F4F4F5] sm:items-center">
-                            {previewLesson.video ? (
-                                <video
-                                    src={getUrl(previewLesson.video)}
-                                    className="w-full object-contain sm:max-h-[75vh]"
-                                    controls
-                                    controlsList="nodownload noplaybackrate"
-                                    disablePictureInPicture
-                                    autoPlay
-                                    playsInline
-                                />
-                            ) : (
-                                <div className="flex aspect-video w-full flex-col items-center justify-center bg-[#F4F4F5]">
+                        <button
+                            type="button"
+                            onClick={() => setPreviewLesson(null)}
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#71717A] transition hover:bg-[#F4F4F5] hover:text-[#18181B]"
+                            aria-label="Đóng"
+                        >
+                            <X size={19} strokeWidth={1.8} />
+                        </button>
+                    </div>
+
+                    {/* VIDEO */}
+                    <div className="flex w-full items-center justify-center bg-[#F4F4F5] p-2 sm:p-4">
+                        {previewLesson?.video ? (
+                            <video
+                                src={getUrl(previewLesson.video)}
+                                className="aspect-video w-full max-h-[75vh] rounded-lg bg-black object-contain"
+                                controls
+                                controlsList="nodownload noplaybackrate"
+                                disablePictureInPicture
+                                autoPlay
+                                playsInline
+                            />
+                        ) : (
+                            <div className="flex aspect-video w-full items-center justify-center rounded-lg bg-[#F4F4F5]">
+                                <div className="text-center">
                                     <PlayCircle
                                         size={42}
                                         strokeWidth={1.2}
-                                        className="text-[#A1A1AA]"
+                                        className="mx-auto text-[#A1A1AA]"
                                     />
 
                                     <p className="mt-4 text-[12px] text-[#71717A]">
                                         Video chưa khả dụng
                                     </p>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

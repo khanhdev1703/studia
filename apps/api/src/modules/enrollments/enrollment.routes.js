@@ -4,14 +4,11 @@ import { Router } from "express";
 
 import auth from "../../middlewares/auth.js";
 import authorize from "../../middlewares/authorize.js";
-
 import enrollmentController from "./enrollment.controller.js";
 
 const router = Router();
 
 router.use(auth);
-
-
 
 // ==========================================
 // TEACHER
@@ -22,6 +19,13 @@ router.get(
     "/course/:courseId",
     authorize("TEACHER"),
     enrollmentController.getEnrollmentsByCourse
+);
+
+// GET /enrollment/course/:courseId/check?studentCode=STU001
+router.get(
+    "/course/:courseId/check",
+    authorize("TEACHER"),
+    enrollmentController.checkEnrollment
 );
 
 // POST /enrollment/course/:courseId

@@ -24,6 +24,14 @@ const authRepository = {
       data,
     });
   },
+
+  countStudents() {
+    return prisma.user.count({
+      where: {
+        role: "STUDENT",
+      },
+    });
+  }
 };
 
 export default authRepository;

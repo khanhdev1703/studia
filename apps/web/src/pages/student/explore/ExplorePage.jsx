@@ -72,7 +72,7 @@ const ExplorePage = () => {
             </header>
 
             {/* BODY */}
-            <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-6">
+            <main className="mx-auto w-full max-w-7xl px-3 py-3 sm:px-6 sm:py-6">
                 {/* LOADING */}
                 {loading && (
                     <div

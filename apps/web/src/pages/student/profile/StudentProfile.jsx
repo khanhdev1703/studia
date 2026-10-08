@@ -23,12 +23,12 @@ const ProfilePage = () => {
             icon: UserRound,
             path: "/student/profile/personal",
         },
-        {
-            label: "Cài đặt",
-            description: "Tùy chỉnh tài khoản",
-            icon: Settings2,
-            path: "/student/profile/settings",
-        },
+        // {
+        //     label: "Cài đặt",
+        //     description: "Tùy chỉnh tài khoản",
+        //     icon: Settings2,
+        //     path: "/student/profile/settings",
+        // },
         {
             label: "Đổi mật khẩu",
             description: "Thay đổi mật khẩu tài khoản",

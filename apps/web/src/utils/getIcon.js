@@ -19,44 +19,38 @@ const getDocumentIcon = (
   ) {
     return {
       Icon: PictureAsPdfIcon,
-      className: "bg-red-50 text-red-500",
+      className: "bg-[#FEF2F2] text-[#DC2626]",
     };
   }
 
   // Word
-  if (
-    ["doc", "docx"].includes(extension)
-  ) {
+  if (["doc", "docx"].includes(extension)) {
     return {
       Icon: DescriptionIcon,
-      className: "bg-blue-50 text-blue-600",
+      className: "bg-[#EFF6FF] text-[#2563EB]",
     };
   }
 
   // PowerPoint
-  if (
-    ["ppt", "pptx"].includes(extension)
-  ) {
+  if (["ppt", "pptx"].includes(extension)) {
     return {
       Icon: SlideshowIcon,
-      className: "bg-orange-50 text-orange-500",
+      className: "bg-[#FFF7ED] text-[#EA580C]",
     };
   }
 
   // Excel
-  if (
-    ["xls", "xlsx"].includes(extension)
-  ) {
+  if (["xls", "xlsx"].includes(extension)) {
     return {
       Icon: TableChartIcon,
-      className: "bg-green-50 text-green-600",
+      className: "bg-[#F0FDF4] text-[#16A34A]",
     };
   }
 
   // Default
   return {
     Icon: DescriptionIcon,
-    className: "bg-gray-100 text-gray-500",
+    className: "bg-[#F4F4F5] text-[#71717A]",
   };
 };
 

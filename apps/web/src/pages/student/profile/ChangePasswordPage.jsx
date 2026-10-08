@@ -14,7 +14,6 @@ const ChangePasswordPage = () => {
 
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const [form, setForm] = useState({
@@ -100,7 +99,6 @@ const ChangePasswordPage = () => {
 
             setShowCurrentPassword(false);
             setShowNewPassword(false);
-            setShowConfirmPassword(false);
 
             // Quay lại trang trước sau một khoảng ngắn
             setTimeout(() => {
@@ -267,7 +265,7 @@ const ChangePasswordPage = () => {
                                 id="confirmPassword"
                                 name="confirmPassword"
                                 type={
-                                    showConfirmPassword
+                                    showNewPassword
                                         ? "text"
                                         : "password"
                                 }
@@ -281,19 +279,19 @@ const ChangePasswordPage = () => {
                             <button
                                 type="button"
                                 onClick={() =>
-                                    setShowConfirmPassword(
+                                    setShowNewPassword(
                                         (current) => !current
                                     )
                                 }
                                 disabled={loading}
                                 className="absolute right-0 top-0 flex h-10 w-10 items-center justify-center text-[#A1A1AA] transition hover:text-[#52525B] disabled:cursor-not-allowed"
                                 aria-label={
-                                    showConfirmPassword
+                                    showNewPassword
                                         ? "Ẩn mật khẩu"
                                         : "Hiện mật khẩu"
                                 }
                             >
-                                {showConfirmPassword ? (
+                                {showNewPassword ? (
                                     <EyeOff size={16} />
                                 ) : (
                                     <Eye size={16} />
@@ -303,11 +301,11 @@ const ChangePasswordPage = () => {
                     </div>
 
                     {/* ACTION */}
-                    <div className="border-t border-[#F0F0F1] bg-[#FAFAFA] px-4 py-3">
+                    <div className="border-t border-[#F0F0F1] px-4 py-3 text-right">
                         <button
                             type="submit"
                             disabled={loading}
-                            className="h-10 w-full rounded-xl bg-[#2563EB] text-[12px] font-medium text-white transition hover:bg-[#1D4ED8] active:bg-[#1E40AF] disabled:cursor-not-allowed disabled:opacity-60"
+                            className="h-10 px-3 rounded-full bg-[#2563EB] text-[12px] font-medium text-white transition hover:bg-[#1D4ED8] active:bg-[#1E40AF] disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             {loading
                                 ? "Đang cập nhật..."

@@ -34,26 +34,23 @@ const documentService = {
     const response =
       await documentAPI.download(documentId);
 
-    const blob = new Blob(
-      [response.data],
-      {
-        type:
-          response.headers["content-type"] ||
-          "application/octet-stream",
-      }
-    );
+    const blob = new Blob([response.data], {
+      type:
+        response.headers["content-type"] ||
+        "application/octet-stream",
+    });
 
     const url =
       window.URL.createObjectURL(blob);
 
     const link =
-      document.createElement("a");
+      window.document.createElement("a");
 
     link.href = url;
     link.download =
       fileName || "tai-lieu";
 
-    document.body.appendChild(link);
+    window.document.body.appendChild(link);
     link.click();
     link.remove();
 
